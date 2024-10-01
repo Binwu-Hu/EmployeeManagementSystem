@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
+import Employee from '../models/employeeModel.js';
 import RegistrationToken from '../models/registrationTokenModel.js';
 
 // @desc Sign up new employee
@@ -38,6 +39,18 @@ const signupUser = asyncHandler(async (req, res) => {
     password: hashedPassword,
     role,
   });
+
+  // If user creation is successful and the role is 'Employee', create an Employee entry
+  if (user && role === 'Employee') {
+    const employee = await Employee.create({
+      firstName,
+      lastName,
+      email,
+      userId: user._id, // Reference the created user's ID
+      // You can add more default fields or handle additional data here
+    });
+    console.log('Employee Created:', employee._id);
+  }
 
   // If user creation is successful, respond with the user details and JWT token
   if (user) {
