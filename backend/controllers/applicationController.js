@@ -4,36 +4,47 @@ import asyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
 
 // @desc    Create application
-// @route   POST /api/application
+// @route   POST /api/application/:id
 const createApplication = asyncHandler(async (req, res) => {
-  const { gender, documents } = req.body;
+  const { employeeId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(employeeId)) {
+    return res.status(400).json({ message: 'Invalid employee ID format.' });
+  }
+
+  // Find employee by employee ID
+  const employee = await Employee.findById(employeeId);
+
+  if (!employee) {
+    return res.status(404).json({ message: 'Employee not found.' });
+  }
 
   const application = new Application({
-    email: req.employee.email,
-    employee: req.employee._id,
-    firstName: req.employee.firstName,
-    lastName: req.employee.lastName,
-    middleName: req.employee.middleName,
-    preferredName: req.employee.preferredName,
-    profilePicture: req.employee.profilePicture,
+    email: employee.email,
+    employee: employee._id,
+    firstName: employee.firstName,
+    lastName: employee.lastName,
+    middleName: employee.middleName,
+    preferredName: employee.preferredName,
+    profilePicture: employee.profilePicture,
     address: {
-      building: req.employee.address.building,
-      street: req.employee.address.street,
-      city: req.employee.address.city,
-      state: req.employee.address.state,
-      zip: req.employee.address.zip,
+      building: employee.address.building,
+      street: employee.address.street,
+      city: employee.address.city,
+      state: employee.address.state,
+      zip: employee.address.zip,
     },
     phone: {
-      cellPhone: req.employee.cellPhone,
-      workPhone: req.employee.workPhone,
+      cellPhone: employee.cellPhone,
+      workPhone: employee.workPhone,
     },
-    ssn: req.employee.ssn,
-    dateOfBirth: req.employee.dateOfBirth,
+    ssn: employee.ssn,
+    dateOfBirth: employee.dateOfBirth,
+    gender: employee.gender,
+    documents: employee.documents,
 
-    gender,
     status: 'Pending',
     feedback: '',
-    documents,
   });
 
   const createdApplication = await application.save();
