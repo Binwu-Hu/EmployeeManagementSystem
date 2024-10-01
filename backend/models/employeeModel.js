@@ -6,7 +6,6 @@ const employeeSchema = new mongoose.Schema({
   middleName: { type: String },
   preferredName: { type: String },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
   profilePicture: { type: String, default: 'default-profile.png' },
   address: {
     building: { type: String },
@@ -55,6 +54,7 @@ const employeeSchema = new mongoose.Schema({
     workAuthorization: { type: String },
   },
   registrationTokens: [{ type: mongoose.Schema.Types.ObjectId, ref: 'RegistrationToken' }],
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 }, { timestamps: true });
 
 const Employee = mongoose.model('Employee', employeeSchema);
