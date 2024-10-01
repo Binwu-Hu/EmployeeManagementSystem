@@ -1,5 +1,5 @@
-import Application from '../models/applicationModel';
-import Employee from '../models/employeeModel';
+import Application from '../models/applicationModel.js';
+import Employee from '../models/employeeModel.js';
 import asyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
 
