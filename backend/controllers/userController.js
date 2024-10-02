@@ -8,59 +8,48 @@ import RegistrationToken from '../models/registrationTokenModel.js';
 // @desc Sign up new employee
 // @route POST /api/users/signup
 const signupUser = asyncHandler(async (req, res) => {
-  const { firstName, lastName, email, password, role, token } = req.body;
+  const { username, email, password, token } = req.body;
+  console.log('req.body:', req.body);
 
-  // If the role is 'Employee', validate the registration token
-  if (role === 'Employee') {
-    const validToken = await RegistrationToken.findOne({ token, email });
-    if (!validToken || validToken.expiresAt < Date.now()) {
-      res.status(400);
-      throw new Error('Invalid or expired registration token');
-    }
-    // If token is valid, delete it after usage
-    await RegistrationToken.deleteOne({ token });
+  const validToken = await RegistrationToken.findOne({ token, email });
+  if (!validToken || validToken.expiresAt < Date.now()) {
+    res.status(400);
+    throw new Error('Invalid or expired registration token');
   }
-
-  // Check if user with the same email already exists
   const userExists = await User.findOne({ email });
   if (userExists) {
     res.status(400);
-    throw new Error('User already exists');
+    throw new Error('User with this email already exists');
   }
 
-  // Hash the password using bcrypt
+  const usernameExists = await User.findOne({ username });
+  if (usernameExists) {
+    res.status(400);
+    throw new Error('Username is already taken');
+  }
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Create the user in the database
   const user = await User.create({
-    firstName,
-    lastName,
+    username,
     email,
     password: hashedPassword,
-    role,
+    role: 'Employee', // default role assignment
   });
 
-  // If user creation is successful and the role is 'Employee', create an Employee entry
-  if (user && role === 'Employee') {
-    const employee = await Employee.create({
-      firstName,
-      lastName,
-      email,
-      userId: user._id, // Reference the created user's ID
-      // You can add more default fields or handle additional data here
-    });
-    console.log('Employee Created:', employee._id);
-  }
+  const employee = await Employee.create({
+    username,
+    email,
+    userId: user._id,
+  });
+  console.log('Employee Created:', employee._id);
 
-  // If user creation is successful, respond with the user details and JWT token
   if (user) {
     res.status(201).json({
       _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      username: user.username,
       email: user.email,
       role: user.role,
-      token: generateToken(user._id), // Generate JWT token
+      token: generateToken(user._id),
     });
   } else {
     res.status(400);
