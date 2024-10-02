@@ -20,7 +20,7 @@ const SignOutButton = () => {
 
   const handleConfirmLogout = () => {
     dispatch(logout());
-    navigate('/');
+    navigate('/login');
     setIsModalVisible(false);
   };
 
