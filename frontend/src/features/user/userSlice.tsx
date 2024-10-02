@@ -5,6 +5,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  role: string;
   token: string;
 }
 
@@ -75,6 +76,7 @@ const userSlice = createSlice({
         id: action.payload._id,
         name: action.payload.name,
         email: action.payload.email,
+        role: action.payload.role,
         token: action.payload.token,
       };
     });
