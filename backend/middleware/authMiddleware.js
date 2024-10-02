@@ -11,6 +11,7 @@ export const authMiddleware = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify the token
     req.user = await User.findById(decoded.id).select('-password'); // Get user data without the password
+    console.log('req.user:', req.user);
     if (!req.user) {
       return res.status(401).json({ message: 'User not found, authorization denied' });
     }

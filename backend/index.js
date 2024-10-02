@@ -4,6 +4,8 @@ import connectDB from './db/index.js';
 import userRoutes from './routes/userRoutes.js';
 import registrationRoutes from './routes/registrationRoutes.js';
 import applicationRoutes from './routes/applicationRoutes.js';
+import visaStatusRoutes from './routes/visaStatusRoutes.js';
+import employeeRoutes from './routes/employeeRoutes.js';
 import { errorHandlerMiddleware } from './middleware/errorHandler.js';
 
 dotenv.config();
@@ -20,6 +22,8 @@ app.use(express.json());
 app.use('/api/user', userRoutes);
 app.use('/api/registration', registrationRoutes);
 app.use('/api/application', applicationRoutes);
+app.use('/api/visa-status', visaStatusRoutes);
+app.use('/api/employee', employeeRoutes);
 
 app.use(errorHandlerMiddleware);
 const port = 3000;

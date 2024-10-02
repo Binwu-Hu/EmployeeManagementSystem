@@ -1,10 +1,9 @@
 const BASE_URL = '/api';
 
-const request = async (url: string, method: string, data?: any) => {
+const request = async (url: string, method: string, data?: any, isFormData = false) => {
   const token = localStorage.getItem('token');
 
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
     'FRONTEND_URL': window.location.origin,
   };
 
@@ -17,7 +16,11 @@ const request = async (url: string, method: string, data?: any) => {
     headers,
   };
 
-  if (data) {
+  if (isFormData) {
+    delete headers['Content-Type']; // Let the browser set the correct Content-Type for FormData
+    options.body = data; // Directly assign FormData
+  } else if (data) {
+    headers['Content-Type'] = 'application/json';
     options.body = JSON.stringify(data);
   }
 
@@ -33,3 +36,4 @@ const request = async (url: string, method: string, data?: any) => {
 
 export const get = (url: string) => request(url, 'GET');
 export const post = (url: string, data: any) => request(url, 'POST', data);
+export const patch = (url: string, data: any, isFormData = false) => request(url, 'PATCH', data, isFormData);

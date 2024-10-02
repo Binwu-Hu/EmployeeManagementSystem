@@ -9,7 +9,7 @@ import RegistrationToken from '../models/registrationTokenModel.js';
 // @route POST /api/users/signup
 const signupUser = asyncHandler(async (req, res) => {
   const { username, email, password, token } = req.body;
-  console.log('req.body:', req.body);
+  // console.log('req.body:', req.body);
 
   const validToken = await RegistrationToken.findOne({ token, email });
   if (!validToken || validToken.expiresAt < Date.now()) {

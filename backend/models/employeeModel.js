@@ -27,8 +27,7 @@ const employeeSchema = new mongoose.Schema({
     default: 'Pending',
   },
   workAuthorization: {
-    visaType: { type: String, enum: ['H1-B', 'L2', 'F1(CPT/OPT)', 'H4', 'Other'] },
-    optReceipt: { type: String },
+    visaType: { type: String, enum: ['H1-B', 'L2', 'F1', 'H4', 'Other'] },
     startDate: { type: Date },
     endDate: { type: Date },
   },
