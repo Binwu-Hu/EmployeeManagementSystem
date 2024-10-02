@@ -6,13 +6,13 @@ import React from 'react';
 
 const { Content } = Layout;
 
-const AppLayout: React.FC = () => {
+const AppLayout: React.FC = ({ children }) => {
   return (
     <Layout className="min-h-screen flex flex-col">
       <MergedHeader />
 
       <Content className="flex-grow bg-gray-100 flex justify-center items-center">
-        <Outlet />
+        {children || <Outlet />}
       </Content>
 
       <AppFooter />
