@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import connectDB from './db/index.js';
 import userRoutes from './routes/userRoutes.js';
 import applicationRoutes from './routes/applicationRoutes.js';
+import { errorHandlerMiddleware } from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use('/api/user', userRoutes);
 
 app.use('/api/application', applicationRoutes);
 
+app.use(errorHandlerMiddleware);
 const port = 3000;
 
 app.listen(port, () => {
