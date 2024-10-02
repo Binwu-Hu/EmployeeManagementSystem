@@ -8,11 +8,11 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // @desc Generate a JWT registration token for the provided email
 // @param email - The email for which to generate the registration token
 const generateJWTToken = asyncHandler(async (email) => {
-  // Create JWT Token (expires in 24 hours)
-  const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '24h' });
+  // Create JWT Token (expires in 30 days)
+  const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
   // Calculate the expiration date
-  const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+  const expiresAt = Date.now() + 30 * 24 * 60 * 60 * 1000;
 
   // Save the JWT token in the database
   const newToken = await RegistrationToken.create({
@@ -45,7 +45,7 @@ const sendRegistrationLink = asyncHandler(async (req, res) => {
     <p>Hello,</p>
     <p>Please use the following link to complete your registration:</p>
     <a href="${registrationLink}">${registrationLink}</a>
-    <p>The link will expire in 24 hours.</p>
+    <p>The link will expire in 30 days.</p>
   `;
 
   // Send the email via SendGrid

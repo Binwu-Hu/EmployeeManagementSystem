@@ -4,6 +4,7 @@ import Signup from './pages/auth/Signup';
 import ErrorPage from './pages/error/ErrorPage';
 import HomePage from './pages/home/HomePage';
 import SendRegistrationLink from './pages/protected/SendRegistrationLink';
+import VisaStatus from './pages/protected/VisaStatus';
 import PrivateRoute from './components/PrivateRoute';
 import AppLayout from './components/Layout/Layout';
 
@@ -21,6 +22,14 @@ const App = () => {
               <PrivateRoute>
                 <HomePage />
               </PrivateRoute>
+            } 
+          />
+          <Route 
+            path='/visa-status' 
+            element={
+            <PrivateRoute>
+              <VisaStatus />
+            </PrivateRoute>
             } 
           />
           <Route 
