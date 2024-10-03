@@ -4,7 +4,7 @@ import {
   updateApplication,
   updateApplicationStatus,
   getAllApplications,
-  getApplicationById,
+  getApplicationDetail,
 } from '../controllers/applicationController.js';
 
 import { authMiddleware } from '../middleware/authMiddleware.js';
@@ -16,7 +16,7 @@ router.post('/', authMiddleware, createApplication);
 
 router.get('/', authMiddleware, getApplicationStatus);
 
-router.get('/:id/view', authMiddleware, getApplicationById);
+router.get('/view', authMiddleware, getApplicationDetail);
 
 router.put('/', authMiddleware, updateApplication);
 

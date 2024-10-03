@@ -433,56 +433,60 @@ const getAllApplications = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Get application by employee id
-// @route   GET /api/application/:id/view
-const getApplicationById = asyncHandler(async (req, res) => {
-  const { employeeId } = req.params;
+// @desc    Get application by employee
+// @route   GET /api/application/view
+const getApplicationDetail = asyncHandler(async (req, res) => {
+  const { email } = req.user;
 
-  if (!mongoose.Types.ObjectId.isValid(employeeId)) {
-    return res.status(400).json({ message: 'Invalid employee ID format.' });
-  }
-
-  // Find application by employee id
-  const application = await Application.findOne({
-    employee: mongoose.Types.ObjectId(employeeId),
-  });
+  const application = await Application.findOne({ email });
 
   if (!application) {
     return res.status(404).json({ message: 'Application not found.' });
   }
 
-  // Find employee by employee ID
-  const employee = await Employee.findById(employeeId);
-
-  if (!employee) {
-    return res.status(404).json({ message: 'Employee not found.' });
-  }
-
-  // Combine application data with employee information and return
   res.status(200).json({
-    message: 'Application and employee data found successfully.',
-    employee: {
-      email: employee.email,
-      firstName: employee.firstName,
-      lastName: employee.lastName,
-      middleName: employee.middleName,
-      preferredName: employee.preferredName,
-      profilePicture: employee.profilePicture,
-      address: {
-        building: employee.address.building,
-        street: employee.address.street,
-        city: employee.address.city,
-        state: employee.address.state,
-        zip: employee.address.zip,
-      },
-      phone: {
-        cellPhone: employee.cellPhone,
-        workPhone: employee.workPhone,
-      },
-      ssn: employee.ssn,
-      dateOfBirth: employee.dateOfBirth,
+    email: application.email,
+    firstName: application.firstName,
+    lastName: application.lastName,
+    address: {
+      building: application.address.building,
+      street: application.address.street,
+      city: application.address.city,
+      state: application.address.state,
+      zip: application.address.zip,
     },
-    application,
+    phone: {
+      cellPhone: application.phone.cellPhone,
+      workPhone: application.phone.workPhone || null,
+    },
+    ssn: application.ssn,
+    dateOfBirth: application.dateOfBirth,
+    gender: application.gender,
+    middleName: application.middleName || null,
+    preferredName: application.preferredName || null,
+    documents: {
+      profilePicture: application.documents?.profilePicture || null,
+      driverLicense: application.documents?.driverLicense || null,
+      workAuthorization: application.documents?.workAuthorization || null,
+    },
+    reference: {
+      firstName: application.reference.firstName,
+      lastName: application.reference.lastName,
+      relationship: application.reference.relationship,
+      middleName: application.reference.middleName || null,
+      phone: application.reference.phone || null,
+      email: application.reference.email || null,
+    },
+    emergencyContacts: application.emergencyContacts.map((contact) => ({
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      relationship: contact.relationship,
+      middleName: contact.middleName || null,
+      phone: contact.phone || null,
+      email: contact.email || null,
+    })),
+    status: application.status,
+    feedback: application.feedback || '',
   });
 });
 
@@ -492,5 +496,5 @@ export {
   updateApplication,
   updateApplicationStatus,
   getAllApplications,
-  getApplicationById,
+  getApplicationDetail,
 };
