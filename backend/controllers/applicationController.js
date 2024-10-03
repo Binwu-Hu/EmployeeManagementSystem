@@ -1,5 +1,6 @@
 import Application from '../models/applicationModel.js';
 import Employee from '../models/employeeModel.js';
+import User from '../models/userModel.js';
 import asyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
 
@@ -189,11 +190,9 @@ const updateApplication = asyncHandler(async (req, res) => {
   }
 
   if (application.status !== 'Rejected') {
-    return res
-      .status(400)
-      .json({
-        message: 'You can only update the application if it was rejected.',
-      });
+    return res.status(400).json({
+      message: 'You can only update the application if it was rejected.',
+    });
   }
 
   if (
@@ -287,15 +286,22 @@ const updateApplication = asyncHandler(async (req, res) => {
 });
 
 // @desc    update application by HR
-// @route   PUT /api/application
+// @route   PUT /api/application/:id
 const updateApplicationStatus = asyncHandler(async (req, res) => {
-  const { employeeId, status, feedback } = req.body;
+  const employeeId = req.params.id;
+  const { status, feedback } = req.body;
 
-  // Check if the provided status is either 'Approved' or 'Rejected'
-  if (!['Approved', 'Rejected'].includes(status)) {
-    return res.status(400).json({
-      message:
-        "Invalid status. Status must be either 'Approved' or 'Rejected'.",
+  const { email } = req.user;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found.' });
+  }
+
+  if (user.role !== 'HR') {
+    return res.status(401).json({
+      message: 'Unauthorized for employee',
     });
   }
 
@@ -303,15 +309,19 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Invalid employee ID format.' });
   }
 
-  const application = await Application.findOne({
-    employee: mongoose.Types.ObjectId(employeeId),
-  });
+  const employee = await Employee.findById(employeeId);
 
-  if (!application) {
-    return res.status(404).json({ message: 'Application not found' });
+  if (!employee) {
+    return res.status(404).json({ message: 'Employee not found.' });
   }
 
-  // Ensure the application is currently pending before updating
+  const application = await Application.findOne({ email: employee.email });
+
+  if (!application) {
+    return res.status(404).json({ message: 'Application not found.' });
+  }
+
+  // Ensure the application is currently pending before allowing updates
   if (application.status !== 'Pending') {
     return res.status(400).json({
       message:
@@ -319,15 +329,23 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
     });
   }
 
-  // Update the application status and feedback if provided
-  application.status = status;
-  if (status === 'Rejected' && feedback) {
-    application.feedback = feedback; // Only add feedback if the application is rejected
-  } else {
-    application.feedback = ''; // Clear feedback if approved
+  // Ensure the provided status is either 'Approved' or 'Rejected'
+  if (!['Approved', 'Rejected'].includes(status)) {
+    return res.status(400).json({
+      message:
+        "Invalid status. Status must be either 'Approved' or 'Rejected'.",
+    });
   }
 
-  // Save the updated application
+  application.status = status;
+
+  // If the application is rejected, set feedback (if provided)
+  if (status === 'Rejected' && feedback) {
+    application.feedback = feedback;
+  } else if (status === 'Approved') {
+    application.feedback = '';
+  }
+
   const updatedApplication = await application.save();
 
   res.status(200).json({
