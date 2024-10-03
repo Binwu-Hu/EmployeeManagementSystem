@@ -39,6 +39,7 @@ export const updateEmployeeProfile = asyncHandler(async (req, res) => {
     documents,
     reference,
     emergencyContacts,
+    workAuthorization,
   } = req.body;
 
   employee.firstName = firstName || employee.firstName;
@@ -63,28 +64,55 @@ export const updateEmployeeProfile = asyncHandler(async (req, res) => {
   employee.ssn = ssn || employee.ssn;
   employee.dateOfBirth = dateOfBirth || employee.dateOfBirth;
   employee.gender = gender || employee.gender;
-  employee.documents = documents || employee.documents;
+
+  if (documents) {
+    employee.documents.profilePicture =
+      documents.profilePicture || employee.documents.profilePicture;
+    employee.documents.driverLicense =
+      documents.driverLicense || employee.documents.driverLicense;
+    employee.documents.workAuthorization =
+      documents.workAuthorization || employee.documents.workAuthorization;
+  }
 
   if (reference) {
-    employee.reference = {
-      firstName: reference.firstName || '',
-      lastName: reference.lastName || '',
-      middleName: reference.middleName || '',
-      phone: reference.phone || '',
-      email: reference.email || '',
-      relationship: reference.relationship || '',
-    };
+    employee.reference.firstName =
+      reference.firstName || employee.reference.firstName;
+    employee.reference.lastName =
+      reference.lastName || employee.reference.lastName;
+    employee.reference.middleName =
+      reference.middleName || employee.reference.middleName;
+    employee.reference.phone = reference.phone || employee.reference.phone;
+    employee.reference.email = reference.email || employee.reference.email;
+    employee.reference.relationship =
+      reference.relationship || employee.reference.relationship;
   }
 
   if (emergencyContacts && Array.isArray(emergencyContacts)) {
-    employee.emergencyContacts = emergencyContacts.map((contact) => ({
-      firstName: contact.firstName || '',
-      lastName: contact.lastName || '',
-      middleName: contact.middleName || '',
-      phone: contact.phone || '',
-      email: contact.email || '',
-      relationship: contact.relationship || '',
+    employee.emergencyContacts = emergencyContacts.map((contact, index) => ({
+      firstName:
+        contact.firstName || employee.emergencyContacts[index]?.firstName || '',
+      lastName:
+        contact.lastName || employee.emergencyContacts[index]?.lastName || '',
+      middleName:
+        contact.middleName ||
+        employee.emergencyContacts[index]?.middleName ||
+        '',
+      phone: contact.phone || employee.emergencyContacts[index]?.phone || '',
+      email: contact.email || employee.emergencyContacts[index]?.email || '',
+      relationship:
+        contact.relationship ||
+        employee.emergencyContacts[index]?.relationship ||
+        '',
     }));
+  }
+
+  if (workAuthorization) {
+    employee.workAuthorization.visaType =
+      workAuthorization.visaType || employee.workAuthorization.visaType;
+    employee.workAuthorization.startDate =
+      workAuthorization.startDate || employee.workAuthorization.startDate;
+    employee.workAuthorization.endDate =
+      workAuthorization.endDate || employee.workAuthorization.endDate;
   }
 
   const updatedEmployee = await employee.save();

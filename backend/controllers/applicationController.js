@@ -17,101 +17,61 @@ const createApplication = asyncHandler(async (req, res) => {
 
   // Check if an application already exists for this email
   const existingApplication = await Application.findOne({
-    email: employee.email,
+    employee: employee._id,
   });
 
   if (existingApplication) {
     return res
       .status(400)
-      .json({ message: 'Application already exists for this email.' });
+      .json({ message: 'Application already exists for this employee.' });
   }
 
-  // Ensure all required fields are present
   if (
-    !employee.address?.building ||
-    !employee.address?.street ||
-    !employee.address?.city ||
-    !employee.address?.state ||
-    !employee.address?.zip ||
-    !employee.phone?.cellPhone ||
+    !employee.firstName ||
+    !employee.lastName ||
+    !employee.address ||
+    !employee.address.building ||
+    !employee.address.street ||
+    !employee.address.city ||
+    !employee.address.state ||
+    !employee.address.zip ||
+    !employee.phone ||
+    !employee.phone.cellPhone ||
     !employee.ssn ||
     !employee.dateOfBirth ||
     !employee.gender ||
-    !employee.reference?.firstName ||
-    !employee.reference?.lastName ||
-    !employee.reference?.relationship ||
-    !employee.emergencyContacts?.length ||
-    !employee.emergencyContacts[0]?.firstName ||
-    !employee.emergencyContacts[0]?.lastName ||
-    !employee.emergencyContacts[0]?.relationship
+    !employee.workAuthorization ||
+    !employee.workAuthorization.visaType ||
+    !employee.workAuthorization.startDate ||
+    !employee.workAuthorization.endDate ||
+    !employee.reference ||
+    !employee.reference.firstName ||
+    !employee.reference.lastName ||
+    !employee.reference.relationship
   ) {
+    return res.status(400).json({
+      message:
+        'Missing required employee information. Please complete all fields before creating an application.',
+    });
+  }
+
+  if (!employee.emergencyContacts || employee.emergencyContacts.length === 0) {
     return res
       .status(400)
-      .json({ message: 'Missing required employee information.' });
+      .json({ message: 'At least one emergency contact is required.' });
+  }
+
+  for (const contact of employee.emergencyContacts) {
+    if (!contact.firstName || !contact.lastName || !contact.relationship) {
+      return res.status(400).json({
+        message:
+          'Each emergency contact must have a first name, last name, and relationship.',
+      });
+    }
   }
 
   const application = new Application({
-    email: employee.email,
-    firstName: employee.firstName,
-    lastName: employee.lastName,
-    address: {
-      building: employee.address.building,
-      street: employee.address.street,
-      city: employee.address.city,
-      state: employee.address.state,
-      zip: employee.address.zip,
-    },
-    phone: {
-      cellPhone: employee.phone.cellPhone,
-
-      ...(employee.phone.workPhone && { workPhone: employee.phone.workPhone }),
-    },
-    ssn: employee.ssn,
-    dateOfBirth: employee.dateOfBirth,
-    gender: employee.gender,
-
-    ...(employee.middleName && { middleName: employee.middleName }),
-    ...(employee.preferredName && { preferredName: employee.preferredName }),
-    ...(employee.documents && {
-      documents: {
-        ...(employee.documents?.profilePicture && {
-          profilePicture: employee.documents.profilePicture,
-        }),
-        ...(employee.documents?.driverLicense && {
-          driverLicense: employee.documents.driverLicense,
-        }),
-        ...(employee.documents?.workAuthorization && {
-          workAuthorization: employee.documents.workAuthorization,
-        }),
-      },
-    }),
-
-    reference: {
-      firstName: employee.reference.firstName,
-      lastName: employee.reference.lastName,
-      relationship: employee.reference.relationship,
-
-      ...(employee.reference.middleName && {
-        middleName: employee.reference.middleName,
-      }),
-      ...(employee.reference.phone && {
-        phone: employee.reference.phone,
-      }),
-      ...(employee.reference.email && {
-        email: employee.reference.email,
-      }),
-    },
-
-    emergencyContacts: employee.emergencyContacts.map((contact) => ({
-      firstName: contact.firstName,
-      lastName: contact.lastName,
-      relationship: contact.relationship,
-
-      ...(contact.middleName && { middleName: contact.middleName }),
-      ...(contact.phone && { phone: contact.phone }),
-      ...(contact.email && { email: contact.email }),
-    })),
-
+    employee: employee._id,
     status: 'Pending',
     feedback: '',
   });

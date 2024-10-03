@@ -40,7 +40,6 @@ const signupUser = asyncHandler(async (req, res) => {
   });
 
   const employee = await Employee.create({
-    username,
     email,
     userId: user._id,
   });
