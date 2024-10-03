@@ -18,7 +18,10 @@ const app = express();
 // Middleware to handle JSON data
 app.use(express.json());
 
+app.use(express.urlencoded({ extended: true }));
+
 // User Routes
+// /user? /users?
 app.use('/api/user', userRoutes);
 app.use('/api/registration', registrationRoutes);
 app.use('/api/application', applicationRoutes);

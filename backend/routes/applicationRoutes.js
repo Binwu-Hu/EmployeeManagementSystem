@@ -4,7 +4,7 @@ import {
   updateApplication,
   updateApplicationStatus,
   getAllApplications,
-  getApplicationById,
+  getApplicationDetail,
 } from '../controllers/applicationController.js';
 
 import { authMiddleware } from '../middleware/authMiddleware.js';
@@ -12,16 +12,16 @@ import express from 'express';
 
 const router = express.Router();
 
-router.post('/:id', authMiddleware, createApplication);
+router.post('/', authMiddleware, createApplication);
 
-router.get('/:id', authMiddleware, getApplicationStatus);
+router.get('/', authMiddleware, getApplicationStatus);
 
-router.get('/:id/view', authMiddleware, getApplicationById);
+router.get('/view', authMiddleware, getApplicationDetail);
 
-router.put('/:id', authMiddleware, updateApplication);
+router.put('/', authMiddleware, updateApplication);
 
-router.put('/', authMiddleware, updateApplicationStatus);
+router.put('/:id', authMiddleware, updateApplicationStatus);
 
-router.get('/', authMiddleware, getAllApplications);
+router.get('/all', authMiddleware, getAllApplications);
 
 export default router;
