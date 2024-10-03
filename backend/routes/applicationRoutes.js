@@ -12,7 +12,7 @@ import express from 'express';
 
 const router = express.Router();
 
-router.post('/:id', authMiddleware, createApplication);
+router.post('/', authMiddleware, createApplication);
 
 router.get('/:id', authMiddleware, getApplicationStatus);
 

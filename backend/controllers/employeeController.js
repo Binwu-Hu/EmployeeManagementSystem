@@ -37,7 +37,7 @@ export const updateEmployeeProfile = asyncHandler(async (req, res) => {
     dateOfBirth,
     gender,
     documents,
-    references,
+    reference,
     emergencyContacts,
   } = req.body;
 
@@ -65,15 +65,15 @@ export const updateEmployeeProfile = asyncHandler(async (req, res) => {
   employee.gender = gender || employee.gender;
   employee.documents = documents || employee.documents;
 
-  if (references && Array.isArray(references)) {
-    employee.references = references.map((ref) => ({
-      firstName: ref.firstName || '',
-      lastName: ref.lastName || '',
-      middleName: ref.middleName || '',
-      phone: ref.phone || '',
-      email: ref.email || '',
-      relationship: ref.relationship || '',
-    }));
+  if (reference) {
+    employee.reference = {
+      firstName: reference.firstName || '',
+      lastName: reference.lastName || '',
+      middleName: reference.middleName || '',
+      phone: reference.phone || '',
+      email: reference.email || '',
+      relationship: reference.relationship || '',
+    };
   }
 
   if (emergencyContacts && Array.isArray(emergencyContacts)) {

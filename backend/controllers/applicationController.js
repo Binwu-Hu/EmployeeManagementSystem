@@ -4,29 +4,55 @@ import asyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
 
 // @desc    Create application
-// @route   POST /api/application/:id
+// @route   POST /api/application
 const createApplication = asyncHandler(async (req, res) => {
-  const { employeeId } = req.params;
+  const { email } = req.user;
 
-  if (!mongoose.Types.ObjectId.isValid(employeeId)) {
-    return res.status(400).json({ message: 'Invalid employee ID format.' });
-  }
-
-  // Find employee by employee ID
-  const employee = await Employee.findById(employeeId);
+  const employee = await Employee.findOne({ email });
 
   if (!employee) {
     return res.status(404).json({ message: 'Employee not found.' });
   }
 
+  // Check if an application already exists for this email
+  const existingApplication = await Application.findOne({
+    email: employee.email,
+  });
+
+  if (existingApplication) {
+    return res
+      .status(400)
+      .json({ message: 'Application already exists for this email.' });
+  }
+
+  // Ensure all required fields are present
+  if (
+    !employee.address?.building ||
+    !employee.address?.street ||
+    !employee.address?.city ||
+    !employee.address?.state ||
+    !employee.address?.zip ||
+    !employee.phone?.cellPhone ||
+    !employee.ssn ||
+    !employee.dateOfBirth ||
+    !employee.gender ||
+    !employee.reference?.firstName ||
+    !employee.reference?.lastName ||
+    !employee.reference?.relationship ||
+    !employee.emergencyContacts?.length ||
+    !employee.emergencyContacts[0]?.firstName ||
+    !employee.emergencyContacts[0]?.lastName ||
+    !employee.emergencyContacts[0]?.relationship
+  ) {
+    return res
+      .status(400)
+      .json({ message: 'Missing required employee information.' });
+  }
+
   const application = new Application({
     email: employee.email,
-    employee: employee._id,
     firstName: employee.firstName,
     lastName: employee.lastName,
-    middleName: employee.middleName,
-    preferredName: employee.preferredName,
-    profilePicture: employee.profilePicture,
     address: {
       building: employee.address.building,
       street: employee.address.street,
@@ -35,20 +61,66 @@ const createApplication = asyncHandler(async (req, res) => {
       zip: employee.address.zip,
     },
     phone: {
-      cellPhone: employee.cellPhone,
-      workPhone: employee.workPhone,
+      cellPhone: employee.phone.cellPhone,
+
+      ...(employee.phone.workPhone && { workPhone: employee.phone.workPhone }),
     },
     ssn: employee.ssn,
     dateOfBirth: employee.dateOfBirth,
     gender: employee.gender,
-    documents: employee.documents,
+
+    ...(employee.middleName && { middleName: employee.middleName }),
+    ...(employee.preferredName && { preferredName: employee.preferredName }),
+    ...(employee.documents && {
+      documents: {
+        ...(employee.documents?.profilePicture && {
+          profilePicture: employee.documents.profilePicture,
+        }),
+        ...(employee.documents?.driverLicense && {
+          driverLicense: employee.documents.driverLicense,
+        }),
+        ...(employee.documents?.workAuthorization && {
+          workAuthorization: employee.documents.workAuthorization,
+        }),
+      },
+    }),
+
+    reference: {
+      firstName: employee.reference.firstName,
+      lastName: employee.reference.lastName,
+      relationship: employee.reference.relationship,
+
+      ...(employee.reference.middleName && {
+        middleName: employee.reference.middleName,
+      }),
+      ...(employee.reference.phone && {
+        phone: employee.reference.phone,
+      }),
+      ...(employee.reference.email && {
+        email: employee.reference.email,
+      }),
+    },
+
+    emergencyContacts: employee.emergencyContacts.map((contact) => ({
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      relationship: contact.relationship,
+
+      ...(contact.middleName && { middleName: contact.middleName }),
+      ...(contact.phone && { phone: contact.phone }),
+      ...(contact.email && { email: contact.email }),
+    })),
 
     status: 'Pending',
     feedback: '',
   });
 
-  const createdApplication = await application.save();
-  res.status(201).json(createdApplication);
+  await application.save();
+
+  res.status(201).json({
+    message: 'Application created successfully.',
+    application,
+  });
 });
 
 // @desc    get application info
