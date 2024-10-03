@@ -12,12 +12,16 @@ export const fetchVisaStatus = createAsyncThunk(
 
 export const uploadVisaDocument = createAsyncThunk(
   'visaStatus/uploadVisaDocument',
-  async ({ employeeId, fileType, files }: { employeeId: string, fileType: string, files: File[] }) => {
-    const formData = new FormData();
-    files.forEach(file => formData.append('files', file));
-    formData.append('fileType', fileType);
-    const response = await post(`/visa-status/upload/${employeeId}`, formData);
-    return response;
+  async ({ employeeId, fileType, files }: { employeeId: string, fileType: string, files: File[] }, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      files.forEach(file => formData.append('files', file));
+      formData.append('fileType', fileType);
+      const response = await post(`/visa-status/upload/${employeeId}`, formData, true);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 

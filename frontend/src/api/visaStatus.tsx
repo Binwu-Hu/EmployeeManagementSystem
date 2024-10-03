@@ -17,7 +17,7 @@ export const uploadVisaDocumentApi = (employeeId: string, fileType: string, file
     formData.append('files', file.originFileObj); // Use originFileObj for Ant Design Upload component
   });
   formData.append('fileType', fileType); // E.g., optReceipt, optEAD, i983Form
-  return patch(`/visa-status/${employeeId}/upload`, formData, true); // Indicate it's form data
+  return post(`/visa-status/upload/${employeeId}`, formData, true); // Indicate it's form data
 };
 
 // Update the visa document status by HR (approve or reject)

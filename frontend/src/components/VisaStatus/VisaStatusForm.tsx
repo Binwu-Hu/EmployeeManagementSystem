@@ -3,15 +3,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { uploadVisaDocument } from '../../features/visaStatus/visaStatusSlice';
 import { RootState } from '../../app/store';
 import { Select, Upload, Button, message } from 'antd';
+import { UploadFile } from 'antd/lib/upload/interface';
 
 const VisaStatusForm = ({ employeeId }: { employeeId: string }) => {
   const dispatch = useDispatch();
   const { visaStatus } = useSelector((state: RootState) => state.visaStatus);
 
   const [fileType, setFileType] = useState('optReceipt');
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<UploadFile[]>([]);
 
   const handleFileChange = (info: any) => {
+    console.log('FileList:', info.fileList);
     setFiles(info.fileList);
   };
 
@@ -20,40 +22,41 @@ const VisaStatusForm = ({ employeeId }: { employeeId: string }) => {
       message.error('Please upload a file!');
       return;
     }
-    dispatch(uploadVisaDocument({ employeeId, fileType, files }));
+
+    // Extract the original File objects
+    const fileList = files.map(file => file.originFileObj).filter(Boolean);
+
+    console.log('files', fileList);
+    console.log('fileType', fileType);  
+    dispatch(uploadVisaDocument({ employeeId, fileType, files: fileList }))
+    .then((res) => {
+      console.log('Upload success:', res);
+    })
+    .catch((error) => {
+      message.error(error.message); 
+      console.error('Upload error:', error);
+    });
+
   };
 
   return (
     <div className="mb-5">
       <h2 className="text-xl font-semibold">Upload Visa Document</h2>
-      {visaStatus?.optReceipt?.status !== 'Approved' && (
-        <p>Waiting for HR to approve your OPT Receipt before you can upload the next document.</p>
-      )}
-      {visaStatus?.optReceipt?.status === 'Approved' && visaStatus?.optEAD?.status !== 'Approved' && (
-        <p>Please upload a copy of your OPT EAD.</p>
-      )}
-      {visaStatus?.optEAD?.status === 'Approved' && visaStatus?.i983Form?.status !== 'Approved' && (
-        <p>Please upload the I-983 Form.</p>
-      )}
+      {/* ... rest of your component ... */}
 
       <Select
         value={fileType}
         onChange={setFileType}
         className="mb-3"
-        disabled={
-          (fileType === 'optEAD' && visaStatus?.optReceipt?.status !== 'Approved') ||
-          (fileType === 'i983Form' && visaStatus?.optEAD?.status !== 'Approved') ||
-          (fileType === 'i20Form' && visaStatus?.i983Form?.status !== 'Approved')
-        }
+        disabled={visaStatus?.optReceipt?.status !== 'Approved' && fileType !== 'optReceipt'}
       >
-        <Select.Option value="optReceipt">OPT Receipt</Select.Option>
-        <Select.Option value="optEAD">OPT EAD</Select.Option>
-        <Select.Option value="i983Form">I-983 Form</Select.Option>
-        <Select.Option value="i20Form">I-20 Form</Select.Option>
+        {/* ... options ... */}
       </Select>
 
       <Upload
         multiple
+        beforeUpload={() => false} 
+        fileList={files}
         onChange={handleFileChange}
         disabled={
           (fileType === 'optEAD' && visaStatus?.optReceipt?.status !== 'Approved') ||

@@ -3,42 +3,56 @@ import Employee from '../models/employeeModel.js';
 
 // Upload Visa Documents
 export const uploadVisaDocuments = async (req, res) => {
-  try {
-    // console.log('req:', req);
-    const { employeeId } = req.params;
-    const { fileType } = req.body;
-
-    let visaStatus = await VisaStatus.findOne({ employee: employeeId });
-
-    if (!visaStatus) {
-      visaStatus = new VisaStatus({ employee: employeeId, visaType: 'OPT' });
+    try {
+    //   console.log('req.files:', req.files);
+      const { employeeId } = req.params;
+      const { fileType } = req.body;
+  
+      let visaStatus = await VisaStatus.findOne({ employee: employeeId });
+      if (!visaStatus) {
+        visaStatus = new VisaStatus({ employee: employeeId, visaType: 'OPT' });
+      }
+      
+      if (fileType === 'optEAD' && visaStatus.optReceipt.status !== 'Approved') {
+        return res.status(400).json({ message: 'You must upload OPT Receipt and get it approved before uploading OPT EAD.' });
+      }
+      if (fileType === 'i983Form' && visaStatus.optEAD.status !== 'Approved') {
+        return res.status(400).json({ message: 'You must upload OPT EAD and get it approved before uploading I-983 Form.' });
+      }
+      if (fileType === 'i20Form' && visaStatus.i983Form.status !== 'Approved') {
+        return res.status(400).json({ message: 'You must upload I-983 and get it approved before uploading I-20.' });
+      }
+  
+      if (fileType === 'optReceipt') {
+        if (!visaStatus.optReceipt.files) visaStatus.optReceipt.files = []; 
+        
+        visaStatus.optReceipt.files.push(...req.files.map(file => file.path));
+      } else if (fileType === 'optEAD') {
+        if (!visaStatus.optEAD.files) visaStatus.optEAD.files = [];
+        visaStatus.optEAD.files.push(...req.files.map(file => file.path));
+      } else if (fileType === 'i983Form') {
+        if (!visaStatus.i983Form.files) visaStatus.i983Form.files = [];
+        visaStatus.i983Form.files.push(...req.files.map(file => file.path));
+      } else if (fileType === 'i20Form') {
+        if (!visaStatus.i20Form.files) visaStatus.i20Form.files = [];
+        visaStatus.i20Form.files.push(...req.files.map(file => file.path));
+      }
+    //   console.log('visaStatus:', visaStatus);
+      await visaStatus.save();
+      res.status(200).json({ message: 'Files uploaded successfully', visaStatus });
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      res.status(500).json({ message: 'Error uploading files', error: error.message });
     }
-
-    // Add uploaded files to the respective field
-    if (fileType === 'optReceipt') {
-      visaStatus.optReceipt.files.push(...req.files.map(file => file.path));
-    } else if (fileType === 'optEAD') {
-      visaStatus.optEAD.files.push(...req.files.map(file => file.path));
-    } else if (fileType === 'i983Form') {
-      visaStatus.i983Form.files.push(...req.files.map(file => file.path));
-    } else if (fileType === 'i20Form') {
-      visaStatus.i20Form.files.push(...req.files.map(file => file.path));
-    }
-
-    await visaStatus.save();
-    res.status(200).json({ message: 'Files uploaded successfully', visaStatus });
-  } catch (error) {
-    res.status(500).json({ message: 'Error uploading files', error });
-  }
-};
+  };  
 
 // Fetch Visa Status by Employee
 export const getVisaStatusByEmployee = async (req, res) => {
-    // console.log('req.params:', req.params);
+    console.log('req.params:', req.params);
   try {
     const { employeeId } = req.params;
     const visaStatus = await VisaStatus.findOne({ employee: employeeId }).populate('employee');
-    // console.log('visaStatus:', visaStatus);
+    console.log('visaStatus:', visaStatus);
     if (!visaStatus) {
       return res.status(404).json({ message: 'Visa status not found' });
     }
