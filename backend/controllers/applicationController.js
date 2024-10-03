@@ -355,55 +355,81 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
 });
 
 // @desc    get all applications for HR
-// @route   Get /api/applications
+// @route   Get /api/application/all
 const getAllApplications = asyncHandler(async (req, res) => {
-  // Get all pending applications
-  const pendingApplications = await Application.find({ status: 'Pending' })
-    .populate('employee', 'firstName lastName email')
-    .select('firstName lastName email');
+  const { email } = req.user;
 
-  // Get all rejected applications
-  const rejectedApplications = await Application.find({ status: 'Rejected' })
-    .populate('employee', 'firstName lastName email')
-    .select('firstName lastName email feedback');
+  const user = await User.findOne({ email });
 
-  // Get all approved applications
-  const approvedApplications = await Application.find({ status: 'Approved' })
-    .populate('employee', 'firstName lastName email')
-    .select('firstName lastName email');
+  if (!user) {
+    return res.status(404).json({ message: 'User not found.' });
+  }
 
+  if (user.role !== 'HR') {
+    return res.status(401).json({
+      message: 'Unauthorized for employee',
+    });
+  }
+
+  // Get all applications by status
+  const pendingApplications = await Application.find({
+    status: 'Pending',
+  });
+  const rejectedApplications = await Application.find({
+    status: 'Rejected',
+  });
+  const approvedApplications = await Application.find({
+    status: 'Approved',
+  });
+
+  // Map applications to include all details
+  const formatApplication = (app) => ({
+    fullName: `${app.firstName} ${app.lastName}`,
+    email: app.email,
+    phone: {
+      cellPhone: app.phone.cellPhone,
+      workPhone: app.phone.workPhone || null,
+    },
+    ssn: app.ssn,
+    dateOfBirth: app.dateOfBirth,
+    gender: app.gender,
+    address: {
+      building: app.address.building,
+      street: app.address.street,
+      city: app.address.city,
+      state: app.address.state,
+      zip: app.address.zip,
+    },
+    documents: {
+      profilePicture: app.documents?.profilePicture || null,
+      driverLicense: app.documents?.driverLicense || null,
+      workAuthorization: app.documents?.workAuthorization || null,
+    },
+    reference: {
+      firstName: app.reference.firstName,
+      lastName: app.reference.lastName,
+      relationship: app.reference.relationship,
+      middleName: app.reference.middleName || null,
+      phone: app.reference.phone || null,
+      email: app.reference.email || null,
+    },
+    emergencyContacts: app.emergencyContacts.map((contact) => ({
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      relationship: contact.relationship,
+      middleName: contact.middleName || null,
+      phone: contact.phone || null,
+      email: contact.email || null,
+    })),
+    status: app.status,
+    feedback: app.feedback || null,
+  });
+
+  // Return response with applications grouped by status
   res.status(200).json({
-    pending: pendingApplications.map((app) => ({
-      fullName: `${app.firstName} ${app.lastName}`,
-      email: app.employee.email,
-      viewApplicationLink: `/api/application/${app._id}`,
-      actions: {
-        approve: true, // HR can approve pending applications
-        reject: true, // HR can reject pending applications
-        feedback: true, // HR can provide feedback on rejected applications
-      },
-    })),
-    rejected: rejectedApplications.map((app) => ({
-      fullName: `${app.firstName} ${app.lastName}`,
-      email: app.employee.email,
-      feedback: app.feedback, // HR can view feedback provided during rejection
-      viewApplicationLink: `/api/application/${app._id}`,
-      actions: {
-        approve: false,
-        reject: false,
-        feedback: false, // No actions for rejected applications
-      },
-    })),
-    approved: approvedApplications.map((app) => ({
-      fullName: `${app.firstName} ${app.lastName}`,
-      email: app.employee.email,
-      viewApplicationLink: `/api/application/${app._id}`,
-      actions: {
-        approve: false, // No actions for approved applications
-        reject: false,
-        feedback: false,
-      },
-    })),
+    pending: pendingApplications.map(formatApplication),
+    rejected: rejectedApplications.map(formatApplication),
+    approved: approvedApplications.map(formatApplication),
   });
 });
 
