@@ -11,8 +11,6 @@ const VisaStatusList = ({ employeeId }: { employeeId: string }) => {
     dispatch(fetchVisaStatus(employeeId));
   }, [dispatch, employeeId]);
 
-  console.log(visaStatus)
-
   return (
     <div>
       <h2 className="text-xl font-semibold">Visa Status</h2>

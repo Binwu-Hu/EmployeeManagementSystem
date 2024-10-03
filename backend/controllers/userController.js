@@ -71,13 +71,17 @@ const loginUser = asyncHandler(async (req, res) => {
   // If the user exists and the password matches (using bcrypt to compare hashes)
   if (user && (await bcrypt.compare(password, user.password))) {
     // Respond with user details and JWT token
+    const token = generateToken(user._id);
+
+    // Log the token to the console
+    console.log('New token generated for user:', token);
     res.json({
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
       role: user.role,
-      token: generateToken(user._id), // Generate JWT token
+      token, // Generate JWT token
     });
   } else {
     res.status(401);

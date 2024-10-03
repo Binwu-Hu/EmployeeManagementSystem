@@ -23,7 +23,8 @@ const request = async (url: string, method: string, data?: any, isFormData = fal
     headers['Content-Type'] = 'application/json';
     options.body = JSON.stringify(data);
   }
-
+  console.log('options', options);
+  console.log('url', url);
   const response = await fetch(`${BASE_URL}${url}`, options);
   const responseData = await response.json();
 
@@ -35,5 +36,5 @@ const request = async (url: string, method: string, data?: any, isFormData = fal
 };
 
 export const get = (url: string) => request(url, 'GET');
-export const post = (url: string, data: any) => request(url, 'POST', data);
+export const post = (url: string, data: any, isFormData = false) => request(url, 'POST', data, isFormData);
 export const patch = (url: string, data: any, isFormData = false) => request(url, 'PATCH', data, isFormData);
