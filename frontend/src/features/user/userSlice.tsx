@@ -40,6 +40,7 @@ export const loginUser = createAsyncThunk(
           id: response._id,
           name: response.name,
           email: response.email,
+          role: response.role, 
         })
       );
 
