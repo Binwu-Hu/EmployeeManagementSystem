@@ -14,10 +14,10 @@ const signupUser = asyncHandler(async (req, res) => {
   const validToken = await RegistrationToken.findOne({ token, email });
 
   // something wrong with the checking?
-  // if (!validToken || validToken.expiresAt < Date.now()) {
-  //   res.status(400);
-  //   throw new Error('Invalid or expired registration token');
-  // }
+  if (!validToken || validToken.expiresAt < Date.now()) {
+    res.status(400);
+    throw new Error('Invalid or expired registration token');
+  }
 
   const userExists = await User.findOne({ email });
   if (userExists) {
