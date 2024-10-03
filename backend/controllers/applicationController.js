@@ -172,35 +172,117 @@ const getApplicationStatus = asyncHandler(async (req, res) => {
 });
 
 // @desc    update application by employee
-// @route   PUT /api/application/:id
+// @route   PUT /api/application
 const updateApplication = asyncHandler(async (req, res) => {
-  const employeeId = req.params.id;
-  const { gender, documents } = req.body;
+  const { email } = req.user;
 
-  const application = await Application.findOne({ employee: employeeId });
+  const employee = await Employee.findOne({ email });
+
+  if (!employee) {
+    return res.status(404).json({ message: 'Employee not found.' });
+  }
+
+  const application = await Application.findOne({ email: employee.email });
 
   if (!application) {
-    return res.status(404).json({ message: 'Application not found' });
+    return res.status(404).json({ message: 'Application not found.' });
   }
 
-  // Check if the application status is 'Rejected'
   if (application.status !== 'Rejected') {
-    return res.status(400).json({
-      message: 'Only rejected applications can be updated and resubmitted.',
-    });
+    return res
+      .status(400)
+      .json({
+        message: 'You can only update the application if it was rejected.',
+      });
   }
 
-  application.gender = gender || application.gender;
-  application.documents = documents || application.documents;
-  application.status = 'Pending';
-  application.feedback = '';
+  if (
+    !employee.address?.building ||
+    !employee.address?.street ||
+    !employee.address?.city ||
+    !employee.address?.state ||
+    !employee.address?.zip ||
+    !employee.phone?.cellPhone ||
+    !employee.ssn ||
+    !employee.dateOfBirth ||
+    !employee.gender ||
+    !employee.reference?.firstName ||
+    !employee.reference?.lastName ||
+    !employee.reference?.relationship ||
+    !employee.emergencyContacts?.length ||
+    !employee.emergencyContacts[0]?.firstName ||
+    !employee.emergencyContacts[0]?.lastName ||
+    !employee.emergencyContacts[0]?.relationship
+  ) {
+    return res
+      .status(400)
+      .json({ message: 'Missing required employee information.' });
+  }
 
-  const updatedApplication = await application.save();
+  application.firstName = employee.firstName;
+  application.lastName = employee.lastName;
+  application.address = {
+    building: employee.address.building,
+    street: employee.address.street,
+    city: employee.address.city,
+    state: employee.address.state,
+    zip: employee.address.zip,
+  };
+  application.phone = {
+    cellPhone: employee.phone.cellPhone,
+    ...(employee.phone.workPhone && { workPhone: employee.phone.workPhone }),
+  };
+  application.ssn = employee.ssn;
+  application.dateOfBirth = employee.dateOfBirth;
+  application.gender = employee.gender;
+
+  if (employee.middleName) application.middleName = employee.middleName;
+  if (employee.preferredName)
+    application.preferredName = employee.preferredName;
+
+  if (employee.documents) {
+    application.documents = {
+      ...(employee.documents?.profilePicture && {
+        profilePicture: employee.documents.profilePicture,
+      }),
+      ...(employee.documents?.driverLicense && {
+        driverLicense: employee.documents.driverLicense,
+      }),
+      ...(employee.documents?.workAuthorization && {
+        workAuthorization: employee.documents.workAuthorization,
+      }),
+    };
+  }
+
+  application.reference = {
+    firstName: employee.reference.firstName,
+    lastName: employee.reference.lastName,
+    relationship: employee.reference.relationship,
+    ...(employee.reference.middleName && {
+      middleName: employee.reference.middleName,
+    }),
+    ...(employee.reference.phone && {
+      phone: employee.reference.phone,
+    }),
+    ...(employee.reference.email && {
+      email: employee.reference.email,
+    }),
+  };
+
+  application.emergencyContacts = employee.emergencyContacts.map((contact) => ({
+    firstName: contact.firstName,
+    lastName: contact.lastName,
+    relationship: contact.relationship,
+    ...(contact.middleName && { middleName: contact.middleName }),
+    ...(contact.phone && { phone: contact.phone }),
+    ...(contact.email && { email: contact.email }),
+  }));
+
+  await application.save();
 
   res.status(200).json({
-    message:
-      'Application updated and resubmitted successfully. Please wait for HR to review again.',
-    application: updatedApplication,
+    message: 'Application updated successfully.',
+    application,
   });
 });
 
