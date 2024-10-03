@@ -124,10 +124,11 @@ const createApplication = asyncHandler(async (req, res) => {
 });
 
 // @desc    get application info
-// @route   GET /api/application/:id
+// @route   GET /api/application
 const getApplicationStatus = asyncHandler(async (req, res) => {
-  const employeeId = req.params.id;
-  const application = await Application.findOne({ employee: employeeId });
+  const { email } = req.user;
+
+  const application = await Application.findOne({ email });
 
   if (!application) {
     // i. Never submitted: they need to fill out and submit the application for the first time
@@ -148,17 +149,10 @@ const getApplicationStatus = asyncHandler(async (req, res) => {
 
       case 'Pending':
         // iii. Pending: they can view the submitted application (not editable) and list of uploaded documents
-        const documents = application.documents.map((doc) => ({
-          name: doc.name,
-          url: doc.url, // Assuming document URLs are stored
-          downloadLink: `${doc.url}/download`, // Provide download link
-          previewLink: `${doc.url}/preview`, // Provide preview link
-        }));
 
         res.status(200).json({
           message: 'Please wait for HR to review your application.',
           application: application, // Application is not editable
-          documents: documents, // List of documents with download and preview options
         });
         break;
 
@@ -167,7 +161,6 @@ const getApplicationStatus = asyncHandler(async (req, res) => {
         res.status(200).json({
           message:
             'Your application has been approved. Redirecting to the home page...',
-          redirectTo: '/home',
         });
         break;
 
