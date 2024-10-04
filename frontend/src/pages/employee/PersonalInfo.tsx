@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '../../app/store';
-import { Layout, Menu } from 'antd';
+import { Button, Layout, Menu, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
   clearEmployee,
@@ -7,6 +7,7 @@ import {
 } from '../../features/employee/employeeSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
+import AddressSection from '../../components/personalInfo/AddressSection';
 import { Link } from 'react-scroll';
 import NameSection from '../../components/personalInfo/NameSection';
 
@@ -19,15 +20,30 @@ const PersonalInfoPage: React.FC = () => {
     (state: RootState) => state.employee
   );
 
-  useEffect(() => {
-    if (user) {
-        dispatch(fetchEmployeeByUserId(user.id));
-    }
+  const userId = user?.id;
 
+  // Edit state that controls all sections
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchEmployeeByUserId(userId));
+    }
     return () => {
       dispatch(clearEmployee()); // Clear the employee data when leaving the page
     };
-  }, [dispatch, user]);
+  }, [dispatch, userId]);
+
+  const handleSave = () => {
+    // Add save logic for all sections here
+    message.success('Changes saved');
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    message.info('Changes discarded');
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -71,12 +87,32 @@ const PersonalInfoPage: React.FC = () => {
 
       <Layout className='bg-gray-50'>
         <Content className='p-6'>
-          {employee ? (
-            <div id='nameSection'>
-              <NameSection employee={employee} />
-            </div>
-          ) : (
-            <div>Loading employee data...</div>
+          <div className='flex justify-end space-x-4 mb-4'>
+            {isEditing ? (
+              <>
+                <Button type='default' onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button type='primary' onClick={handleSave}>
+                  Save
+                </Button>
+              </>
+            ) : (
+              <Button type='primary' onClick={() => setIsEditing(true)}>
+                Edit
+              </Button>
+            )}
+          </div>
+
+          {employee && (
+            <>
+              <div id='nameSection'>
+                <NameSection employee={employee} isEditing={isEditing} />
+              </div>
+              <div id='addressSection' className='mt-6'>
+                <AddressSection employee={employee} isEditing={isEditing} />
+              </div>
+            </>
           )}
         </Content>
       </Layout>

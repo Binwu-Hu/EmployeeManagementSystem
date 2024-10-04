@@ -1,26 +1,15 @@
-import { Button, Form, Input, message } from 'antd';
-import React, { useState } from 'react';
+import { Form, Input } from 'antd';
 
 import { Employee } from '../../utils/type';
+import React from 'react';
 
 interface NameSectionProps {
   employee: Employee;
+  isEditing: boolean;
 }
 
-const NameSection: React.FC<NameSectionProps> = ({ employee }) => {
-  const [isEditing, setIsEditing] = useState(false);
+const NameSection: React.FC<NameSectionProps> = ({ employee, isEditing }) => {
   const [form] = Form.useForm();
-
-  const onFinish = (values: any) => {
-    // Logic for saving the updated values
-    message.success('Changes saved');
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    form.resetFields();
-    setIsEditing(false);
-  };
 
   return (
     <div className='bg-white p-4 rounded shadow-md'>
@@ -35,7 +24,6 @@ const NameSection: React.FC<NameSectionProps> = ({ employee }) => {
             middleName: employee.middleName,
             preferredName: employee.preferredName,
           }}
-          onFinish={onFinish}
         >
           <Form.Item name='firstName' label='First Name'>
             <Input />
@@ -49,12 +37,6 @@ const NameSection: React.FC<NameSectionProps> = ({ employee }) => {
           <Form.Item name='preferredName' label='Preferred Name'>
             <Input />
           </Form.Item>
-          <div className='flex justify-end space-x-2'>
-            <Button onClick={handleCancel}>Cancel</Button>
-            <Button type='primary' htmlType='submit'>
-              Save
-            </Button>
-          </div>
         </Form>
       ) : (
         <div>
@@ -65,12 +47,11 @@ const NameSection: React.FC<NameSectionProps> = ({ employee }) => {
             <strong>Last Name:</strong> {employee.lastName}
           </p>
           <p>
-            <strong>Middle Name:</strong> {employee.middleName}
+            <strong>Middle Name:</strong> {employee.middleName || 'N/A'}
           </p>
           <p>
-            <strong>Preferred Name:</strong> {employee.preferredName}
+            <strong>Preferred Name:</strong> {employee.preferredName || 'N/A'}
           </p>
-          <Button onClick={() => setIsEditing(true)}>Edit</Button>
         </div>
       )}
     </div>
