@@ -166,6 +166,7 @@ const PersonalInfoPage: React.FC = () => {
                 <EmergencyContactSection
                   employee={employee}
                   isEditing={isEditing}
+                  onChange={handleFieldChange}
                 />
               </div>
 

@@ -6,11 +6,13 @@ import React from 'react';
 interface EmergencyContactSectionProps {
   employee: Employee;
   isEditing: boolean;
+  onChange: (field: string, value: any) => void;
 }
 
 const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
   employee,
   isEditing,
+  onChange,
 }) => {
   const [form] = Form.useForm();
 
@@ -33,22 +35,64 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
               }}
             >
               <Form.Item name='firstName' label='First Name'>
-                <Input />
+                <Input
+                  onChange={(e) =>
+                    onChange(
+                      `emergencyContacts[${index}].firstName`,
+                      e.target.value
+                    )
+                  }
+                />
               </Form.Item>
               <Form.Item name='lastName' label='Last Name'>
-                <Input />
+                <Input
+                  onChange={(e) =>
+                    onChange(
+                      `emergencyContacts[${index}].lastName`,
+                      e.target.value
+                    )
+                  }
+                />
               </Form.Item>
               <Form.Item name='middleName' label='Middle Name'>
-                <Input />
+                <Input
+                  onChange={(e) =>
+                    onChange(
+                      `emergencyContacts[${index}].middleName`,
+                      e.target.value
+                    )
+                  }
+                />
               </Form.Item>
               <Form.Item name='phone' label='Phone'>
-                <Input />
+                <Input
+                  onChange={(e) =>
+                    onChange(
+                      `emergencyContacts[${index}].phone`,
+                      e.target.value
+                    )
+                  }
+                />
               </Form.Item>
               <Form.Item name='email' label='Email'>
-                <Input />
+                <Input
+                  onChange={(e) =>
+                    onChange(
+                      `emergencyContacts[${index}].email`,
+                      e.target.value
+                    )
+                  }
+                />
               </Form.Item>
               <Form.Item name='relationship' label='Relationship'>
-                <Input />
+                <Input
+                  onChange={(e) =>
+                    onChange(
+                      `emergencyContacts[${index}].relationship`,
+                      e.target.value
+                    )
+                  }
+                />
               </Form.Item>
             </Form>
           ) : (
@@ -60,7 +104,7 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                 <strong>Last Name:</strong> {contact.lastName}
               </p>
               <p>
-                <strong>Middle Name:</strong> {contact.middleName || 'N/A'}
+                <strong>Middle Name:</strong> {contact.middleName || ''}
               </p>
               <p>
                 <strong>Phone:</strong> {contact.phone}
