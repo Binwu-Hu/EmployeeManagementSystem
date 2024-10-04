@@ -80,7 +80,10 @@ const PersonalInfoPage: React.FC = () => {
 
   return (
     <Layout className='min-h-screen'>
-      <Sider width={200} className='bg-gray-800 text-white'>
+      <Sider
+        width={200}
+        className='bg-gray-800 text-white h-screen sticky top-0'
+      >
         <Menu mode='inline' theme='dark' className='h-full'>
           <Menu.Item key='name'>
             <Link to='nameSection' smooth={true} offset={-70}>

@@ -13,6 +13,8 @@ import DocumentsSection from '../../components/personalInfo/DocumentsSection';
 import EmergencyContactSection from '../../components/personalInfo/EmergencyContactSection';
 import EmploymentSection from '../../components/personalInfo/EmploymentSection';
 import NameSection from '../../components/personalInfo/NameSection';
+import ProfilePictureSection from '../../components/personalInfo/ProfilePictureSection';
+import UserSection from '../../components/personalInfo/UserSection';
 
 const { Sider, Content } = Layout;
 
@@ -72,16 +74,25 @@ const OnboardingPage: React.FC = () => {
 
   return (
     <Layout className='min-h-screen'>
-      <Sider width={200} className='bg-gray-800 text-white'>
+      <Sider
+        width={200}
+        className='bg-gray-800 text-white h-screen sticky top-0'
+      >
         <Menu mode='inline' theme='dark' className='h-full'>
           <Menu.Item key='name'>
             <a href='#nameSection'>Name</a>
+          </Menu.Item>
+          <Menu.Item key='profile-picture'>
+            <a href='#profilePictureSection'>Profile Picture</a>
           </Menu.Item>
           <Menu.Item key='address'>
             <a href='#addressSection'>Address</a>
           </Menu.Item>
           <Menu.Item key='contact-info'>
             <a href='#contactInfoSection'>Contact Info</a>
+          </Menu.Item>
+          <Menu.Item key='user-info'>
+            <a href='#userInfoSection'>Employee Info</a>
           </Menu.Item>
           <Menu.Item key='employment'>
             <a href='#employmentSection'>Employment</a>
@@ -115,6 +126,13 @@ const OnboardingPage: React.FC = () => {
                     form={form}
                   />
                 </div>
+                <div id='profilePictureSection'>
+                  <ProfilePictureSection
+                    employee={employee}
+                    onChange={handleFieldChange}
+                    form={form}
+                  />
+                </div>
                 <div id='addressSection' className='mt-6'>
                   <AddressSection
                     employee={employee}
@@ -127,6 +145,13 @@ const OnboardingPage: React.FC = () => {
                   <ContactInfoSection
                     employee={employee}
                     isEditing={true}
+                    onChange={handleFieldChange}
+                    form={form}
+                  />
+                </div>
+                <div id='userInfoSection' className='mt-6'>
+                  <UserSection
+                    employee={employee}
                     onChange={handleFieldChange}
                     form={form}
                   />
