@@ -17,101 +17,61 @@ const createApplication = asyncHandler(async (req, res) => {
 
   // Check if an application already exists for this email
   const existingApplication = await Application.findOne({
-    email: employee.email,
+    employee: employee._id,
   });
 
   if (existingApplication) {
     return res
       .status(400)
-      .json({ message: 'Application already exists for this email.' });
+      .json({ message: 'Application already exists for this employee.' });
   }
 
-  // Ensure all required fields are present
   if (
-    !employee.address?.building ||
-    !employee.address?.street ||
-    !employee.address?.city ||
-    !employee.address?.state ||
-    !employee.address?.zip ||
-    !employee.phone?.cellPhone ||
+    !employee.firstName ||
+    !employee.lastName ||
+    !employee.address ||
+    !employee.address.building ||
+    !employee.address.street ||
+    !employee.address.city ||
+    !employee.address.state ||
+    !employee.address.zip ||
+    !employee.phone ||
+    !employee.phone.cellPhone ||
     !employee.ssn ||
     !employee.dateOfBirth ||
     !employee.gender ||
-    !employee.reference?.firstName ||
-    !employee.reference?.lastName ||
-    !employee.reference?.relationship ||
-    !employee.emergencyContacts?.length ||
-    !employee.emergencyContacts[0]?.firstName ||
-    !employee.emergencyContacts[0]?.lastName ||
-    !employee.emergencyContacts[0]?.relationship
+    !employee.workAuthorization ||
+    !employee.workAuthorization.visaType ||
+    !employee.workAuthorization.startDate ||
+    !employee.workAuthorization.endDate ||
+    !employee.reference ||
+    !employee.reference.firstName ||
+    !employee.reference.lastName ||
+    !employee.reference.relationship
   ) {
+    return res.status(400).json({
+      message:
+        'Missing required employee information. Please complete all fields before creating an application.',
+    });
+  }
+
+  if (!employee.emergencyContacts || employee.emergencyContacts.length === 0) {
     return res
       .status(400)
-      .json({ message: 'Missing required employee information.' });
+      .json({ message: 'At least one emergency contact is required.' });
+  }
+
+  for (const contact of employee.emergencyContacts) {
+    if (!contact.firstName || !contact.lastName || !contact.relationship) {
+      return res.status(400).json({
+        message:
+          'Each emergency contact must have a first name, last name, and relationship.',
+      });
+    }
   }
 
   const application = new Application({
-    email: employee.email,
-    firstName: employee.firstName,
-    lastName: employee.lastName,
-    address: {
-      building: employee.address.building,
-      street: employee.address.street,
-      city: employee.address.city,
-      state: employee.address.state,
-      zip: employee.address.zip,
-    },
-    phone: {
-      cellPhone: employee.phone.cellPhone,
-
-      ...(employee.phone.workPhone && { workPhone: employee.phone.workPhone }),
-    },
-    ssn: employee.ssn,
-    dateOfBirth: employee.dateOfBirth,
-    gender: employee.gender,
-
-    ...(employee.middleName && { middleName: employee.middleName }),
-    ...(employee.preferredName && { preferredName: employee.preferredName }),
-    ...(employee.documents && {
-      documents: {
-        ...(employee.documents?.profilePicture && {
-          profilePicture: employee.documents.profilePicture,
-        }),
-        ...(employee.documents?.driverLicense && {
-          driverLicense: employee.documents.driverLicense,
-        }),
-        ...(employee.documents?.workAuthorization && {
-          workAuthorization: employee.documents.workAuthorization,
-        }),
-      },
-    }),
-
-    reference: {
-      firstName: employee.reference.firstName,
-      lastName: employee.reference.lastName,
-      relationship: employee.reference.relationship,
-
-      ...(employee.reference.middleName && {
-        middleName: employee.reference.middleName,
-      }),
-      ...(employee.reference.phone && {
-        phone: employee.reference.phone,
-      }),
-      ...(employee.reference.email && {
-        email: employee.reference.email,
-      }),
-    },
-
-    emergencyContacts: employee.emergencyContacts.map((contact) => ({
-      firstName: contact.firstName,
-      lastName: contact.lastName,
-      relationship: contact.relationship,
-
-      ...(contact.middleName && { middleName: contact.middleName }),
-      ...(contact.phone && { phone: contact.phone }),
-      ...(contact.email && { email: contact.email }),
-    })),
-
+    employee: employee._id,
     status: 'Pending',
     feedback: '',
   });
@@ -129,7 +89,8 @@ const createApplication = asyncHandler(async (req, res) => {
 const getApplicationStatus = asyncHandler(async (req, res) => {
   const { email } = req.user;
 
-  const application = await Application.findOne({ email });
+  const employee = await Employee.findOne({ email });
+  const application = await Application.findOne({ employee });
 
   if (!application) {
     // i. Never submitted: they need to fill out and submit the application for the first time
@@ -183,7 +144,9 @@ const updateApplication = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: 'Employee not found.' });
   }
 
-  const application = await Application.findOne({ email: employee.email });
+  const application = await Application.findOne({
+    employee: employee._id,
+  });
 
   if (!application) {
     return res.status(404).json({ message: 'Application not found.' });
@@ -196,92 +159,58 @@ const updateApplication = asyncHandler(async (req, res) => {
   }
 
   if (
-    !employee.address?.building ||
-    !employee.address?.street ||
-    !employee.address?.city ||
-    !employee.address?.state ||
-    !employee.address?.zip ||
-    !employee.phone?.cellPhone ||
+    !employee.firstName ||
+    !employee.lastName ||
+    !employee.address ||
+    !employee.address.building ||
+    !employee.address.street ||
+    !employee.address.city ||
+    !employee.address.state ||
+    !employee.address.zip ||
+    !employee.phone ||
+    !employee.phone.cellPhone ||
     !employee.ssn ||
     !employee.dateOfBirth ||
     !employee.gender ||
-    !employee.reference?.firstName ||
-    !employee.reference?.lastName ||
-    !employee.reference?.relationship ||
-    !employee.emergencyContacts?.length ||
-    !employee.emergencyContacts[0]?.firstName ||
-    !employee.emergencyContacts[0]?.lastName ||
-    !employee.emergencyContacts[0]?.relationship
+    !employee.workAuthorization ||
+    !employee.workAuthorization.visaType ||
+    !employee.workAuthorization.startDate ||
+    !employee.workAuthorization.endDate ||
+    !employee.reference ||
+    !employee.reference.firstName ||
+    !employee.reference.lastName ||
+    !employee.reference.relationship
   ) {
+    return res.status(400).json({
+      message:
+        'Missing required employee information. Please complete all fields before updating the application.',
+    });
+  }
+
+  if (!employee.emergencyContacts || employee.emergencyContacts.length === 0) {
     return res
       .status(400)
-      .json({ message: 'Missing required employee information.' });
+      .json({ message: 'At least one emergency contact is required.' });
   }
 
-  application.firstName = employee.firstName;
-  application.lastName = employee.lastName;
-  application.address = {
-    building: employee.address.building,
-    street: employee.address.street,
-    city: employee.address.city,
-    state: employee.address.state,
-    zip: employee.address.zip,
-  };
-  application.phone = {
-    cellPhone: employee.phone.cellPhone,
-    ...(employee.phone.workPhone && { workPhone: employee.phone.workPhone }),
-  };
-  application.ssn = employee.ssn;
-  application.dateOfBirth = employee.dateOfBirth;
-  application.gender = employee.gender;
-
-  if (employee.middleName) application.middleName = employee.middleName;
-  if (employee.preferredName)
-    application.preferredName = employee.preferredName;
-
-  if (employee.documents) {
-    application.documents = {
-      ...(employee.documents?.profilePicture && {
-        profilePicture: employee.documents.profilePicture,
-      }),
-      ...(employee.documents?.driverLicense && {
-        driverLicense: employee.documents.driverLicense,
-      }),
-      ...(employee.documents?.workAuthorization && {
-        workAuthorization: employee.documents.workAuthorization,
-      }),
-    };
+  for (const contact of employee.emergencyContacts) {
+    if (!contact.firstName || !contact.lastName || !contact.relationship) {
+      return res.status(400).json({
+        message:
+          'Each emergency contact must have a first name, last name, and relationship.',
+      });
+    }
   }
 
-  application.reference = {
-    firstName: employee.reference.firstName,
-    lastName: employee.reference.lastName,
-    relationship: employee.reference.relationship,
-    ...(employee.reference.middleName && {
-      middleName: employee.reference.middleName,
-    }),
-    ...(employee.reference.phone && {
-      phone: employee.reference.phone,
-    }),
-    ...(employee.reference.email && {
-      email: employee.reference.email,
-    }),
-  };
+  application.employee = employee._id;
+  application.status = 'Pending';
+  application.feedback = '';
 
-  application.emergencyContacts = employee.emergencyContacts.map((contact) => ({
-    firstName: contact.firstName,
-    lastName: contact.lastName,
-    relationship: contact.relationship,
-    ...(contact.middleName && { middleName: contact.middleName }),
-    ...(contact.phone && { phone: contact.phone }),
-    ...(contact.email && { email: contact.email }),
-  }));
-
-  await application.save();
+  const updatedApplication = await application.save();
 
   res.status(200).json({
     message: 'Application updated successfully.',
-    application,
+    application: updatedApplication,
   });
 });
 
@@ -315,7 +244,7 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: 'Employee not found.' });
   }
 
-  const application = await Application.findOne({ email: employee.email });
+  const application = await Application.findOne({ employee });
 
   if (!application) {
     return res.status(404).json({ message: 'Application not found.' });
@@ -371,61 +300,24 @@ const getAllApplications = asyncHandler(async (req, res) => {
     });
   }
 
-  // Get all applications by status
   const pendingApplications = await Application.find({
     status: 'Pending',
-  });
+  }).populate('employee', 'firstName lastName email');
   const rejectedApplications = await Application.find({
     status: 'Rejected',
-  });
+  }).populate('employee', 'firstName lastName email');
   const approvedApplications = await Application.find({
     status: 'Approved',
+  }).populate('employee', 'firstName lastName email');
+
+  const formatApplication = (application) => ({
+    fullName: `${application.employee.firstName} ${application.employee.lastName}`,
+    email: application.employee.email,
+    status: application.status,
+    submittedAt: application.submittedAt,
+    feedback: application.feedback || '',
   });
 
-  // Map applications to include all details
-  const formatApplication = (app) => ({
-    fullName: `${app.firstName} ${app.lastName}`,
-    email: app.email,
-    phone: {
-      cellPhone: app.phone.cellPhone,
-      workPhone: app.phone.workPhone || null,
-    },
-    ssn: app.ssn,
-    dateOfBirth: app.dateOfBirth,
-    gender: app.gender,
-    address: {
-      building: app.address.building,
-      street: app.address.street,
-      city: app.address.city,
-      state: app.address.state,
-      zip: app.address.zip,
-    },
-    documents: {
-      profilePicture: app.documents?.profilePicture || null,
-      driverLicense: app.documents?.driverLicense || null,
-      workAuthorization: app.documents?.workAuthorization || null,
-    },
-    reference: {
-      firstName: app.reference.firstName,
-      lastName: app.reference.lastName,
-      relationship: app.reference.relationship,
-      middleName: app.reference.middleName || null,
-      phone: app.reference.phone || null,
-      email: app.reference.email || null,
-    },
-    emergencyContacts: app.emergencyContacts.map((contact) => ({
-      firstName: contact.firstName,
-      lastName: contact.lastName,
-      relationship: contact.relationship,
-      middleName: contact.middleName || null,
-      phone: contact.phone || null,
-      email: contact.email || null,
-    })),
-    status: app.status,
-    feedback: app.feedback || null,
-  });
-
-  // Return response with applications grouped by status
   res.status(200).json({
     pending: pendingApplications.map(formatApplication),
     rejected: rejectedApplications.map(formatApplication),
@@ -433,60 +325,95 @@ const getAllApplications = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Get application by employee
-// @route   GET /api/application/view
+// @desc    Get application detail
+// @route   GET /api/application/:id
 const getApplicationDetail = asyncHandler(async (req, res) => {
+  const employeeId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(employeeId)) {
+    return res.status(400).json({ message: 'Invalid employee ID format.' });
+  }
+
+  const employee = await Employee.findById(employeeId);
+
+  if (!employee) {
+    return res.status(404).json({ message: 'Employee not found.' });
+  }
+
   const { email } = req.user;
 
-  const application = await Application.findOne({ email });
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found.' });
+  }
+
+  if (user.role !== 'HR' && employee.email !== email) {
+    return res
+      .status(401)
+      .json({ message: 'Unauthorized for other employees.' });
+  }
+
+  const application = await Application.findOne({ employee });
 
   if (!application) {
     return res.status(404).json({ message: 'Application not found.' });
   }
 
   res.status(200).json({
-    email: application.email,
-    firstName: application.firstName,
-    lastName: application.lastName,
-    address: {
-      building: application.address.building,
-      street: application.address.street,
-      city: application.address.city,
-      state: application.address.state,
-      zip: application.address.zip,
+    employee: {
+      fullName: `${employee.firstName} ${employee.lastName}`,
+      middleName: employee.middleName || '',
+      preferredName: employee.preferredName || '',
+      email: employee.email,
+      profilePicture: employee.profilePicture,
+      address: {
+        building: employee.address.building,
+        street: employee.address.street,
+        city: employee.address.city,
+        state: employee.address.state,
+        zip: employee.address.zip,
+      },
+      phone: {
+        cellPhone: employee.phone.cellPhone,
+        workPhone: employee.phone.workPhone || '',
+      },
+      ssn: employee.ssn,
+      dateOfBirth: employee.dateOfBirth,
+      gender: employee.gender,
+      visaStatus: employee.visaStatus,
+      workAuthorization: {
+        visaType: employee.workAuthorization.visaType,
+        startDate: employee.workAuthorization.startDate,
+        endDate: employee.workAuthorization.endDate,
+      },
+      reference: {
+        firstName: employee.reference.firstName,
+        lastName: employee.reference.lastName,
+        middleName: employee.reference.middleName || '',
+        phone: employee.reference.phone || '',
+        email: employee.reference.email || '',
+        relationship: employee.reference.relationship,
+      },
+      emergencyContacts: employee.emergencyContacts.map((contact) => ({
+        firstName: contact.firstName,
+        lastName: contact.lastName,
+        middleName: contact.middleName || '',
+        phone: contact.phone || '',
+        email: contact.email || '',
+        relationship: contact.relationship,
+      })),
+      documents: {
+        profilePicture: employee.documents.profilePicture || '',
+        driverLicense: employee.documents.driverLicense || '',
+        workAuthorization: employee.documents.workAuthorization || '',
+      },
     },
-    phone: {
-      cellPhone: application.phone.cellPhone,
-      workPhone: application.phone.workPhone || null,
+    application: {
+      status: application.status,
+      feedback: application.feedback || '',
+      submittedAt: application.submittedAt,
     },
-    ssn: application.ssn,
-    dateOfBirth: application.dateOfBirth,
-    gender: application.gender,
-    middleName: application.middleName || null,
-    preferredName: application.preferredName || null,
-    documents: {
-      profilePicture: application.documents?.profilePicture || null,
-      driverLicense: application.documents?.driverLicense || null,
-      workAuthorization: application.documents?.workAuthorization || null,
-    },
-    reference: {
-      firstName: application.reference.firstName,
-      lastName: application.reference.lastName,
-      relationship: application.reference.relationship,
-      middleName: application.reference.middleName || null,
-      phone: application.reference.phone || null,
-      email: application.reference.email || null,
-    },
-    emergencyContacts: application.emergencyContacts.map((contact) => ({
-      firstName: contact.firstName,
-      lastName: contact.lastName,
-      relationship: contact.relationship,
-      middleName: contact.middleName || null,
-      phone: contact.phone || null,
-      email: contact.email || null,
-    })),
-    status: application.status,
-    feedback: application.feedback || '',
   });
 });
 

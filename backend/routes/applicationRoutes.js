@@ -16,7 +16,7 @@ router.post('/', authMiddleware, createApplication);
 
 router.get('/', authMiddleware, getApplicationStatus);
 
-router.get('/view', authMiddleware, getApplicationDetail);
+router.get('/:id', authMiddleware, getApplicationDetail);
 
 router.put('/', authMiddleware, updateApplication);
 
