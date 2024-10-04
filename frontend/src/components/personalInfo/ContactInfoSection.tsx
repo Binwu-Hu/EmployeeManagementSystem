@@ -7,14 +7,15 @@ interface ContactInfoSectionProps {
   employee: Employee;
   isEditing: boolean;
   onChange: (field: string, value: any) => void;
+  form: any;
 }
 
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
   employee,
   isEditing,
   onChange,
+  form,
 }) => {
-  const [form] = Form.useForm();
 
   return (
     <div className='bg-white p-4 rounded shadow-md'>
@@ -28,7 +29,11 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
             workPhone: employee.phone?.workPhone,
           }}
         >
-          <Form.Item name='cellPhone' label='Cell Phone'>
+          <Form.Item
+            name='cellPhone'
+            label='Cell Phone'
+            rules={[{ required: true, message: 'Cell phone is required' }]}
+          >
             <Input
               onChange={(e) => onChange('phone.cellPhone', e.target.value)}
             />

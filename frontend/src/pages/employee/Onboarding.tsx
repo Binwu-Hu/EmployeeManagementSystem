@@ -11,8 +11,10 @@ import AddressSection from '../../components/personalInfo/AddressSection';
 import ContactInfoSection from '../../components/personalInfo/ContactInfoSection';
 import DocumentsSection from '../../components/personalInfo/DocumentsSection';
 import EmergencyContactSection from '../../components/personalInfo/EmergencyContactSection';
-import EmploymentSection from '../../components/personalInfo/EmploymentSection';
 import NameSection from '../../components/personalInfo/NameSection';
+import ProfilePictureSection from '../../components/personalInfo/ProfilePictureSection';
+import UserSection from '../../components/personalInfo/UserSection';
+import WorkAuthorizationSection from '../../components/personalInfo/WorkAuthorizationSection';
 
 const { Sider, Content } = Layout;
 
@@ -72,10 +74,16 @@ const OnboardingPage: React.FC = () => {
 
   return (
     <Layout className='min-h-screen'>
-      <Sider width={200} className='bg-gray-800 text-white'>
+      <Sider
+        width={200}
+        className='bg-gray-800 text-white h-screen sticky top-0'
+      >
         <Menu mode='inline' theme='dark' className='h-full'>
           <Menu.Item key='name'>
             <a href='#nameSection'>Name</a>
+          </Menu.Item>
+          <Menu.Item key='profile-picture'>
+            <a href='#profilePictureSection'>Profile Picture</a>
           </Menu.Item>
           <Menu.Item key='address'>
             <a href='#addressSection'>Address</a>
@@ -83,8 +91,11 @@ const OnboardingPage: React.FC = () => {
           <Menu.Item key='contact-info'>
             <a href='#contactInfoSection'>Contact Info</a>
           </Menu.Item>
-          <Menu.Item key='employment'>
-            <a href='#employmentSection'>Employment</a>
+          <Menu.Item key='user-info'>
+            <a href='#userInfoSection'>Employee Info</a>
+          </Menu.Item>
+          <Menu.Item key='work-authorization'>
+            <a href='#workAuthorizationSection'>Work Authorization</a>
           </Menu.Item>
           <Menu.Item key='emergency-contacts'>
             <a href='#emergencyContactSection'>Emergency Contacts</a>
@@ -112,6 +123,14 @@ const OnboardingPage: React.FC = () => {
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
+                    form={form}
+                  />
+                </div>
+                <div id='profilePictureSection'>
+                  <ProfilePictureSection
+                    employee={employee}
+                    onChange={handleFieldChange}
+                    form={form}
                   />
                 </div>
                 <div id='addressSection' className='mt-6'>
@@ -119,6 +138,7 @@ const OnboardingPage: React.FC = () => {
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
+                    form={form}
                   />
                 </div>
                 <div id='contactInfoSection' className='mt-6'>
@@ -126,13 +146,22 @@ const OnboardingPage: React.FC = () => {
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
+                    form={form}
                   />
                 </div>
-                <div id='employmentSection' className='mt-6'>
-                  <EmploymentSection
+                <div id='userInfoSection' className='mt-6'>
+                  <UserSection
+                    employee={employee}
+                    onChange={handleFieldChange}
+                    form={form}
+                  />
+                </div>
+                <div id='workAuthorizationSection' className='mt-6'>
+                  <WorkAuthorizationSection
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
+                    form={form}
                   />
                 </div>
                 <div id='emergencyContactSection' className='mt-6'>
@@ -140,6 +169,7 @@ const OnboardingPage: React.FC = () => {
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
+                    form={form}
                   />
                 </div>
 
@@ -148,6 +178,7 @@ const OnboardingPage: React.FC = () => {
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
+                    form={form}
                   />
                 </div>
               </>
