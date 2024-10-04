@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import AddressSection from '../../components/personalInfo/AddressSection';
 import ContactInfoSection from '../../components/personalInfo/ContactInfoSection';
+import DocumentsSection from '../../components/personalInfo/DocumentsSection';
 import EmergencyContactSection from '../../components/personalInfo/EmergencyContactSection';
 import EmploymentSection from '../../components/personalInfo/EmploymentSection';
 import { Link } from 'react-scroll';
@@ -127,10 +128,10 @@ const PersonalInfoPage: React.FC = () => {
                   isEditing={isEditing}
                 />
               </div>
-              {/*
+
               <div id='documentsSection' className='mt-6'>
                 <DocumentsSection employee={employee} isEditing={isEditing} />
-              </div> */}
+              </div>
             </>
           )}
         </Content>
