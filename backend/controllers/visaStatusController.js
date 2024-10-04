@@ -1,5 +1,5 @@
-import VisaStatus from '../models/visaStatusModel.js';
 import Employee from '../models/employeeModel.js';
+import VisaStatus from '../models/visaStatusModel.js';
 
 // Upload Visa Documents
 export const uploadVisaDocuments = async (req, res) => {
@@ -48,6 +48,7 @@ export const uploadVisaDocuments = async (req, res) => {
 
 // Fetch Visa Status by Employee
 export const getVisaStatusByEmployee = async (req, res) => {
+
     console.log('req.params:', req.params);
   try {
     const { employeeId } = req.params;

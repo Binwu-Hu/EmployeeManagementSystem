@@ -1,18 +1,19 @@
-import React, { useEffect } from 'react';
+import { AppDispatch, RootState } from '../../app/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchEmployee } from '../../features/employee/employeeSlice';
-import { RootState } from '../../app/store';
+
 import VisaStatusForm from '../../components/VisaStatus/VisaStatusForm';
 import VisaStatusList from '../../components/VisaStatus/VisaStatusList';
+import { fetchEmployeeByUserId } from '../../features/employee/employeeSlice';
+import { useEffect } from 'react';
 
 const VisaStatusPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.user);
   const { employee, loading, error } = useSelector((state: RootState) => state.employee);
 
   useEffect(() => {
     if (user?.email) {
-      dispatch(fetchEmployee(user.email)); // Fetch employee details by email
+      dispatch(fetchEmployeeByUserId(user.id));
     }
   }, [dispatch, user]);
 
