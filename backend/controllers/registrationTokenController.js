@@ -7,7 +7,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // @desc Generate a JWT registration token for the provided email
 // @param email - The email for which to generate the registration token
-const generateJWTToken = asyncHandler(async (email) => {
+const generateJWTToken = asyncHandler(async (email, firstName, lastName) => {
   // Create JWT Token (expires in 30 days)
   const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
@@ -18,6 +18,8 @@ const generateJWTToken = asyncHandler(async (email) => {
   const newToken = await RegistrationToken.create({
     token,
     email,
+    firstName,
+    lastName,
     expiresAt,
   });
 
@@ -32,17 +34,18 @@ const generateJWTToken = asyncHandler(async (email) => {
 // @desc Send registration link via email
 // @route POST /api/registration/send
 const sendRegistrationLink = asyncHandler(async (req, res) => {
-  const { email } = req.body;
+  const { email, firstName, lastName } = req.body;
   const frontendUrl = req.headers['frontend_url'];
+  console.log('req.body:', req.body);
   // Generate JWT token for the email
-  const token = await generateJWTToken(email);
+  const token = await generateJWTToken(email, firstName, lastName);
 
   // Construct the registration link
   const registrationLink = `${frontendUrl}/signup/${token}`;
-
+  console.log('registrationLink:', registrationLink);
   // Email content
   const message = `
-    <p>Hello,</p>
+    <p>Hi ${firstName},</p>
     <p>Please use the following link to complete your registration:</p>
     <a href="${registrationLink}">${registrationLink}</a>
     <p>The link will expire in 30 days.</p>
@@ -52,7 +55,7 @@ const sendRegistrationLink = asyncHandler(async (req, res) => {
   try {
     await sgMail.send({
       to: email,
-      from: 'ecommercemanagementchuwa@gmail.com',  // Your verified sender email
+      from: 'ecommercemanagementchuwa@gmail.com',
       subject: 'Complete your registration',
       html: message,
     });

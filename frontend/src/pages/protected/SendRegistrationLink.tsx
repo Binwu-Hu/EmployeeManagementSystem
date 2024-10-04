@@ -7,7 +7,7 @@ const SendRegistrationLink = () => {
   const [form] = Form.useForm();
   const [isSent, setIsSent] = useState(false); 
 
-  const handleSubmit = async (values: { email: string }) => {
+  const handleSubmit = async (values: { firstName: string; lastName: string; email: string }) => {
     setLoading(true);
     try {
       await sendRegistrationLinkApi(values);
@@ -29,8 +29,8 @@ const SendRegistrationLink = () => {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
       {isSent ? (
         <Card style={{ width: 400, textAlign: 'center' }}>
-          <div style={{ fontSize: '64px', marginBottom: '20px' }}>📧</div> {/* 你可以替换这个emoji为图标 */}
-          <h3>We have sent the registration link to your email, please check that!</h3>
+          <div style={{ fontSize: '64px', marginBottom: '20px' }}>📧</div>
+          <h3>We have sent the registration link to this email, please check that!</h3>
           <Button type="primary" onClick={handleResend} style={{ marginTop: '20px' }}>
             Send Again
           </Button>
@@ -38,6 +38,20 @@ const SendRegistrationLink = () => {
       ) : (
         <Card title="Send Registration Link" style={{ width: 400 }}>
           <Form form={form} onFinish={handleSubmit} layout="vertical">
+            <Form.Item
+              label="First Name"
+              name="firstName"
+              rules={[{ required: true, message: 'Please input the first name!' }]}
+            >
+              <Input placeholder="Enter first name" />
+            </Form.Item>
+            <Form.Item
+              label="Last Name"
+              name="lastName"
+              rules={[{ required: true, message: 'Please input the last name!' }]}
+            >
+              <Input placeholder="Enter last name" />
+            </Form.Item>
             <Form.Item
               label="Email"
               name="email"
