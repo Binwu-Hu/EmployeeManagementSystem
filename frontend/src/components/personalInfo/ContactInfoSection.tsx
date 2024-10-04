@@ -6,11 +6,13 @@ import React from 'react';
 interface ContactInfoSectionProps {
   employee: Employee;
   isEditing: boolean;
+  onChange: (field: string, value: any) => void;
 }
 
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
   employee,
   isEditing,
+  onChange,
 }) => {
   const [form] = Form.useForm();
 
@@ -27,19 +29,23 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
           }}
         >
           <Form.Item name='cellPhone' label='Cell Phone'>
-            <Input />
+            <Input
+              onChange={(e) => onChange('phone.cellPhone', e.target.value)}
+            />
           </Form.Item>
           <Form.Item name='workPhone' label='Work Phone'>
-            <Input />
+            <Input
+              onChange={(e) => onChange('phone.workPhone', e.target.value)}
+            />
           </Form.Item>
         </Form>
       ) : (
         <div>
           <p>
-            <strong>Cell Phone:</strong> {employee.phone?.cellPhone || 'N/A'}
+            <strong>Cell Phone:</strong> {employee.phone?.cellPhone || ''}
           </p>
           <p>
-            <strong>Work Phone:</strong> {employee.phone?.workPhone || 'N/A'}
+            <strong>Work Phone:</strong> {employee.phone?.workPhone || ''}
           </p>
         </div>
       )}
