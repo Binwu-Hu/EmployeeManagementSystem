@@ -6,11 +6,13 @@ import React from 'react';
 interface AddressSectionProps {
   employee: Employee;
   isEditing: boolean;
+  onChange: (field: string, value: any) => void;
 }
 
 const AddressSection: React.FC<AddressSectionProps> = ({
   employee,
   isEditing,
+  onChange,
 }) => {
   const [form] = Form.useForm();
 
@@ -30,37 +32,43 @@ const AddressSection: React.FC<AddressSectionProps> = ({
           }}
         >
           <Form.Item name='building' label='Building'>
-            <Input />
+            <Input
+              onChange={(e) => onChange('address.building', e.target.value)}
+            />
           </Form.Item>
           <Form.Item name='street' label='Street'>
-            <Input />
+            <Input
+              onChange={(e) => onChange('address.street', e.target.value)}
+            />
           </Form.Item>
           <Form.Item name='city' label='City'>
-            <Input />
+            <Input onChange={(e) => onChange('address.city', e.target.value)} />
           </Form.Item>
           <Form.Item name='state' label='State'>
-            <Input />
+            <Input
+              onChange={(e) => onChange('address.state', e.target.value)}
+            />
           </Form.Item>
           <Form.Item name='zip' label='Zip'>
-            <Input />
+            <Input onChange={(e) => onChange('address.zip', e.target.value)} />
           </Form.Item>
         </Form>
       ) : (
         <div>
           <p>
-            <strong>Building:</strong> {employee.address?.building || 'N/A'}
+            <strong>Building:</strong> {employee.address?.building || ''}
           </p>
           <p>
-            <strong>Street:</strong> {employee.address?.street || 'N/A'}
+            <strong>Street:</strong> {employee.address?.street || ''}
           </p>
           <p>
-            <strong>City:</strong> {employee.address?.city || 'N/A'}
+            <strong>City:</strong> {employee.address?.city || ''}
           </p>
           <p>
-            <strong>State:</strong> {employee.address?.state || 'N/A'}
+            <strong>State:</strong> {employee.address?.state || ''}
           </p>
           <p>
-            <strong>Zip:</strong> {employee.address?.zip || 'N/A'}
+            <strong>Zip:</strong> {employee.address?.zip || ''}
           </p>
         </div>
       )}
