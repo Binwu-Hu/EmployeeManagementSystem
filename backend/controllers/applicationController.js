@@ -1,6 +1,7 @@
 import Application from '../models/applicationModel.js';
 import Employee from '../models/employeeModel.js';
 import User from '../models/userModel.js';
+import RegistrationToken from '../models/registrationTokenModel.js';
 import asyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
 
@@ -418,6 +419,76 @@ const getApplicationDetail = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Get all tokens, email, Employee name, and Application status
+// @route   GET /api/application/tokenlist
+const getTokenList = asyncHandler(async (req, res) => {
+  const { email } = req.user;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found.' });
+  }
+
+  if (user.role !== 'HR') {
+    return res.status(401).json({
+      message: 'Unauthorized for employee',
+    });
+  }
+
+  try {
+    // Fetch all tokens and return `token` and `email` fields
+    const tokens = await RegistrationToken.find({}, 'token email');
+
+    // For each token, check if an Employee and Application exist for the associated email
+    const tokenList = await Promise.all(
+      tokens.map(async (t) => {
+        const employee = await Employee.findOne({ email: t.email });
+
+        let employeeStatus = 'Employee not created';
+        let applicationStatus = 'Not submitted';
+        let employeeId = null;
+
+        if (employee) {
+          employeeId = employee._id;
+
+          if (!employee.firstName && !employee.lastName) {
+            employeeStatus = 'Unnamed Employee';
+          } else {
+            employeeStatus = `${employee.firstName || ''} ${
+              employee.lastName || ''
+            }`.trim();
+          }
+
+          const application = await Application.findOne({
+            employee: employee._id,
+          });
+
+          // If application exists, return its status, otherwise keep 'Not submitted'
+          if (application) {
+            applicationStatus = application.status;
+          }
+        }
+
+        return {
+          token: `signup/${t.token}`,
+          email: t.email,
+          employee: employeeStatus,
+          employeeId: employeeId,
+          applicationStatus: applicationStatus,
+        };
+      })
+    );
+
+    res.status(200).json(tokenList);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to retrieve tokens',
+      error: error.message,
+    });
+  }
+});
+
 export {
   createApplication,
   getApplicationStatus,
@@ -425,4 +496,5 @@ export {
   updateApplicationStatus,
   getAllApplications,
   getApplicationDetail,
+  getTokenList,
 };
