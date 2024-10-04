@@ -11,10 +11,10 @@ import AddressSection from '../../components/personalInfo/AddressSection';
 import ContactInfoSection from '../../components/personalInfo/ContactInfoSection';
 import DocumentsSection from '../../components/personalInfo/DocumentsSection';
 import EmergencyContactSection from '../../components/personalInfo/EmergencyContactSection';
-import EmploymentSection from '../../components/personalInfo/EmploymentSection';
 import NameSection from '../../components/personalInfo/NameSection';
 import ProfilePictureSection from '../../components/personalInfo/ProfilePictureSection';
 import UserSection from '../../components/personalInfo/UserSection';
+import WorkAuthorizationSection from '../../components/personalInfo/WorkAuthorizationSection';
 
 const { Sider, Content } = Layout;
 
@@ -94,8 +94,8 @@ const OnboardingPage: React.FC = () => {
           <Menu.Item key='user-info'>
             <a href='#userInfoSection'>Employee Info</a>
           </Menu.Item>
-          <Menu.Item key='employment'>
-            <a href='#employmentSection'>Employment</a>
+          <Menu.Item key='work-authorization'>
+            <a href='#workAuthorizationSection'>Work Authorization</a>
           </Menu.Item>
           <Menu.Item key='emergency-contacts'>
             <a href='#emergencyContactSection'>Emergency Contacts</a>
@@ -156,8 +156,8 @@ const OnboardingPage: React.FC = () => {
                     form={form}
                   />
                 </div>
-                <div id='employmentSection' className='mt-6'>
-                  <EmploymentSection
+                <div id='workAuthorizationSection' className='mt-6'>
+                  <WorkAuthorizationSection
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
