@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '../../app/store';
-import { Button, Layout, Menu, message } from 'antd';
+import { Button, Form, Layout, Menu, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
   clearEmployee,
@@ -26,6 +26,8 @@ const PersonalInfoPage: React.FC = () => {
   );
 
   const userId = user?.id;
+
+  const [form] = Form.useForm();
 
   // Edit state that controls all sections
   const [isEditing, setIsEditing] = useState(false);
@@ -139,6 +141,7 @@ const PersonalInfoPage: React.FC = () => {
                   employee={employee}
                   isEditing={isEditing}
                   onChange={handleFieldChange}
+                  form={form}
                 />
               </div>
               <div id='addressSection' className='mt-6'>
@@ -146,6 +149,7 @@ const PersonalInfoPage: React.FC = () => {
                   employee={employee}
                   isEditing={isEditing}
                   onChange={handleFieldChange}
+                  form={form}
                 />
               </div>
               <div id='contactInfoSection' className='mt-6'>
@@ -153,6 +157,7 @@ const PersonalInfoPage: React.FC = () => {
                   employee={employee}
                   isEditing={isEditing}
                   onChange={handleFieldChange}
+                  form={form}
                 />
               </div>
               <div id='employmentSection' className='mt-6'>
@@ -160,6 +165,7 @@ const PersonalInfoPage: React.FC = () => {
                   employee={employee}
                   isEditing={isEditing}
                   onChange={handleFieldChange}
+                  form={form}
                 />
               </div>
               <div id='emergencyContactSection' className='mt-6'>
@@ -167,6 +173,7 @@ const PersonalInfoPage: React.FC = () => {
                   employee={employee}
                   isEditing={isEditing}
                   onChange={handleFieldChange}
+                  form={form}
                 />
               </div>
 
@@ -175,6 +182,7 @@ const PersonalInfoPage: React.FC = () => {
                   employee={employee}
                   isEditing={isEditing}
                   onChange={handleFieldChange}
+                  form={form}
                 />
               </div>
             </>

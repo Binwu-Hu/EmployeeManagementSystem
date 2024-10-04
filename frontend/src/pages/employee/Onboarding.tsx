@@ -112,6 +112,7 @@ const OnboardingPage: React.FC = () => {
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
+                    form={form}
                   />
                 </div>
                 <div id='addressSection' className='mt-6'>
@@ -119,6 +120,7 @@ const OnboardingPage: React.FC = () => {
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
+                    form={form}
                   />
                 </div>
                 <div id='contactInfoSection' className='mt-6'>
@@ -126,6 +128,7 @@ const OnboardingPage: React.FC = () => {
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
+                    form={form}
                   />
                 </div>
                 <div id='employmentSection' className='mt-6'>
@@ -133,6 +136,7 @@ const OnboardingPage: React.FC = () => {
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
+                    form={form}
                   />
                 </div>
                 <div id='emergencyContactSection' className='mt-6'>
@@ -140,6 +144,7 @@ const OnboardingPage: React.FC = () => {
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
+                    form={form}
                   />
                 </div>
 
@@ -148,6 +153,7 @@ const OnboardingPage: React.FC = () => {
                     employee={employee}
                     isEditing={true}
                     onChange={handleFieldChange}
+                    form={form}
                   />
                 </div>
               </>

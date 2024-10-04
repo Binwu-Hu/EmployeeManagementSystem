@@ -8,12 +8,14 @@ interface DocumentsSectionProps {
   employee: Employee;
   isEditing: boolean;
   onChange: (field: string, value: any) => void;
+  form: any;
 }
 
 const DocumentsSection: React.FC<DocumentsSectionProps> = ({
   employee,
   isEditing,
   onChange,
+  form,
 }) => {
   return (
     <div className='bg-white p-4 rounded shadow-md'>

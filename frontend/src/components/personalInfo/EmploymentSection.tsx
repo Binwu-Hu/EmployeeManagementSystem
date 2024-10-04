@@ -8,14 +8,15 @@ interface EmploymentSectionProps {
   employee: Employee;
   isEditing: boolean;
   onChange: (field: string, value: any) => void;
+  form: any;
 }
 
 const EmploymentSection: React.FC<EmploymentSectionProps> = ({
   employee,
   isEditing,
   onChange,
+  form,
 }) => {
-  const [form] = Form.useForm();
 
   return (
     <div className='bg-white p-4 rounded shadow-md'>

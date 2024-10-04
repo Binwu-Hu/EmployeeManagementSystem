@@ -7,14 +7,15 @@ interface EmergencyContactSectionProps {
   employee: Employee;
   isEditing: boolean;
   onChange: (field: string, value: any) => void;
+  form: any;
 }
 
 const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
   employee,
   isEditing,
   onChange,
+  form,
 }) => {
-  const [form] = Form.useForm();
 
   return (
     <div className='bg-white p-4 rounded shadow-md'>
