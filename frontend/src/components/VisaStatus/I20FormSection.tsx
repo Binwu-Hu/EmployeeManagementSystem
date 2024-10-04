@@ -36,7 +36,7 @@ const I20FormSection = ({ employeeId }: { employeeId: string }) => {
         bordered={false}
         style={{ width: 400, textAlign: 'center' }}
       >
-        {visaStatus?.i20Form?.status !== 'Approved' ? (
+        {visaStatus?.visaStatus?.i20Form?.status !== 'Approved' ? (
           <>
             <p>Waiting for HR to approve your I-20 Form</p>
             <Upload multiple onChange={handleFileChange} fileList={files}>

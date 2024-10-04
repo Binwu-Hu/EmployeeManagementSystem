@@ -36,7 +36,7 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
         bordered={false}
         style={{ width: 400, textAlign: 'center' }}
       >
-        {visaStatus?.i983Form?.status !== 'Approved' ? (
+        {visaStatus?.visaStatus?.i983Form?.status !== 'Approved' ? (
           <>
             <p>Waiting for HR to approve your I-983 Form</p>
             <Upload multiple onChange={handleFileChange} fileList={files}>

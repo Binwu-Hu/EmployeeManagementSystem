@@ -4,7 +4,6 @@ import VisaStatus from '../models/visaStatusModel.js';
 // Upload Visa Documents
 export const uploadVisaDocuments = async (req, res) => {
     try {
-    //   console.log('req.files:', req.files);
       const { employeeId } = req.params;
       const { fileType } = req.body;
   
@@ -49,7 +48,6 @@ export const uploadVisaDocuments = async (req, res) => {
 // Fetch Visa Status by Employee
 export const getVisaStatusByEmployee = async (req, res) => {
 
-    console.log('req.params:', req.params);
   try {
     const { employeeId } = req.params;
     const visaStatus = await VisaStatus.findOne({ employee: employeeId }).populate('employee');
