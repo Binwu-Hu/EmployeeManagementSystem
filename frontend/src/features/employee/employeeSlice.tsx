@@ -38,6 +38,36 @@ export const fetchEmployeeByUserId = createAsyncThunk(
   }
 );
 
+export const updateEmployee = createAsyncThunk(
+  'employee/updateEmployee',
+  async (
+    { userId, updatedData }: { userId: string; updatedData: Employee },
+    { rejectWithValue }
+  ) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `/api/employees/user/${userId}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('updated employee:', response.data);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
+
 const employeeSlice = createSlice({
   name: 'employee',
   initialState,
@@ -57,6 +87,18 @@ const employeeSlice = createSlice({
         state.employee = action.payload;
       })
       .addCase(fetchEmployeeByUserId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(updateEmployee.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateEmployee.fulfilled, (state, action) => {
+        state.loading = false;
+        state.employee = action.payload;
+      })
+      .addCase(updateEmployee.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

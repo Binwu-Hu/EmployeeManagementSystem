@@ -6,9 +6,14 @@ import React from 'react';
 interface NameSectionProps {
   employee: Employee;
   isEditing: boolean;
+  onChange: (field: string, value: any) => void;
 }
 
-const NameSection: React.FC<NameSectionProps> = ({ employee, isEditing }) => {
+const NameSection: React.FC<NameSectionProps> = ({
+  employee,
+  isEditing,
+  onChange,
+}) => {
   const [form] = Form.useForm();
 
   return (
@@ -26,16 +31,18 @@ const NameSection: React.FC<NameSectionProps> = ({ employee, isEditing }) => {
           }}
         >
           <Form.Item name='firstName' label='First Name'>
-            <Input />
+            <Input onChange={(e) => onChange('firstName', e.target.value)} />
           </Form.Item>
           <Form.Item name='lastName' label='Last Name'>
-            <Input />
+            <Input onChange={(e) => onChange('lastName', e.target.value)} />
           </Form.Item>
           <Form.Item name='middleName' label='Middle Name'>
-            <Input />
+            <Input onChange={(e) => onChange('middleName', e.target.value)} />
           </Form.Item>
           <Form.Item name='preferredName' label='Preferred Name'>
-            <Input />
+            <Input
+              onChange={(e) => onChange('preferredName', e.target.value)}
+            />
           </Form.Item>
         </Form>
       ) : (
@@ -47,10 +54,10 @@ const NameSection: React.FC<NameSectionProps> = ({ employee, isEditing }) => {
             <strong>Last Name:</strong> {employee.lastName}
           </p>
           <p>
-            <strong>Middle Name:</strong> {employee.middleName || 'N/A'}
+            <strong>Middle Name:</strong> {employee.middleName || ''}
           </p>
           <p>
-            <strong>Preferred Name:</strong> {employee.preferredName || 'N/A'}
+            <strong>Preferred Name:</strong> {employee.preferredName || ''}
           </p>
         </div>
       )}

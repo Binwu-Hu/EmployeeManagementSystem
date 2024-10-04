@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import {
   clearEmployee,
   fetchEmployeeByUserId,
+  updateEmployee,
 } from '../../features/employee/employeeSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -28,6 +29,7 @@ const PersonalInfoPage: React.FC = () => {
 
   // Edit state that controls all sections
   const [isEditing, setIsEditing] = useState(false);
+  const [updatedData, setUpdatedData] = useState(employee);
 
   useEffect(() => {
     if (userId) {
@@ -38,15 +40,37 @@ const PersonalInfoPage: React.FC = () => {
     };
   }, [dispatch, userId]);
 
+  useEffect(() => {
+    setUpdatedData(employee); // Reset data when employee data is fetched
+  }, [employee]);
+
   const handleSave = () => {
-    // Add save logic for all sections here
-    message.success('Changes saved');
-    setIsEditing(false);
+    if (updatedData && userId) {
+      dispatch(updateEmployee({ userId, updatedData }))
+        .then(() => {
+          message.success('Changes saved successfully!');
+          setIsEditing(false);
+        })
+        .catch(() => {
+          message.error('Failed to save changes');
+        });
+    }
   };
 
   const handleCancel = () => {
+    setUpdatedData(employee); // Reset to original data on cancel
     setIsEditing(false);
     message.info('Changes discarded');
+  };
+
+  const handleFieldChange = (field: string, value: any) => {
+    setUpdatedData((prev) => {
+      if (!prev) return prev; // Handle the case when prev is null
+      return {
+        ...prev,
+        [field]: value,
+      };
+    });
   };
 
   if (loading) return <div>Loading...</div>;
@@ -111,7 +135,11 @@ const PersonalInfoPage: React.FC = () => {
           {employee && (
             <>
               <div id='nameSection'>
-                <NameSection employee={employee} isEditing={isEditing} />
+                <NameSection
+                  employee={employee}
+                  isEditing={isEditing}
+                  onChange={handleFieldChange}
+                />
               </div>
               <div id='addressSection' className='mt-6'>
                 <AddressSection employee={employee} isEditing={isEditing} />
