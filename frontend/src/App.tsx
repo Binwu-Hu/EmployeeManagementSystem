@@ -1,12 +1,13 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './pages/auth/Login';
-import Signup from './pages/auth/Signup';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+
+import AppLayout from './components/Layout/Layout';
 import ErrorPage from './pages/error/ErrorPage';
 import HomePage from './pages/home/HomePage';
-import SendRegistrationLink from './pages/protected/SendRegistrationLink';
-import VisaStatus from './pages/protected/VisaStatus';
+import Login from './pages/auth/Login';
 import PrivateRoute from './components/PrivateRoute';
-import AppLayout from './components/Layout/Layout';
+import SendRegistrationLink from './pages/protected/SendRegistrationLink';
+import Signup from './pages/auth/Signup';
+import VisaStatus from './pages/protected/VisaStatus';
 
 const App = () => {
   return (
@@ -16,27 +17,59 @@ const App = () => {
           <Route path='/login' element={<Login />} />
           <Route path='/signup/:token' element={<Signup />} />
           <Route path='/error' element={<ErrorPage />} />
-          <Route 
-            path='/' 
+          <Route
+            path='/'
             element={
               <PrivateRoute>
                 <HomePage />
               </PrivateRoute>
-            } 
+            }
           />
-          <Route 
-            path='/visa-status' 
+          <Route
+            path='/visa-status'
             element={
-            <PrivateRoute>
-              <VisaStatus />
-            </PrivateRoute>
-            } 
+              <PrivateRoute>
+                <VisaStatus />
+              </PrivateRoute>
+            }
           />
-          <Route 
-            path='/send-registration-link' 
+          {/* <Route
+            path='/onboarding'
             element={
-              <PrivateRoute  requiredRole="HR">
-                <SendRegistrationLink/>
+              <PrivateRoute requiredRole='Employee'>
+                <Onboarding />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path='/personal-info'
+            element={
+              <PrivateRoute requiredRole='Employee'>
+                <PersonalInfo />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path='/employee-profiles'
+            element={
+              <PrivateRoute requiredRole='HR'>
+                <EmployeeProfiles />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path='/hiring-management'
+            element={
+              <PrivateRoute requiredRole='HR'>
+                <HiringManagement />
+              </PrivateRoute>
+            }
+          /> */}
+          <Route
+            path='/send-registration-link'
+            element={
+              <PrivateRoute requiredRole='HR'>
+                <SendRegistrationLink />
               </PrivateRoute>
             }
           />
