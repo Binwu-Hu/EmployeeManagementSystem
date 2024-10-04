@@ -7,11 +7,13 @@ import moment from 'moment';
 interface EmploymentSectionProps {
   employee: Employee;
   isEditing: boolean;
+  onChange: (field: string, value: any) => void;
 }
 
 const EmploymentSection: React.FC<EmploymentSectionProps> = ({
   employee,
   isEditing,
+  onChange,
 }) => {
   const [form] = Form.useForm();
 
@@ -33,28 +35,40 @@ const EmploymentSection: React.FC<EmploymentSectionProps> = ({
           }}
         >
           <Form.Item name='visaType' label='Visa Type'>
-            <Input />
+            <Input
+              onChange={(e) =>
+                onChange('workAuthorization.visaType', e.target.value)
+              }
+            />
           </Form.Item>
           <Form.Item name='startDate' label='Start Date'>
-            <DatePicker />
+            <DatePicker
+              onChange={(date, dateString) =>
+                onChange('workAuthorization.startDate', dateString)
+              }
+            />
           </Form.Item>
           <Form.Item name='endDate' label='End Date'>
-            <DatePicker />
+            <DatePicker
+              onChange={(date, dateString) =>
+                onChange('workAuthorization.endDate', dateString)
+              }
+            />
           </Form.Item>
         </Form>
       ) : (
         <div>
           <p>
             <strong>Visa Type:</strong>{' '}
-            {employee.workAuthorization?.visaType || 'N/A'}
+            {employee.workAuthorization?.visaType || ''}
           </p>
           <p>
             <strong>Start Date:</strong>{' '}
-            {employee.workAuthorization?.startDate || 'N/A'}
+            {employee.workAuthorization?.startDate || ''}
           </p>
           <p>
             <strong>End Date:</strong>{' '}
-            {employee.workAuthorization?.endDate || 'N/A'}
+            {employee.workAuthorization?.endDate || ''}
           </p>
         </div>
       )}
