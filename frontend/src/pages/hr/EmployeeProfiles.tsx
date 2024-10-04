@@ -1,16 +1,18 @@
 import { AppDispatch, RootState } from '../../app/store';
 import { Input, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { fetchEmployees, setSelectedEmployee } from '../../features/employee/employeeSlice';
+import {
+  fetchEmployees,
+  setSelectedEmployee,
+} from '../../features/employee/employeeSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const { Search } = Input;
 
 const EmployeeProfilesPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
   const { employees, loading, error } = useSelector(
     (state: RootState) => state.employee
   );
@@ -28,16 +30,15 @@ const EmployeeProfilesPage: React.FC = () => {
   const handleSearch = (value: string) => {
     const filtered = employees.filter(
       (employee) =>
-        employee.firstName.toLowerCase().includes(value.toLowerCase()) ||
-        employee.lastName.toLowerCase().includes(value.toLowerCase()) ||
+        employee.firstName?.toLowerCase().includes(value.toLowerCase()) ||
+        employee.lastName?.toLowerCase().includes(value.toLowerCase()) ||
         employee.preferredName?.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredEmployees(filtered);
   };
 
   const handleEmployeeClick = (employee: any) => {
-    dispatch(setSelectedEmployee(employee)); // Set selected employee in the slice
-    // navigate(`/employees/user/${employee.userId}`); // Navigate to the employee profile page
+    dispatch(setSelectedEmployee(employee));
   };
 
   const columns = [
@@ -46,15 +47,9 @@ const EmployeeProfilesPage: React.FC = () => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: any) => (
-        // <span
-        //   style={{ color: 'blue', cursor: 'pointer' }}
-        //   onClick={() => handleEmployeeClick(record)}
-        // >
-        //   {text}
-        // </span>
         <Link
           to={`/employees/user/${record.userId}`}
-          target='_blank' // This will open the link in a new tab
+          target='_blank'
           onClick={() => handleEmployeeClick(record)}
         >
           {text}
