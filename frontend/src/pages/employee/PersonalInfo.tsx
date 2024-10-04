@@ -171,7 +171,11 @@ const PersonalInfoPage: React.FC = () => {
               </div>
 
               <div id='documentsSection' className='mt-6'>
-                <DocumentsSection employee={employee} isEditing={isEditing} />
+                <DocumentsSection
+                  employee={employee}
+                  isEditing={isEditing}
+                  onChange={handleFieldChange}
+                />
               </div>
             </>
           )}
