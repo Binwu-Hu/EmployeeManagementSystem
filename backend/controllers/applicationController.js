@@ -438,27 +438,21 @@ const getTokenList = asyncHandler(async (req, res) => {
 
   try {
     // Fetch all tokens and return `token` and `email` fields
-    const tokens = await RegistrationToken.find({}, 'token email');
+    const tokens = await RegistrationToken.find(
+      {},
+      'token email firstName lastName'
+    );
 
     // For each token, check if an Employee and Application exist for the associated email
     const tokenList = await Promise.all(
       tokens.map(async (t) => {
         const employee = await Employee.findOne({ email: t.email });
 
-        let employeeStatus = 'Employee not created';
         let applicationStatus = 'Not submitted';
         let employeeId = null;
 
         if (employee) {
           employeeId = employee._id;
-
-          if (!employee.firstName && !employee.lastName) {
-            employeeStatus = 'Unnamed Employee';
-          } else {
-            employeeStatus = `${employee.firstName || ''} ${
-              employee.lastName || ''
-            }`.trim();
-          }
 
           const application = await Application.findOne({
             employee: employee._id,
@@ -473,7 +467,7 @@ const getTokenList = asyncHandler(async (req, res) => {
         return {
           token: `signup/${t.token}`,
           email: t.email,
-          employee: employeeStatus,
+          name: `${t.firstName} ${t.lastName}`,
           employeeId: employeeId,
           applicationStatus: applicationStatus,
         };
