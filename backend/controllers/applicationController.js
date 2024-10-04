@@ -316,6 +316,7 @@ const getAllApplications = asyncHandler(async (req, res) => {
     status: application.status,
     submittedAt: application.submittedAt,
     feedback: application.feedback || '',
+    employeeId: application.employee._id,
   });
 
   res.status(200).json({

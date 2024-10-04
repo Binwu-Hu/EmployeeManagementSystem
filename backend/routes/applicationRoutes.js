@@ -12,6 +12,8 @@ import express from 'express';
 
 const router = express.Router();
 
+router.get('/all', authMiddleware, getAllApplications);
+
 router.post('/', authMiddleware, createApplication);
 
 router.get('/', authMiddleware, getApplicationStatus);
@@ -21,7 +23,5 @@ router.get('/:id', authMiddleware, getApplicationDetail);
 router.put('/', authMiddleware, updateApplication);
 
 router.put('/:id', authMiddleware, updateApplicationStatus);
-
-router.get('/all', authMiddleware, getAllApplications);
 
 export default router;
