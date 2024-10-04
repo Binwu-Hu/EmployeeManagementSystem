@@ -1,6 +1,6 @@
 import { AppDispatch, RootState } from '../../app/store';
 import { Button, Form, Layout, Menu, message } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   clearEmployee,
   fetchEmployeeByUserId,
@@ -25,11 +25,16 @@ const PersonalInfoPage: React.FC = () => {
     (state: RootState) => state.employee
   );
 
-  const userId = user?.id;
+  const userId = useMemo(() => {
+    if (user?.role === 'Employee') {
+      return user.id;
+    } else if (user?.role === 'HR') {
+      return employee?.userId;
+    }
+    return undefined;
+  }, [user]);
 
   const [form] = Form.useForm();
-
-  // Edit state that controls all sections
   const [isEditing, setIsEditing] = useState(false);
   const [updatedData, setUpdatedData] = useState(employee);
 
@@ -38,12 +43,15 @@ const PersonalInfoPage: React.FC = () => {
       dispatch(fetchEmployeeByUserId(userId));
     }
     return () => {
-      dispatch(clearEmployee()); // Clear the employee data when leaving the page
+      dispatch(clearEmployee());
     };
   }, [dispatch, userId]);
 
+  // Synchronize updatedData with employee data once fetched
   useEffect(() => {
-    setUpdatedData(employee); // Reset data when employee data is fetched
+    if (employee) {
+      setUpdatedData(employee);
+    }
   }, [employee]);
 
   const handleSave = () => {
@@ -60,14 +68,14 @@ const PersonalInfoPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    setUpdatedData(employee); // Reset to original data on cancel
+    setUpdatedData(employee);
     setIsEditing(false);
     message.info('Changes discarded');
   };
 
   const handleFieldChange = (field: string, value: any) => {
     setUpdatedData((prev) => {
-      if (!prev) return prev; // Handle the case when prev is null
+      if (!prev) return prev;
       return {
         ...prev,
         [field]: value,

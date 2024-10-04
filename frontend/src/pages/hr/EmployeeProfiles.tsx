@@ -1,16 +1,16 @@
 import { AppDispatch, RootState } from '../../app/store';
 import { Input, Table } from 'antd';
-// pages/hr/EmployeeProfilesPage.tsx
 import React, { useEffect, useState } from 'react';
+import { fetchEmployees, setSelectedEmployee } from '../../features/employee/employeeSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Link } from 'react-router-dom';
-import { fetchEmployees } from '../../features/employee/employeeSlice';
+import { Link, useNavigate } from 'react-router-dom';
 
 const { Search } = Input;
 
 const EmployeeProfilesPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { employees, loading, error } = useSelector(
     (state: RootState) => state.employee
   );
@@ -35,13 +35,28 @@ const EmployeeProfilesPage: React.FC = () => {
     setFilteredEmployees(filtered);
   };
 
+  const handleEmployeeClick = (employee: any) => {
+    dispatch(setSelectedEmployee(employee)); // Set selected employee in the slice
+    // navigate(`/employees/user/${employee.userId}`); // Navigate to the employee profile page
+  };
+
   const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: any) => (
-        <Link to={`/employees/user/${record.userId}`} target='_blank'>
+        // <span
+        //   style={{ color: 'blue', cursor: 'pointer' }}
+        //   onClick={() => handleEmployeeClick(record)}
+        // >
+        //   {text}
+        // </span>
+        <Link
+          to={`/employees/user/${record.userId}`}
+          target='_blank' // This will open the link in a new tab
+          onClick={() => handleEmployeeClick(record)}
+        >
           {text}
         </Link>
       ),
@@ -74,6 +89,7 @@ const EmployeeProfilesPage: React.FC = () => {
         dataSource={filteredEmployees.map((employee) => ({
           key: employee._id,
           name: `${employee.firstName} ${employee.lastName}`,
+          userId: employee.userId,
           ssn: employee.ssn,
           workAuthorization: employee.workAuthorization?.visaType || 'N/A',
           phone: employee.phone?.cellPhone || 'N/A',
