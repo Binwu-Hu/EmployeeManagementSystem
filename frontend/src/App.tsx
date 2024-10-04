@@ -1,6 +1,7 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
 import AppLayout from './components/Layout/Layout';
+import EmployeeProfiles from './pages/hr/EmployeeProfiles';
 import ErrorPage from './pages/error/ErrorPage';
 import HomePage from './pages/home/HomePage';
 import Login from './pages/auth/Login';
@@ -36,7 +37,7 @@ const App = () => {
             }
           />
           <Route
-            path='/onboarding'
+            path='/onboarding/user/:id'
             element={
               <PrivateRoute requiredRole='Employee'>
                 <Onboarding />
@@ -44,14 +45,13 @@ const App = () => {
             }
           />
           <Route
-            path='/personal-info'
+            path='/employees/user/:id'
             element={
-              <PrivateRoute requiredRole='Employee'>
+              <PrivateRoute>
                 <PersonalInfo />
               </PrivateRoute>
             }
           />
-          {/*
           <Route
             path='/employee-profiles'
             element={
@@ -60,6 +60,7 @@ const App = () => {
               </PrivateRoute>
             }
           />
+          {/*
           <Route
             path='/hiring-management'
             element={

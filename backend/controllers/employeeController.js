@@ -5,6 +5,7 @@ import asyncHandler from 'express-async-handler';
 export const getEmployeeByUserId = async (req, res) => {
   try {
     const userId = req.params.id;
+    console.log('req.params: ', req.params);
     const employee = await Employee.findOne({ userId });
 
     if (!employee) {
@@ -39,5 +40,15 @@ export const updateEmployee = async (req, res) => {
     res
       .status(500)
       .json({ message: 'Error updating employee', error: error.message });
+  }
+};
+
+// Get all employees, ordered by last name
+export const getAllEmployees = async (req, res) => {
+  try {
+    const employees = await Employee.find().sort({ lastName: 1 });
+    res.status(200).json(employees);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching employees', error });
   }
 };
