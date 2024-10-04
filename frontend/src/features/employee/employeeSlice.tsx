@@ -1,25 +1,72 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { fetchEmployeeDetails } from '../../api/visaStatus';
 
-// Initial state for employee slice
-const initialState = {
-  employee: null, // or define employee structure here
+import { Employee } from '../../utils/type';
+import axios from 'axios';
+
+export interface EmployeeState {
+  employee: Employee | null;
+  loading: boolean;
+  error: string | null;
+}
+
+// Initial state
+const initialState: EmployeeState= {
+  employee: null,
   loading: false,
   error: null,
 };
 
-// Async action to fetch employee details
-export const fetchEmployee = createAsyncThunk(
-  'employee/fetchEmployee',
-  async (email: string, { rejectWithValue }) => {
+export const fetchEmployeeByUserId = createAsyncThunk(
+  'employee/fetchByUserId',
+  async (userId: string, { rejectWithValue }) => {
     try {
-      const response = await fetchEmployeeDetails(email); // API call by email
-      return response;
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`/api/employees/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('employee:', response.data);
+      return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
     }
   }
 );
+
+export const updateEmployee = createAsyncThunk(
+  'employee/updateEmployee',
+  async (
+    { userId, updatedData }: { userId: string; updatedData: Employee },
+    { rejectWithValue }
+  ) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `/api/employees/user/${userId}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('updated employee:', response.data);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
 
 const employeeSlice = createSlice({
   name: 'employee',
@@ -31,15 +78,27 @@ const employeeSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchEmployee.pending, (state) => {
+      .addCase(fetchEmployeeByUserId.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchEmployee.fulfilled, (state, action) => {
+      .addCase(fetchEmployeeByUserId.fulfilled, (state, action) => {
         state.loading = false;
         state.employee = action.payload;
       })
-      .addCase(fetchEmployee.rejected, (state, action) => {
+      .addCase(fetchEmployeeByUserId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(updateEmployee.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateEmployee.fulfilled, (state, action) => {
+        state.loading = false;
+        state.employee = action.payload;
+      })
+      .addCase(updateEmployee.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

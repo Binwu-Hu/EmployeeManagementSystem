@@ -1,12 +1,12 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import connectDB from './db/index.js';
-import userRoutes from './routes/userRoutes.js';
-import registrationRoutes from './routes/registrationRoutes.js';
 import applicationRoutes from './routes/applicationRoutes.js';
-import visaStatusRoutes from './routes/visaStatusRoutes.js';
+import connectDB from './db/index.js';
+import dotenv from 'dotenv';
 import employeeRoutes from './routes/employeeRoutes.js';
 import { errorHandlerMiddleware } from './middleware/errorHandler.js';
+import express from 'express';
+import registrationRoutes from './routes/registrationRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import visaStatusRoutes from './routes/visaStatusRoutes.js';
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/registration', registrationRoutes);
 app.use('/api/application', applicationRoutes);
 app.use('/api/visa-status', visaStatusRoutes);
-app.use('/api/employee', employeeRoutes);
+app.use('/api/employees', employeeRoutes);
 
 app.use(errorHandlerMiddleware);
 const port = 3000;

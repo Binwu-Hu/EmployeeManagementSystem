@@ -4,6 +4,7 @@ import AppLayout from './components/Layout/Layout';
 import ErrorPage from './pages/error/ErrorPage';
 import HomePage from './pages/home/HomePage';
 import Login from './pages/auth/Login';
+import PersonalInfo from './pages/employee/PersonalInfo';
 import PrivateRoute from './components/PrivateRoute';
 import SendRegistrationLink from './pages/protected/SendRegistrationLink';
 import Signup from './pages/auth/Signup';
@@ -40,7 +41,7 @@ const App = () => {
                 <Onboarding />
               </PrivateRoute>
             }
-          />
+          /> */}
           <Route
             path='/personal-info'
             element={
@@ -49,6 +50,7 @@ const App = () => {
               </PrivateRoute>
             }
           />
+          {/*
           <Route
             path='/employee-profiles'
             element={
