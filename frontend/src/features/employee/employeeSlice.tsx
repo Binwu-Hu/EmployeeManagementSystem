@@ -1,16 +1,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { Employee } from '../../utils/type';
 import axios from 'axios';
-import { fetchEmployeeDetails } from '../../api/visaStatus';
 
-interface EmployeeState {
-  employee: any | null;
+export interface EmployeeState {
+  employee: Employee | null;
   loading: boolean;
   error: string | null;
 }
 
 // Initial state
-const initialState: EmployeeState = {
+const initialState: EmployeeState= {
   employee: null,
   loading: false,
   error: null,
@@ -38,19 +38,6 @@ export const fetchEmployeeByUserId = createAsyncThunk(
   }
 );
 
-// Async action to fetch employee details
-// export const fetchEmployee = createAsyncThunk(
-//   'employee/fetchEmployee',
-//   async (email: string, { rejectWithValue }) => {
-//     try {
-//       const response = await fetchEmployeeDetails(email); // API call by email
-//       return response;
-//     } catch (error: any) {
-//       return rejectWithValue(error.message);
-//     }
-//   }
-// );
-
 const employeeSlice = createSlice({
   name: 'employee',
   initialState,
@@ -73,18 +60,6 @@ const employeeSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       });
-    //   .addCase(fetchEmployee.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(fetchEmployee.fulfilled, (state, action) => {
-    //     state.loading = false;
-    //     state.employee = action.payload;
-    //   })
-    //   .addCase(fetchEmployee.rejected, (state, action) => {
-    //     state.loading = false;
-    //     state.error = action.payload as string;
-    //   });
   },
 });
 

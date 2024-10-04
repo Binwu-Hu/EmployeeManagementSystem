@@ -8,7 +8,6 @@ import express from 'express';
 
 const router = express.Router();
 
-// Route to get employee details by email
 router.get('/user/:id', authMiddleware, getEmployeeByUserId);
 
 router.put('/', authMiddleware, updateEmployeeProfile);
