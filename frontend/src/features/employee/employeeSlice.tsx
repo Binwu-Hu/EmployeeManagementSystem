@@ -4,13 +4,15 @@ import { Employee } from '../../utils/type';
 import axios from 'axios';
 
 export interface EmployeeState {
+  employees: Employee[];
   employee: Employee | null;
   loading: boolean;
   error: string | null;
 }
 
 // Initial state
-const initialState: EmployeeState= {
+const initialState: EmployeeState = {
+  employees: [],
   employee: null,
   loading: false,
   error: null,
@@ -67,6 +69,24 @@ export const updateEmployee = createAsyncThunk(
   }
 );
 
+export const fetchEmployees = createAsyncThunk(
+  'employeeProfiles/fetchEmployees',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/employees', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch all employees'
+      );
+    }
+  }
+);
 
 const employeeSlice = createSlice({
   name: 'employee',
@@ -99,6 +119,18 @@ const employeeSlice = createSlice({
         state.employee = action.payload;
       })
       .addCase(updateEmployee.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchEmployees.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchEmployees.fulfilled, (state, action) => {
+        state.loading = false;
+        state.employees = action.payload;
+      })
+      .addCase(fetchEmployees.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

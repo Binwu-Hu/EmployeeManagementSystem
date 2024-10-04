@@ -8,7 +8,9 @@ import { useSelector } from 'react-redux';
 const { Header } = Layout;
 
 const MergedHeader = () => {
-  const { isAuthenticated, user } = useSelector((state: RootState) => state.user);
+  const { isAuthenticated, user } = useSelector(
+    (state: RootState) => state.user
+  );
   console.log('isauth', isAuthenticated);
 
   return (
@@ -38,10 +40,14 @@ const MergedHeader = () => {
               {user.role === 'Employee' && (
                 <>
                   <Menu.Item key='onboarding'>
-                    <Link to='/onboarding'>Onboarding Application</Link>
+                    <Link to={`/onboarding/user/${user.id}`}>
+                      Onboarding Application
+                    </Link>
                   </Menu.Item>
                   <Menu.Item key='personal-info'>
-                    <Link to='/personal-info'>Personal Information</Link>
+                    <Link to={`/employees/user/${user.id}`}>
+                      Personal Information
+                    </Link>
                   </Menu.Item>
                   <Menu.Item key='visa-status'>
                     <Link to='/visa-status'>Visa Status Management</Link>

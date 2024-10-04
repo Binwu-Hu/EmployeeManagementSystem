@@ -1,6 +1,7 @@
 import {
+  getAllEmployees,
   getEmployeeByUserId,
-  updateEmployee,
+  updateEmployee
 } from '../controllers/employeeController.js';
 
 import { authMiddleware } from '../middleware/authMiddleware.js';
@@ -11,5 +12,7 @@ const router = express.Router();
 router.get('/user/:id', authMiddleware, getEmployeeByUserId);
 
 router.put('/user/:id', authMiddleware, updateEmployee);
+
+router.get('/', authMiddleware, getAllEmployees);
 
 export default router;

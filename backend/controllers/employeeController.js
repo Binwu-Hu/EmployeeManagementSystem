@@ -41,3 +41,13 @@ export const updateEmployee = async (req, res) => {
       .json({ message: 'Error updating employee', error: error.message });
   }
 };
+
+// Get all employees, ordered by last name
+export const getAllEmployees = async (req, res) => {
+  try {
+    const employees = await Employee.find().sort({ lastName: 1 });
+    res.status(200).json(employees);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching employees', error });
+  }
+};
