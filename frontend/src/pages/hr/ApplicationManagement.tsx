@@ -192,13 +192,17 @@ const ApplicationManagement: React.FC = () => {
             )}
 
             {application?.status && (
-              <div className='mb-6'>
-                <h3 className='text-lg font-bold'>Application Status</h3>
-                <p>{application?.status}</p>
+              <div className='bg-white p-4 rounded shadow-md'>
+                <h3 className='text-xl font-semibold mb-1'>
+                  Application Status
+                </h3>
+                <p className='text-lg mb-1'>{application?.status}</p>
 
                 {application?.status === 'Pending' && (
                   <>
-                    <h3 className='text-lg font-bold'>Feedback</h3>
+                    <h3 className='text-xl font-semibold mt-2 mb-1'>
+                      Feedback
+                    </h3>
                     <Input.TextArea
                       value={feedback}
                       onChange={(e) => setFeedback(e.target.value)}
@@ -210,8 +214,8 @@ const ApplicationManagement: React.FC = () => {
                 {application?.status === 'Rejected' &&
                   application?.feedback && (
                     <>
-                      <h3 className='text-lg font-bold'>Feedback</h3>
-                      <p>{application?.feedback}</p>
+                      <h3 className='text-xl font-semibold mb-1'>Feedback</h3>
+                      <p className='text-lg mb-1'>{application?.feedback}</p>
                     </>
                   )}
               </div>
