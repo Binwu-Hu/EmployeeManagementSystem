@@ -61,7 +61,7 @@ const MergedHeader = () => {
                     <Link to='/employee-profiles'>Employee Profiles</Link>
                   </Menu.Item>
                   <Menu.Item key='visa-status'>
-                    <Link to='/visa-status'>Visa Status Management</Link>
+                    <Link to='/visa-status-management'>Visa Status Management</Link>
                   </Menu.Item>
                   <Menu.Item key='hiring-management'>
                     <Link to='/hiring-management'>Hiring Management</Link>

@@ -12,6 +12,7 @@ import SendRegistrationLink from './pages/protected/SendRegistrationLink';
 import Signup from './pages/auth/Signup';
 import VisaStatus from './pages/protected/VisaStatus';
 import HiringManagement from './pages/hr/HiringManagement';
+import VisaStatusManagement from './pages/hr/VisaStatusManagement';
 import ApplicationManagement from './pages/hr/ApplicationManagement';
 import LinkHistory from './pages/hr/LinkHistory';
 
@@ -34,7 +35,7 @@ const App = () => {
           <Route
             path='/visa-status'
             element={
-              <PrivateRoute>
+              <PrivateRoute requiredRole='Employee'>
                 <VisaStatus />
               </PrivateRoute>
             }
@@ -68,6 +69,14 @@ const App = () => {
             element={
               <PrivateRoute requiredRole='HR'>
                 <ApplicationManagement />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path='/visa-status-management'
+            element={
+              <PrivateRoute requiredRole='HR'>
+                <VisaStatusManagement />
               </PrivateRoute>
             }
           />

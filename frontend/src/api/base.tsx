@@ -23,8 +23,6 @@ const request = async (url: string, method: string, data?: any, isFormData = fal
     headers['Content-Type'] = 'application/json';
     options.body = JSON.stringify(data);
   }
-  console.log('options', options);
-  console.log('url', url);
   const response = await fetch(`${BASE_URL}${url}`, options);
   const responseData = await response.json();
 

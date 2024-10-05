@@ -1,5 +1,8 @@
 import { get, post, patch } from './base';
 
+// Fetch all visa statuses
+export const fetchVisaStatusesApi = () => get('/visa-status/all');
+
 // Fetch employee details by email
 export const fetchEmployeeDetails = () => get('/employee/me');
 

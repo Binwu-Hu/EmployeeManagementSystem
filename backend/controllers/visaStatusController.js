@@ -45,6 +45,22 @@ export const uploadVisaDocuments = async (req, res) => {
     }
   };  
 
+// Fetch Visa Status for all employees
+export const getAllVisaStatuses = async (req, res) => {
+    try {
+      const visaStatuses = await VisaStatus.find().populate('employee'); // Populate employee details
+    //   const visaStatuses = await VisaStatus.find();
+      console.log('visaStatuses:', visaStatuses);
+      if (!visaStatuses.length) {
+        return res.status(404).json({ message: 'No visa statuses found' });
+      }
+      res.status(200).json(visaStatuses);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching visa statuses', error });
+    }
+  };  
+
+
 // Fetch Visa Status by Employee
 export const getVisaStatusByEmployee = async (req, res) => {
 

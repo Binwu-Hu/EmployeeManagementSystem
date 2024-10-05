@@ -1,23 +1,38 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { get, post } from '../../api/base';
+import { fetchVisaStatusApi, fetchVisaStatusesApi, uploadVisaDocumentApi } from '../../api/visaStatus';
+import { get, post, patch } from '../../api/base';
 
 export const fetchVisaStatus = createAsyncThunk(
   'visaStatus/fetchVisaStatus',
-  async (employeeId: string) => {
-    const response = await get(`/visa-status/${employeeId}`);
-    console.log('visaStatus', response);
-    return response;
+  async (employeeId: string, { rejectWithValue }) => {
+    try {
+      const response = await fetchVisaStatusApi(employeeId);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
+// Fetch all employees' visa statuses
+export const fetchVisaStatuses = createAsyncThunk(
+  'visaStatus/fetchVisaStatuses',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetchVisaStatusesApi();
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Upload visa documents
 export const uploadVisaDocument = createAsyncThunk(
   'visaStatus/uploadVisaDocument',
   async ({ employeeId, fileType, files }: { employeeId: string, fileType: string, files: File[] }, { rejectWithValue }) => {
     try {
-      const formData = new FormData();
-      files.forEach(file => formData.append('files', file));
-      formData.append('fileType', fileType);
-      const response = await post(`/visa-status/upload/${employeeId}`, formData, true);
+      const response = await uploadVisaDocumentApi(employeeId, fileType, files);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message);
@@ -36,13 +51,15 @@ export const approveOrRejectVisaDocument = createAsyncThunk(
 const visaStatusSlice = createSlice({
   name: 'visaStatus',
   initialState: {
-    visaStatus: null,
+    visaStatus: null,       // Single employee's visa status
+    visaStatuses: [],       // All employees' visa statuses
     loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Fetch single visa status
       .addCase(fetchVisaStatus.pending, (state) => {
         state.loading = true;
       })
@@ -52,11 +69,25 @@ const visaStatusSlice = createSlice({
       })
       .addCase(fetchVisaStatus.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       })
+      // Fetch all visa statuses
+      .addCase(fetchVisaStatuses.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchVisaStatuses.fulfilled, (state, action) => {
+        state.loading = false;
+        state.visaStatuses = action.payload;  // Store all visa statuses
+      })
+      .addCase(fetchVisaStatuses.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Upload document
       .addCase(uploadVisaDocument.fulfilled, (state, action) => {
         state.visaStatus = action.payload;
       })
+      // Approve or reject document
       .addCase(approveOrRejectVisaDocument.fulfilled, (state, action) => {
         state.visaStatus = action.payload;
       });

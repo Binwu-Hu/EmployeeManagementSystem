@@ -1,5 +1,5 @@
 import express from 'express';
-import { uploadVisaDocuments, getVisaStatusByEmployee, approveOrRejectVisaDocument, sendNotification } from '../controllers/visaStatusController.js';
+import { uploadVisaDocuments, getVisaStatusByEmployee, getAllVisaStatuses, approveOrRejectVisaDocument, sendNotification } from '../controllers/visaStatusController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import path from 'path';
 import multer from 'multer';
@@ -22,6 +22,10 @@ const router = express.Router();
 
 // Employee Upload Visa Document
 router.post('/upload/:employeeId', authMiddleware, upload.array('files'), uploadVisaDocuments);
+
+
+// Get Visa Status for all employees
+router.get('/all', authMiddleware, getAllVisaStatuses);
 
 // Get Visa Status by Employee
 router.get('/:employeeId', authMiddleware, getVisaStatusByEmployee);
