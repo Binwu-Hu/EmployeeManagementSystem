@@ -8,12 +8,14 @@ interface ProfilePictureSectionProps {
   employee: Employee;
   onChange: (field: string, value: any) => void;
   form: any;
+  unchangeable: boolean;
 }
 
 const ProfilePictureSection: React.FC<ProfilePictureSectionProps> = ({
   employee,
   onChange,
   form,
+  unchangeable,
 }) => {
   return (
     <div className='bg-white p-4 rounded shadow-md'>
@@ -38,7 +40,7 @@ const ProfilePictureSection: React.FC<ProfilePictureSectionProps> = ({
               onChange('documents.profilePicture', info.file.name)
             }
           >
-            <Button icon={<UploadOutlined />}>
+            <Button disabled={unchangeable} icon={<UploadOutlined />}>
               {employee.documents?.profilePicture || 'Upload Profile Picture'}
             </Button>
           </Upload>

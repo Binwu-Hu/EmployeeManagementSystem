@@ -5,8 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import {
-  fetchEmployeeByUserId,
-  updateEmployee,
+  fetchEmployeeByUserId
 } from '../../features/employee/employeeSlice';
 
 import AddressSection from '../../components/personalInfo/AddressSection';
@@ -37,7 +36,7 @@ const ApplicationManagement: React.FC = () => {
   console.log('Received userId:', userId);
 
   const [form] = Form.useForm();
-  const [updatedData, setUpdatedData] = useState(employee);
+  //const [updatedData, setUpdatedData] = useState(employee);
   const [applicationStatus, setApplicationStatus] = useState<string | null>(
     null
   );
@@ -53,9 +52,9 @@ const ApplicationManagement: React.FC = () => {
     dispatch(fetchAllApplications());
   }, [dispatch]);
 
-  useEffect(() => {
-    setUpdatedData(employee);
-  }, [employee]);
+  // useEffect(() => {
+  //   setUpdatedData(employee);
+  // }, [employee]);
 
   useEffect(() => {
     if (applications && userId) {
@@ -83,13 +82,13 @@ const ApplicationManagement: React.FC = () => {
   }, [applications, userId]);
 
   const handleFieldChange = (field: string, value: any) => {
-    setUpdatedData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        [field]: value,
-      };
-    });
+    // setUpdatedData((prev) => {
+    //   if (!prev) return prev;
+    //   return {
+    //     ...prev,
+    //     [field]: value,
+    //   };
+    // });
   };
 
   const handleApprove = () => {

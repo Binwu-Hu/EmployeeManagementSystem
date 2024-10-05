@@ -8,6 +8,7 @@ interface ContactInfoSectionProps {
   isEditing: boolean;
   onChange: (field: string, value: any) => void;
   form: any;
+  unchangeable: boolean;
 }
 
 const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
@@ -15,8 +16,8 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
   isEditing,
   onChange,
   form,
+  unchangeable,
 }) => {
-
   return (
     <div className='bg-white p-4 rounded shadow-md'>
       <h2 className='text-xl font-semibold'>Contact Info</h2>
@@ -35,11 +36,13 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
             rules={[{ required: true, message: 'Cell phone is required' }]}
           >
             <Input
+              disabled={unchangeable}
               onChange={(e) => onChange('phone.cellPhone', e.target.value)}
             />
           </Form.Item>
           <Form.Item name='workPhone' label='Work Phone'>
             <Input
+              disabled={unchangeable}
               onChange={(e) => onChange('phone.workPhone', e.target.value)}
             />
           </Form.Item>

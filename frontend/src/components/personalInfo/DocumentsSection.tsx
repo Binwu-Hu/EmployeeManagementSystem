@@ -9,6 +9,7 @@ interface DocumentsSectionProps {
   isEditing: boolean;
   onChange: (field: string, value: any) => void;
   form: any;
+  unchangeable: boolean;
 }
 
 const DocumentsSection: React.FC<DocumentsSectionProps> = ({
@@ -16,6 +17,7 @@ const DocumentsSection: React.FC<DocumentsSectionProps> = ({
   isEditing,
   onChange,
   form,
+  unchangeable,
 }) => {
   return (
     <div className='bg-white p-4 rounded shadow-md'>
@@ -27,21 +29,27 @@ const DocumentsSection: React.FC<DocumentsSectionProps> = ({
               onChange('documents.profilePicture', info.file.name)
             }
           >
-            <Button icon={<UploadOutlined />}>Upload Profile Picture</Button>
+            <Button disabled={unchangeable} icon={<UploadOutlined />}>
+              Upload Profile Picture
+            </Button>
           </Upload>
           <Upload
             onChange={(info) =>
               onChange('documents.driverLicense', info.file.name)
             }
           >
-            <Button icon={<UploadOutlined />}>Upload Driver License</Button>
+            <Button disabled={unchangeable} icon={<UploadOutlined />}>
+              Upload Driver License
+            </Button>
           </Upload>
           <Upload
             onChange={(info) =>
               onChange('documents.workAuthorization', info.file.name)
             }
           >
-            <Button icon={<UploadOutlined />}>Upload Work Authorization</Button>
+            <Button disabled={unchangeable} icon={<UploadOutlined />}>
+              Upload Work Authorization
+            </Button>
           </Upload>
         </>
       ) : (

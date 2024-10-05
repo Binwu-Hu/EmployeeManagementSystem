@@ -28,6 +28,8 @@ const OnboardingPage: React.FC = () => {
     (state: RootState) => state.employee
   );
 
+  const [unchangeable, setUnchangeable] = useState<boolean>(true);
+
   const {
     application,
     applicationMessage,
@@ -54,6 +56,19 @@ const OnboardingPage: React.FC = () => {
   useEffect(() => {
     setUpdatedData(employee);
   }, [employee]);
+
+  useEffect(() => {
+    if (
+      applicationMessage ===
+        'Please fill in the application fields and submit.' ||
+      applicationMessage ===
+        'Your application was rejected. Please review the feedback, make changes, and resubmit.'
+    ) {
+      setUnchangeable(false);
+    } else {
+      setUnchangeable(true);
+    }
+  }, [applicationMessage]);
 
   const handleSubmit = () => {
     form
@@ -128,137 +143,136 @@ const OnboardingPage: React.FC = () => {
     );
   }
 
-  if (
-    applicationMessage ===
-      'Please fill in the application fields and submit.' ||
-    applicationMessage ===
-      'Your application was rejected. Please review the feedback, make changes, and resubmit.'
-  ) {
-    return (
-      <Layout className='min-h-screen'>
-        <Sider
-          width={200}
-          className='bg-gray-800 text-white h-screen sticky top-0'
-        >
-          <Menu mode='inline' theme='dark' className='h-full'>
-            <Menu.Item key='name'>
-              <a href='#nameSection'>Name</a>
-            </Menu.Item>
-            <Menu.Item key='profile-picture'>
-              <a href='#profilePictureSection'>Profile Picture</a>
-            </Menu.Item>
-            <Menu.Item key='address'>
-              <a href='#addressSection'>Address</a>
-            </Menu.Item>
-            <Menu.Item key='contact-info'>
-              <a href='#contactInfoSection'>Contact Info</a>
-            </Menu.Item>
-            <Menu.Item key='user-info'>
-              <a href='#userInfoSection'>Employee Info</a>
-            </Menu.Item>
-            <Menu.Item key='work-authorization'>
-              <a href='#workAuthorizationSection'>Work Authorization</a>
-            </Menu.Item>
-            <Menu.Item key='emergency-contacts'>
-              <a href='#emergencyContactSection'>Emergency Contacts</a>
-            </Menu.Item>
-            <Menu.Item key='documents'>
-              <a href='#documentsSection'>Documents</a>
-            </Menu.Item>
-          </Menu>
-        </Sider>
+  return (
+    <Layout className='min-h-screen'>
+      <Sider
+        width={200}
+        className='bg-gray-800 text-white h-screen sticky top-0'
+      >
+        <Menu mode='inline' theme='dark' className='h-full'>
+          <Menu.Item key='name'>
+            <a href='#nameSection'>Name</a>
+          </Menu.Item>
+          <Menu.Item key='profile-picture'>
+            <a href='#profilePictureSection'>Profile Picture</a>
+          </Menu.Item>
+          <Menu.Item key='address'>
+            <a href='#addressSection'>Address</a>
+          </Menu.Item>
+          <Menu.Item key='contact-info'>
+            <a href='#contactInfoSection'>Contact Info</a>
+          </Menu.Item>
+          <Menu.Item key='user-info'>
+            <a href='#userInfoSection'>Employee Info</a>
+          </Menu.Item>
+          <Menu.Item key='work-authorization'>
+            <a href='#workAuthorizationSection'>Work Authorization</a>
+          </Menu.Item>
+          <Menu.Item key='emergency-contacts'>
+            <a href='#emergencyContactSection'>Emergency Contacts</a>
+          </Menu.Item>
+          <Menu.Item key='documents'>
+            <a href='#documentsSection'>Documents</a>
+          </Menu.Item>
+        </Menu>
+      </Sider>
 
-        <Layout className='bg-gray-50'>
-          <Content className='p-6'>
-            <Form form={form} layout='vertical'>
-              {/* Submit button */}
-              <div className='flex justify-end space-x-4 mb-4'>
-                <Button type='primary' htmlType='submit' onClick={handleSubmit}>
-                  Submit
-                </Button>
+      <Layout className='bg-gray-50'>
+        <Content className='p-6'>
+          <Form form={form} layout='vertical'>
+            {/* Submit button */}
+            <div className='flex justify-end space-x-4 mb-4'>
+              <Button type='primary' htmlType='submit' onClick={handleSubmit}>
+                Submit
+              </Button>
 
-                <Button type='primary' htmlType='button' onClick={handleApply}>
-                  Apply
-                </Button>
-              </div>
+              <Button type='primary' htmlType='button' onClick={handleApply}>
+                Apply
+              </Button>
+            </div>
 
-              <div>{applicationMessage}</div>
+            <div>{applicationMessage}</div>
 
-              {employee && (
-                <>
-                  <div id='nameSection'>
-                    <NameSection
-                      employee={employee}
-                      isEditing={true}
-                      onChange={handleFieldChange}
-                      form={form}
-                    />
-                  </div>
-                  <div id='profilePictureSection'>
-                    <ProfilePictureSection
-                      employee={employee}
-                      onChange={handleFieldChange}
-                      form={form}
-                    />
-                  </div>
-                  <div id='addressSection' className='mt-6'>
-                    <AddressSection
-                      employee={employee}
-                      isEditing={true}
-                      onChange={handleFieldChange}
-                      form={form}
-                    />
-                  </div>
-                  <div id='contactInfoSection' className='mt-6'>
-                    <ContactInfoSection
-                      employee={employee}
-                      isEditing={true}
-                      onChange={handleFieldChange}
-                      form={form}
-                    />
-                  </div>
-                  <div id='userInfoSection' className='mt-6'>
-                    <UserSection
-                      employee={employee}
-                      onChange={handleFieldChange}
-                      form={form}
-                    />
-                  </div>
-                  <div id='workAuthorizationSection' className='mt-6'>
-                    <WorkAuthorizationSection
-                      employee={employee}
-                      isEditing={true}
-                      onChange={handleFieldChange}
-                      form={form}
-                    />
-                  </div>
-                  <div id='emergencyContactSection' className='mt-6'>
-                    <EmergencyContactSection
-                      employee={employee}
-                      isEditing={true}
-                      onChange={handleFieldChange}
-                      form={form}
-                    />
-                  </div>
+            {employee && (
+              <>
+                <div id='nameSection'>
+                  <NameSection
+                    unchangeable={unchangeable}
+                    employee={employee}
+                    isEditing={true}
+                    onChange={handleFieldChange}
+                    form={form}
+                  />
+                </div>
+                <div id='profilePictureSection'>
+                  <ProfilePictureSection
+                  unchangeable={unchangeable}
+                    employee={employee}
+                    onChange={handleFieldChange}
+                    form={form}
+                  />
+                </div>
+                <div id='addressSection' className='mt-6'>
+                  <AddressSection
+                    unchangeable={unchangeable}
+                    employee={employee}
+                    isEditing={true}
+                    onChange={handleFieldChange}
+                    form={form}
+                  />
+                </div>
+                <div id='contactInfoSection' className='mt-6'>
+                  <ContactInfoSection
+                    unchangeable={unchangeable}
+                    employee={employee}
+                    isEditing={true}
+                    onChange={handleFieldChange}
+                    form={form}
+                  />
+                </div>
+                <div id='userInfoSection' className='mt-6'>
+                  <UserSection
+                    unchangeable={unchangeable}
+                    employee={employee}
+                    onChange={handleFieldChange}
+                    form={form}
+                  />
+                </div>
+                <div id='workAuthorizationSection' className='mt-6'>
+                  <WorkAuthorizationSection
+                    unchangeable={unchangeable}
+                    employee={employee}
+                    isEditing={true}
+                    onChange={handleFieldChange}
+                    form={form}
+                  />
+                </div>
+                <div id='emergencyContactSection' className='mt-6'>
+                  <EmergencyContactSection
+                    unchangeable={unchangeable}
+                    employee={employee}
+                    isEditing={true}
+                    onChange={handleFieldChange}
+                    form={form}
+                  />
+                </div>
 
-                  <div id='documentsSection' className='mt-6'>
-                    <DocumentsSection
-                      employee={employee}
-                      isEditing={true}
-                      onChange={handleFieldChange}
-                      form={form}
-                    />
-                  </div>
-                </>
-              )}
-            </Form>
-          </Content>
-        </Layout>
+                <div id='documentsSection' className='mt-6'>
+                  <DocumentsSection
+                    unchangeable={unchangeable}
+                    employee={employee}
+                    isEditing={true}
+                    onChange={handleFieldChange}
+                    form={form}
+                  />
+                </div>
+              </>
+            )}
+          </Form>
+        </Content>
       </Layout>
-    );
-  }
-
-  return <div>pending</div>;
+    </Layout>
+  );
 };
 
 export default OnboardingPage;
