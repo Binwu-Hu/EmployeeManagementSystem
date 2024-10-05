@@ -29,16 +29,14 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
       });
   };
 
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-      <Card
-        title="OPT EAD"
-        bordered={false}
-        style={{ width: 400, textAlign: 'center' }}
-      >
-        {visaStatus?.visaStatus?.optEAD?.status !== 'Approved' ? (
+  const renderContent = () => {
+    const status = visaStatus?.optEAD?.status;
+    console.log('status', status);
+    switch (status) {
+      case 'Unsubmitted':
+        return (
           <>
-            <p>Waiting for HR to approve your OPT EAD</p>
+            <p>Please upload your OPT EAD.</p>
             <Upload multiple onChange={handleFileChange} fileList={files}>
               <Button>Select File</Button>
             </Upload>
@@ -46,9 +44,32 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
               Upload OPT EAD
             </Button>
           </>
-        ) : (
-          <p>Your OPT EAD is approved.</p>
-        )}
+        );
+      case 'Pending':
+        return <p>Waiting for HR to approve your OPT EAD.</p>;
+      case 'Approved':
+        return <p>Your OPT EAD is approved.</p>;
+      case 'Rejected':
+        return (
+          <>
+            <p>Your OPT EAD was rejected. Feedback: {visaStatus.optEAD.feedback}</p>
+            <Upload multiple onChange={handleFileChange} fileList={files}>
+              <Button>Select File</Button>
+            </Upload>
+            <Button type="primary" onClick={handleSubmit} className="mt-3">
+              Re-upload OPT EAD
+            </Button>
+          </>
+        );
+      default:
+        return <p>Unknown status.</p>;
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+      <Card title="OPT EAD" bordered={false} style={{ width: 400, textAlign: 'center' }}>
+        {renderContent()}
       </Card>
     </div>
   );

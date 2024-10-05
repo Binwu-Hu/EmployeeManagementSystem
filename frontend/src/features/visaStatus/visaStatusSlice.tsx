@@ -43,8 +43,16 @@ const visaStatusSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(fetchVisaStatus.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(fetchVisaStatus.fulfilled, (state, action) => {
+        state.loading = false;
         state.visaStatus = action.payload;
+      })
+      .addCase(fetchVisaStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       })
       .addCase(uploadVisaDocument.fulfilled, (state, action) => {
         state.visaStatus = action.payload;

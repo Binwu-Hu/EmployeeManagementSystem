@@ -29,17 +29,50 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
       });
   };
 
+  const renderContent = () => {
+    const status = visaStatus?.i983Form?.status;
+    console.log('status', visaStatus.i983Form.status);
+    switch (status) {
+      case 'Unsubmitted':
+        return (
+          <>
+            <p>Please upload your I-983 Form.</p>
+            <Upload multiple onChange={handleFileChange} fileList={files}>
+              <Button>Select File</Button>
+            </Upload>
+            <Button type="primary" onClick={handleSubmit} className="mt-3">
+              Upload I-983 Form
+            </Button>
+          </>
+        );
+      case 'Pending':
+        return <p>Waiting for HR to approve and sign your I-983 Form.</p>;
+      case 'Approved':
+        return <p>Your I-983 Form is approved. Please upload a copy of your I-20 form.</p>;
+      case 'Rejected':
+        return (
+          <>
+            <p>Your I-983 Form was rejected. Feedback: {visaStatus.i983Form.feedback}</p>
+            <Upload multiple onChange={handleFileChange} fileList={files}>
+              <Button>Select File</Button>
+            </Upload>
+            <Button type="primary" onClick={handleSubmit} className="mt-3">
+              Re-upload I-983 Form
+            </Button>
+          </>
+        );
+      default:
+        return <p>Unknown status.</p>;
+    }
+  };
+
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-      <Card
-        title="I-983 Form"
-        bordered={false}
-        style={{ width: 400, textAlign: 'center' }}
-      >
+      <Card title="I-983 Form" bordered={false} style={{ width: 400, textAlign: 'center' }}>
         {/* Display preview and download options for the two templates */}
         <div style={{ marginBottom: '20px' }}>
           <p>Download/Preview Templates:</p>
-          
+
           <div style={{ marginBottom: '10px' }}>
             {/* Preview Empty Template */}
             <Button
@@ -58,7 +91,7 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
               <Button>Download Empty Template</Button>
             </a>
           </div>
-          
+
           <div style={{ marginBottom: '10px' }}>
             {/* Preview Sample Template */}
             <Button
@@ -79,19 +112,7 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
           </div>
         </div>
 
-        {visaStatus?.visaStatus?.i983Form?.status !== 'Approved' ? (
-          <>
-            <p>Waiting for HR to approve your I-983 Form</p>
-            <Upload multiple onChange={handleFileChange} fileList={files}>
-              <Button>Select File</Button>
-            </Upload>
-            <Button type="primary" onClick={handleSubmit} className="mt-3">
-              Upload I-983 Form
-            </Button>
-          </>
-        ) : (
-          <p>Your I-983 Form is approved.</p>
-        )}
+        {renderContent()}
       </Card>
     </div>
   );
