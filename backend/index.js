@@ -1,6 +1,7 @@
 import applicationRoutes from './routes/applicationRoutes.js';
 import connectDB from './db/index.js';
 import dotenv from 'dotenv';
+import path from 'path';
 import employeeRoutes from './routes/employeeRoutes.js';
 import { errorHandlerMiddleware } from './middleware/errorHandler.js';
 import express from 'express';
@@ -27,6 +28,11 @@ app.use('/api/registration', registrationRoutes);
 app.use('/api/application', applicationRoutes);
 app.use('/api/visa-status', visaStatusRoutes);
 app.use('/api/employees', employeeRoutes);
+
+// Serve static files
+const __dirname = path.resolve();
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/static', express.static(path.join(__dirname, 'static')));
 
 app.use(errorHandlerMiddleware);
 const port = 3000;

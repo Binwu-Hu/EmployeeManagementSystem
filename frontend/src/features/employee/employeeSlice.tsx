@@ -28,7 +28,7 @@ export const fetchEmployeeByUserId = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log('employee:', response.data);
+    //   console.log('employee:', response.data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(

@@ -43,7 +43,7 @@ const signupUser = asyncHandler(async (req, res) => {
     email,
     userId: user._id,
   });
-  console.log('Employee Created:', employee._id);
+  // console.log('Employee Created:', employee._id);
 
   if (user) {
     res.status(201).json({
