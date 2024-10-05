@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { uploadVisaDocument } from '../../features/visaStatus/visaStatusSlice';
+import { uploadVisaDocument, fetchVisaStatus } from '../../features/visaStatus/visaStatusSlice';
 import { RootState } from '../../app/store';
 import { Upload, Button, message, Card } from 'antd';
 
@@ -23,6 +23,7 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
     dispatch(uploadVisaDocument({ employeeId, fileType: 'i983Form', files: fileList }))
       .then(() => {
         message.success('I-983 Form upload successful');
+        dispatch(fetchVisaStatus(employeeId));
       })
       .catch((error) => {
         message.error(error.message);
