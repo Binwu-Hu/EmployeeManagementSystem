@@ -10,6 +10,7 @@ interface WorkAuthorizationSectionProps {
   isEditing: boolean;
   onChange: (field: string, value: any) => void;
   form: any;
+  unchangeable: boolean;
 }
 
 const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
@@ -17,6 +18,7 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
   isEditing,
   onChange,
   form,
+  unchangeable,
 }) => {
   return (
     <div className='bg-white p-4 rounded shadow-md'>
@@ -43,7 +45,7 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
           rules={[{ required: true, message: 'This field is required' }]}
         >
           <Radio.Group
-            disabled={!isEditing}
+            disabled={unchangeable || !isEditing}
             onChange={(e) =>
               onChange('workAuthorization.visaType', e.target.value)
             }
@@ -65,7 +67,7 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
             ]}
           >
             <Radio.Group
-              disabled={!isEditing}
+              disabled={unchangeable || !isEditing}
               onChange={(e) =>
                 onChange('workAuthorization.visaType', e.target.value)
               }
@@ -89,7 +91,7 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
               ]}
             >
               <Radio.Group
-                disabled={!isEditing}
+                disabled={unchangeable || !isEditing}
                 onChange={(e) =>
                   onChange('workAuthorization.visaType', e.target.value)
                 }
@@ -104,16 +106,17 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
 
             {/* Show Upload Field Only if Visa Type is F1 */}
             {form.getFieldValue('visaType') === 'F1' && (
-              <Form.Item
-                label='Upload OPT Receipt'
-              >
+              <Form.Item label='Upload OPT Receipt'>
                 <Upload
-                  disabled={!isEditing}
+                  disabled={unchangeable || !isEditing}
                   onChange={(info) =>
                     onChange('documents.workAuthorization', info.file.name)
                   }
                 >
-                  <Button icon={<UploadOutlined />} disabled={!isEditing}>
+                  <Button
+                    icon={<UploadOutlined />}
+                    disabled={unchangeable || !isEditing}
+                  >
                     Upload OPT Receipt
                   </Button>
                 </Upload>
@@ -127,7 +130,7 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
                 rules={[{ required: true, message: 'Visa title is required' }]}
               >
                 <Input
-                  disabled={!isEditing}
+                  disabled={unchangeable || !isEditing}
                   onChange={(e) =>
                     onChange('workAuthorization.visaTitle', e.target.value)
                   }
@@ -138,7 +141,7 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
             {/* Start Date and End Date Fields */}
             <Form.Item name='startDate' label='Start Date'>
               <DatePicker
-                disabled={!isEditing}
+                disabled={unchangeable || !isEditing}
                 onChange={(date) =>
                   onChange('workAuthorization.startDate', date?.toISOString())
                 }
@@ -152,7 +155,7 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
 
             <Form.Item name='endDate' label='End Date'>
               <DatePicker
-                disabled={!isEditing}
+                disabled={unchangeable || !isEditing}
                 onChange={(date) =>
                   onChange('workAuthorization.endDate', date?.toISOString())
                 }

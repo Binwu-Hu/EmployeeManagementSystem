@@ -71,16 +71,24 @@ const HiringManagement: React.FC = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div>
-      <h1>Application Management</h1>
+    <div style={{ margin: '20px 0' }}>
+      <h1 style={{ fontSize: '2rem', marginBottom: '20px' }}>
+        Application Management
+      </h1>
+      <div style={{ marginBottom: '20px' }}>
+        <Link to='/link-history'>
+          <Button type='primary' style={{ marginRight: '10px' }}>
+            Link History
+          </Button>
+        </Link>
 
-      <Search
-        placeholder='Search by name or email'
-        onSearch={handleSearch}
-        enterButton
-        style={{ marginBottom: 20, maxWidth: 400 }}
-      />
-
+        <Search
+          placeholder='Search by name or email'
+          onSearch={handleSearch}
+          enterButton
+          style={{ marginBottom: 10, maxWidth: 400 }}
+        />
+      </div>
       <h2>Pending Applications</h2>
       <Table
         dataSource={filteredPending.map((application) => ({
@@ -95,7 +103,6 @@ const HiringManagement: React.FC = () => {
         columns={columns}
         pagination={{ pageSize: 10 }}
       />
-
       <h2>Rejected Applications</h2>
       <Table
         dataSource={filteredRejected.map((application) => ({
@@ -110,7 +117,6 @@ const HiringManagement: React.FC = () => {
         columns={columns}
         pagination={{ pageSize: 10 }}
       />
-
       <h2>Approved Applications</h2>
       <Table
         dataSource={filteredApproved.map((application) => ({

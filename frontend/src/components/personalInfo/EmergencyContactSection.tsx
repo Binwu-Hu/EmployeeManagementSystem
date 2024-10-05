@@ -9,6 +9,7 @@ interface EmergencyContactSectionProps {
   isEditing: boolean;
   onChange: (field: string, value: any) => void;
   form: any;
+  unchangeable: boolean;
 }
 
 const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
@@ -16,6 +17,7 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
   isEditing,
   onChange,
   form,
+  unchangeable,
 }) => {
   return (
     <div className='bg-white p-4 rounded shadow-md'>
@@ -46,6 +48,7 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
             rules={[{ required: true, message: 'First Name is required' }]}
           >
             <Input
+              disabled={unchangeable}
               onChange={(e) => onChange('reference.firstName', e.target.value)}
             />
           </Form.Item>
@@ -55,21 +58,25 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
             rules={[{ required: true, message: 'Last Name is required' }]}
           >
             <Input
+              disabled={unchangeable}
               onChange={(e) => onChange('reference.lastName', e.target.value)}
             />
           </Form.Item>
           <Form.Item name='referenceMiddleName' label='Middle Name'>
             <Input
+              disabled={unchangeable}
               onChange={(e) => onChange('reference.middleName', e.target.value)}
             />
           </Form.Item>
           <Form.Item name='referencePhone' label='Phone'>
             <Input
+              disabled={unchangeable}
               onChange={(e) => onChange('reference.phone', e.target.value)}
             />
           </Form.Item>
           <Form.Item name='referenceEmail' label='Email'>
             <Input
+              disabled={unchangeable}
               onChange={(e) => onChange('reference.email', e.target.value)}
             />
           </Form.Item>
@@ -79,6 +86,7 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
             rules={[{ required: true, message: 'Relationship is required' }]}
           >
             <Input
+              disabled={unchangeable}
               onChange={(e) =>
                 onChange('reference.relationship', e.target.value)
               }
@@ -101,6 +109,7 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                       ]}
                     >
                       <Input
+                        disabled={unchangeable}
                         onChange={(e) =>
                           onChange(
                             `emergencyContacts[${index}].firstName`,
@@ -118,6 +127,7 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                       ]}
                     >
                       <Input
+                        disabled={unchangeable}
                         onChange={(e) =>
                           onChange(
                             `emergencyContacts[${index}].lastName`,
@@ -132,6 +142,7 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                       label='Middle Name'
                     >
                       <Input
+                        disabled={unchangeable}
                         onChange={(e) =>
                           onChange(
                             `emergencyContacts[${index}].middleName`,
@@ -146,6 +157,7 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                       label='Phone'
                     >
                       <Input
+                        disabled={unchangeable}
                         onChange={(e) =>
                           onChange(
                             `emergencyContacts[${index}].phone`,
@@ -160,6 +172,7 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                       label='Email'
                     >
                       <Input
+                        disabled={unchangeable}
                         onChange={(e) =>
                           onChange(
                             `emergencyContacts[${index}].email`,
@@ -177,6 +190,7 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                       ]}
                     >
                       <Input
+                        disabled={unchangeable}
                         onChange={(e) =>
                           onChange(
                             `emergencyContacts[${index}].relationship`,
@@ -195,6 +209,7 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
 
                 <Form.Item>
                   <Button
+                    disabled={unchangeable}
                     type='dashed'
                     onClick={() => add()}
                     icon={<PlusOutlined />}

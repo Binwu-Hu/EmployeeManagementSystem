@@ -8,6 +8,7 @@ interface NameSectionProps {
   isEditing: boolean;
   onChange: (field: string, value: any) => void;
   form: any;
+  unchangeable: boolean;
 }
 
 const NameSection: React.FC<NameSectionProps> = ({
@@ -15,7 +16,7 @@ const NameSection: React.FC<NameSectionProps> = ({
   isEditing,
   onChange,
   form,
-  
+  unchangeable,
 }) => {
   return (
     <div className='bg-white p-4 rounded shadow-md'>
@@ -36,20 +37,30 @@ const NameSection: React.FC<NameSectionProps> = ({
             label='First Name'
             rules={[{ required: true, message: 'First Name is required' }]}
           >
-            <Input onChange={(e) => onChange('firstName', e.target.value)} />
+            <Input
+              disabled={unchangeable}
+              onChange={(e) => onChange('firstName', e.target.value)}
+            />
           </Form.Item>
           <Form.Item
             name='lastName'
             label='Last Name'
             rules={[{ required: true, message: 'Last Name is required' }]}
           >
-            <Input onChange={(e) => onChange('lastName', e.target.value)} />
+            <Input
+              disabled={unchangeable}
+              onChange={(e) => onChange('lastName', e.target.value)}
+            />
           </Form.Item>
           <Form.Item name='middleName' label='Middle Name'>
-            <Input onChange={(e) => onChange('middleName', e.target.value)} />
+            <Input
+              disabled={unchangeable}
+              onChange={(e) => onChange('middleName', e.target.value)}
+            />
           </Form.Item>
           <Form.Item name='preferredName' label='Preferred Name'>
             <Input
+              disabled={unchangeable}
               onChange={(e) => onChange('preferredName', e.target.value)}
             />
           </Form.Item>

@@ -8,6 +8,7 @@ interface AddressSectionProps {
   isEditing: boolean;
   onChange: (field: string, value: any) => void;
   form: any;
+  unchangeable: boolean;
 }
 
 const AddressSection: React.FC<AddressSectionProps> = ({
@@ -15,6 +16,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
   isEditing,
   onChange,
   form,
+  unchangeable,
 }) => {
   return (
     <div className='bg-white p-4 rounded shadow-md'>
@@ -37,6 +39,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
             rules={[{ required: true, message: 'Building/Apt # is required' }]}
           >
             <Input
+              disabled={unchangeable}
               onChange={(e) => onChange('address.building', e.target.value)}
             />
           </Form.Item>
@@ -46,6 +49,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
             rules={[{ required: true, message: 'Street name is required' }]}
           >
             <Input
+              disabled={unchangeable}
               onChange={(e) => onChange('address.street', e.target.value)}
             />
           </Form.Item>
@@ -54,7 +58,10 @@ const AddressSection: React.FC<AddressSectionProps> = ({
             label='City'
             rules={[{ required: true, message: 'City is required' }]}
           >
-            <Input onChange={(e) => onChange('address.city', e.target.value)} />
+            <Input
+              disabled={unchangeable}
+              onChange={(e) => onChange('address.city', e.target.value)}
+            />
           </Form.Item>
           <Form.Item
             name='state'
@@ -62,6 +69,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
             rules={[{ required: true, message: 'State is required' }]}
           >
             <Input
+              disabled={unchangeable}
               onChange={(e) => onChange('address.state', e.target.value)}
             />
           </Form.Item>
@@ -70,7 +78,10 @@ const AddressSection: React.FC<AddressSectionProps> = ({
             label='Zip'
             rules={[{ required: true, message: 'Zip code is required' }]}
           >
-            <Input onChange={(e) => onChange('address.zip', e.target.value)} />
+            <Input
+              disabled={unchangeable}
+              onChange={(e) => onChange('address.zip', e.target.value)}
+            />
           </Form.Item>
         </Form>
       ) : (

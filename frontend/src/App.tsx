@@ -13,6 +13,7 @@ import Signup from './pages/auth/Signup';
 import VisaStatus from './pages/protected/VisaStatus';
 import HiringManagement from './pages/hr/HiringManagement';
 import ApplicationManagement from './pages/hr/ApplicationManagement';
+import LinkHistory from './pages/hr/LinkHistory';
 
 const App = () => {
   return (
@@ -75,6 +76,14 @@ const App = () => {
             element={
               <PrivateRoute requiredRole='HR'>
                 <HiringManagement />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path='/link-history'
+            element={
+              <PrivateRoute requiredRole='HR'>
+                <LinkHistory />
               </PrivateRoute>
             }
           />

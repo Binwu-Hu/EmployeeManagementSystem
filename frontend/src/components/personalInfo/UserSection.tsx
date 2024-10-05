@@ -8,12 +8,14 @@ interface UserSectionProps {
   employee: Employee;
   onChange: (field: string, value: any) => void;
   form: any;
+  unchangeable: boolean;
 }
 
 const UserSection: React.FC<UserSectionProps> = ({
   employee,
   onChange,
   form,
+  unchangeable,
 }) => {
   return (
     <div className='bg-white p-4 rounded shadow-md'>
@@ -46,7 +48,10 @@ const UserSection: React.FC<UserSectionProps> = ({
           label='SSN'
           rules={[{ required: true, message: 'SSN is required' }]}
         >
-          <Input onChange={(e) => onChange('ssn', e.target.value)} />
+          <Input
+            disabled={unchangeable}
+            onChange={(e) => onChange('ssn', e.target.value)}
+          />
         </Form.Item>
 
         {/* Date of Birth Field */}
@@ -56,6 +61,7 @@ const UserSection: React.FC<UserSectionProps> = ({
           rules={[{ required: true, message: 'Date of Birth is required' }]}
         >
           <DatePicker
+            disabled={unchangeable}
             onChange={(date) => onChange('dateOfBirth', date?.toISOString())}
           />
         </Form.Item>
@@ -66,7 +72,10 @@ const UserSection: React.FC<UserSectionProps> = ({
           label='Gender'
           rules={[{ required: true, message: 'Gender is required' }]}
         >
-          <Radio.Group onChange={(e) => onChange('gender', e.target.value)}>
+          <Radio.Group
+            disabled={unchangeable}
+            onChange={(e) => onChange('gender', e.target.value)}
+          >
             <Radio value='male'>Male</Radio>
             <Radio value='female'>Female</Radio>
             <Radio value='i do not wish to answer'>
