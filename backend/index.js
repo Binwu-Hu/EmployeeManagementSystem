@@ -8,6 +8,7 @@ import express from 'express';
 import registrationRoutes from './routes/registrationRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import visaStatusRoutes from './routes/visaStatusRoutes.js';
+import cors from 'cors'
 
 dotenv.config();
 
@@ -15,6 +16,12 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+app.use(cors({
+  origin: 'http://localhost:3001',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  credentials: true, 
+}));
 
 // Middleware to handle JSON data
 app.use(express.json());

@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { uploadVisaDocument } from '../../features/visaStatus/visaStatusSlice';
 import { RootState } from '../../app/store';
-import { Upload, Button, message, Card } from 'antd';
+import { Upload, Button, message, Card, Modal } from 'antd';
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+import '@react-pdf-viewer/core/lib/styles/index.css';
 
 const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
   const dispatch = useDispatch();
   const { visaStatus } = useSelector((state: RootState) => state.visaStatus);
   const [files, setFiles] = React.useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalPdfUrl, setModalPdfUrl] = useState<string | null>(null);
 
   const handleFileChange = (info: any) => {
     setFiles(info.fileList);
@@ -29,9 +33,13 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
       });
   };
 
+  const handlePreview = (fileUrl: string) => {
+    setModalPdfUrl(fileUrl);
+    setIsModalVisible(true);
+  };
+
   const renderContent = () => {
     const status = visaStatus?.optReceipt?.status;
-    // console.log('status', visaStatus);
     switch (status) {
       case 'Unsubmitted':
         return (
@@ -69,7 +77,7 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
         return <p>Unknown status.</p>;
     }
   };
-  
+
   const fileBaseUrl = "http://localhost:3000/";
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
@@ -79,14 +87,29 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
         {visaStatus?.optReceipt?.status !== 'Unsubmitted' && visaStatus?.optReceipt?.files?.[0] && (
           <Button
             type="link"
-            onClick={() => window.open(`${fileBaseUrl}${visaStatus.optReceipt.files[0]}`, '_blank')}
+            onClick={() => handlePreview(`${fileBaseUrl}${visaStatus.optReceipt.files[0]}`)}
           >
             View Uploaded OPT Receipt
           </Button>
         )}
-        
+
         {/* Render the rest of the content */}
         {renderContent()}
+
+        {/* Modal to preview the PDF */}
+        <Modal
+          title="PDF Preview"
+          visible={isModalVisible}
+          onCancel={() => setIsModalVisible(false)}
+          footer={null}
+          width="80%"
+        >
+          {modalPdfUrl && (
+            <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
+              <Viewer fileUrl={modalPdfUrl} />
+            </Worker>
+          )}
+        </Modal>
       </Card>
     </div>
   );
