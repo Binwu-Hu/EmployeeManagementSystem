@@ -11,6 +11,7 @@ import PrivateRoute from './components/PrivateRoute';
 import SendRegistrationLink from './pages/protected/SendRegistrationLink';
 import Signup from './pages/auth/Signup';
 import VisaStatus from './pages/protected/VisaStatus';
+import HiringManagement from './pages/hr/HiringManagement';
 
 const App = () => {
   return (
@@ -60,7 +61,6 @@ const App = () => {
               </PrivateRoute>
             }
           />
-          {/*
           <Route
             path='/hiring-management'
             element={
@@ -68,7 +68,7 @@ const App = () => {
                 <HiringManagement />
               </PrivateRoute>
             }
-          /> */}
+          />
           <Route
             path='/send-registration-link'
             element={
