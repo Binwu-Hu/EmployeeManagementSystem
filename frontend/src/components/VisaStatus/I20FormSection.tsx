@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { uploadVisaDocument } from '../../features/visaStatus/visaStatusSlice';
+import { uploadVisaDocument, fetchVisaStatus } from '../../features/visaStatus/visaStatusSlice';
 import { RootState } from '../../app/store';
 import { Upload, Button, message, Card, Modal } from 'antd';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
@@ -27,6 +27,7 @@ const I20FormSection = ({ employeeId }: { employeeId: string }) => {
     dispatch(uploadVisaDocument({ employeeId, fileType: 'i20Form', files: fileList }))
       .then(() => {
         message.success('I-20 Form upload successful');
+        dispatch(fetchVisaStatus(employeeId));
       })
       .catch((error) => {
         message.error(error.message);
