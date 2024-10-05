@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '../../app/store';
-import { Button, Form, Layout, Menu, message } from 'antd';
+import { Button, Form, Layout, Menu, message, Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
   fetchEmployeeByUserId,
@@ -16,7 +16,7 @@ import ProfilePictureSection from '../../components/personalInfo/ProfilePictureS
 import UserSection from '../../components/personalInfo/UserSection';
 import WorkAuthorizationSection from '../../components/personalInfo/WorkAuthorizationSection';
 
-import { getApplicationStatus } from '../../features/application/applicationSlice';
+import { fetchApplicationByEmployeeId } from '../../features/application/applicationSlice';
 import axios from 'axios';
 
 const { Sider, Content } = Layout;
@@ -33,6 +33,7 @@ const OnboardingPage: React.FC = () => {
   const {
     application,
     applicationMessage,
+    //application.status,
     loading: applicationLoading,
   } = useSelector((state: RootState) => state.application);
 
@@ -47,9 +48,15 @@ const OnboardingPage: React.FC = () => {
     }
   }, [dispatch, userId]);
 
+  // useEffect(() => {
+  //   if (employee?._id) {
+  //     dispatch(getApplicationStatus());
+  //   }
+  // }, [dispatch, employee?._id]);
+
   useEffect(() => {
     if (employee?._id) {
-      dispatch(getApplicationStatus());
+      dispatch(fetchApplicationByEmployeeId(employee?._id));
     }
   }, [dispatch, employee?._id]);
 
@@ -61,14 +68,13 @@ const OnboardingPage: React.FC = () => {
     if (
       applicationMessage ===
         'Please fill in the application fields and submit.' ||
-      applicationMessage ===
-        'Your application was rejected. Please review the feedback, make changes, and resubmit.'
+      application?.status === 'Rejected'
     ) {
       setUnchangeable(false);
     } else {
       setUnchangeable(true);
     }
-  }, [applicationMessage]);
+  }, [application?.status]);
 
   const handleSubmit = () => {
     form
@@ -100,42 +106,59 @@ const OnboardingPage: React.FC = () => {
   };
 
   const handleApply = () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      message.error('No authentication token found.');
-      return;
-    }
+    Modal.confirm({
+      title: 'Confirm Submission',
+      content:
+        'Unsaved changes will not be updated. Are you sure you want to submit the application?',
+      okText: 'Yes, Submit',
+      cancelText: 'Cancel',
+      onOk: () => {
+        form
+          .validateFields() // Validate required fields before submission
+          .then(() => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+              message.error('No authentication token found.');
+              return;
+            }
 
-    axios
-      .post(
-        '/api/application',
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((response) => {
-        message.success('Application applied successfully!', 0.8, () => {
-          window.location.reload();
-        });
-        console.log('Response:', response.data);
-      })
-      .catch((error) => {
-        message.error(error.response?.data?.message || 'Failed to apply.');
-        console.error('Error:', error);
-      });
+            axios
+              .post(
+                '/api/application',
+                {},
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              )
+              .then((response) => {
+                message.success(
+                  'Application submitted successfully!',
+                  0.8,
+                  () => {
+                    window.location.reload();
+                  }
+                );
+                console.log('Response:', response.data);
+              });
+          })
+          .catch((error) => {
+            message.error(
+              error.response?.data?.message ||
+                'Failed to apply. Please fill in all required fields.'
+            );
+            console.error('Error:', error);
+          });
+      },
+    });
   };
 
   if (loading || applicationLoading) return <div>Loading...</div>;
 
   if (error) return <div>Error: {error}</div>;
 
-  if (
-    applicationMessage ===
-    'Your application has been approved. Redirecting to the home page...'
-  ) {
+  if (application?.status === 'Approved') {
     return (
       <div>
         Your application has been approved. Redirecting to the home page...
@@ -182,16 +205,34 @@ const OnboardingPage: React.FC = () => {
           <Form form={form} layout='vertical'>
             {/* Submit button */}
             <div className='flex justify-end space-x-4 mb-4'>
-              <Button type='primary' htmlType='submit' onClick={handleSubmit}>
-                Submit
+              <Button
+                type='primary'
+                htmlType='submit'
+                onClick={handleSubmit}
+                disabled={application?.status === 'Pending'}
+              >
+                Save
               </Button>
 
-              <Button type='primary' htmlType='button' onClick={handleApply}>
-                Apply
+              <Button
+                type='primary'
+                htmlType='button'
+                onClick={handleApply}
+                disabled={application?.status === 'Pending'}
+              >
+                {application?.status === 'Rejected' ? 'Resubmit' : 'Apply'}
               </Button>
             </div>
 
-            <div>{applicationMessage}</div>
+            {applicationMessage ===
+              'Please fill in the application fields and submit.' &&
+              `${applicationMessage}`}
+
+            <div>{application?.status}</div>
+            <div>
+              {application?.status === 'Rejected' &&
+                `HR feedback: ${application?.feedback}`}
+            </div>
 
             {employee && (
               <>
@@ -206,7 +247,7 @@ const OnboardingPage: React.FC = () => {
                 </div>
                 <div id='profilePictureSection'>
                   <ProfilePictureSection
-                  unchangeable={unchangeable}
+                    unchangeable={unchangeable}
                     employee={employee}
                     onChange={handleFieldChange}
                     form={form}

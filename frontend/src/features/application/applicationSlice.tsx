@@ -7,6 +7,7 @@ export interface Application {
   submittedAt?: string;
   employeeId: string;
   userId: string;
+  applicationMessage?: string | null;
 }
 
 export interface ApplicationState {

@@ -31,7 +31,7 @@ const ProfilePictureSection: React.FC<ProfilePictureSectionProps> = ({
         <Form.Item
           name='profilePicture'
           label='Profile Picture'
-          rules={[{ required: true, message: 'Profile picture is required' }]}
+          // rules={[{ required: true, message: 'Profile picture is required' }]}
         >
           <Upload
             listType='picture'
