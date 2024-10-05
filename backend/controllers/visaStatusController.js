@@ -6,7 +6,7 @@ export const uploadVisaDocuments = async (req, res) => {
     try {
       const { employeeId } = req.params;
       const { fileType } = req.body;
-  
+        // console.log('req.files:', req.files);
       let visaStatus = await VisaStatus.findOne({ employee: employeeId });
       if (!visaStatus) {
         visaStatus = new VisaStatus({ employee: employeeId, visaType: 'OPT' });
@@ -24,17 +24,20 @@ export const uploadVisaDocuments = async (req, res) => {
   
       if (fileType === 'optReceipt') {
         if (!visaStatus.optReceipt.files) visaStatus.optReceipt.files = []; 
-        
         visaStatus.optReceipt.files.push(...req.files.map(file => file.path));
+        visaStatus.optReceipt.status = 'Pending';
       } else if (fileType === 'optEAD') {
         if (!visaStatus.optEAD.files) visaStatus.optEAD.files = [];
         visaStatus.optEAD.files.push(...req.files.map(file => file.path));
+        visaStatus.optEAD.status = 'Pending';
       } else if (fileType === 'i983Form') {
         if (!visaStatus.i983Form.files) visaStatus.i983Form.files = [];
         visaStatus.i983Form.files.push(...req.files.map(file => file.path));
+        visaStatus.i983Form.status = 'Pending';
       } else if (fileType === 'i20Form') {
         if (!visaStatus.i20Form.files) visaStatus.i20Form.files = [];
         visaStatus.i20Form.files.push(...req.files.map(file => file.path));
+        visaStatus.i20Form.status = 'Pending';
       }
     //   console.log('visaStatus:', visaStatus);
       await visaStatus.save();
@@ -50,7 +53,7 @@ export const getAllVisaStatuses = async (req, res) => {
     try {
       const visaStatuses = await VisaStatus.find().populate('employee'); // Populate employee details
     //   const visaStatuses = await VisaStatus.find();
-      console.log('visaStatuses:', visaStatuses);
+    //   console.log('visaStatuses:', visaStatuses);
       if (!visaStatuses.length) {
         return res.status(404).json({ message: 'No visa statuses found' });
       }
@@ -67,7 +70,7 @@ export const getVisaStatusByEmployee = async (req, res) => {
   try {
     const { employeeId } = req.params;
     const visaStatus = await VisaStatus.findOne({ employee: employeeId }).populate('employee');
-    console.log('visaStatus:', visaStatus);
+    // console.log('visaStatus:', visaStatus);
     if (!visaStatus) {
       return res.status(404).json({ message: 'Visa status not found' });
     }

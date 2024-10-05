@@ -13,10 +13,12 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalPdfUrl, setModalPdfUrl] = useState<string | null>(null);
 
+  // Handle file change and only set file, do not auto-upload
   const handleFileChange = (info: any) => {
     setFiles(info.fileList);
   };
 
+  // Handle the manual upload on button click
   const handleSubmit = () => {
     if (!files.length) {
       message.error('Please upload a file!');
@@ -24,6 +26,9 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
     }
 
     const fileList = files.map(file => file.originFileObj).filter(Boolean);
+
+    // console.log("Files ready to upload: ", fileList);
+    // console.log("Current visaStatus: ", visaStatus);
     dispatch(uploadVisaDocument({ employeeId, fileType: 'optReceipt', files: fileList }))
       .then(() => {
         message.success('OPT Receipt upload successful');
@@ -40,12 +45,18 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
 
   const renderContent = () => {
     const status = visaStatus?.optReceipt?.status;
+    console.log('status', status);
     switch (status) {
       case 'Unsubmitted':
         return (
           <>
             <p>Please upload your OPT Receipt.</p>
-            <Upload multiple onChange={handleFileChange} fileList={files}>
+            <Upload 
+              multiple 
+              onChange={handleFileChange} 
+              fileList={files}
+              beforeUpload={() => false}  // Prevent automatic upload
+            >
               <Button>Select File</Button>
             </Upload>
             <Button type="primary" onClick={handleSubmit} className="mt-3">
@@ -65,7 +76,12 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
         return (
           <>
             <p>Your OPT Receipt was rejected. Feedback: {visaStatus.optReceipt.feedback}</p>
-            <Upload multiple onChange={handleFileChange} fileList={files}>
+            <Upload 
+              multiple 
+              onChange={handleFileChange} 
+              fileList={files}
+              beforeUpload={() => false}  // Prevent automatic upload
+            >
               <Button>Select File</Button>
             </Upload>
             <Button type="primary" onClick={handleSubmit} className="mt-3">

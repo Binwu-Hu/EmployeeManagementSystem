@@ -51,7 +51,7 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
         return (
           <>
             <p>Please upload your OPT EAD.</p>
-            <Upload multiple onChange={handleFileChange} fileList={files}>
+            <Upload multiple onChange={handleFileChange} fileList={files} beforeUpload={() => false}>
               <Button>Select File</Button>
             </Upload>
             <Button type="primary" onClick={handleSubmit} className="mt-3">
@@ -67,7 +67,7 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
         return (
           <>
             <p>Your OPT EAD was rejected. Feedback: {visaStatus.optEAD.feedback}</p>
-            <Upload multiple onChange={handleFileChange} fileList={files}>
+            <Upload multiple onChange={handleFileChange} fileList={files} beforeUpload={() => false}>
               <Button>Select File</Button>
             </Upload>
             <Button type="primary" onClick={handleSubmit} className="mt-3">
@@ -80,27 +80,16 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
     }
   };
 
-  // Base URL for serving uploaded files
   const fileBaseUrl = "http://localhost:3000/";
-
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <Card title="OPT EAD" bordered={false} style={{ width: 400, textAlign: 'center' }}>
-        
-        {/* Conditionally render the previously uploaded file if status is not 'Unsubmitted' */}
         {visaStatus?.optEAD?.status !== 'Unsubmitted' && visaStatus?.optEAD?.files?.[0] && (
-          <Button
-            type="link"
-            onClick={() => handlePreview(`${fileBaseUrl}${visaStatus.optEAD.files[0]}`)}
-          >
+          <Button type="link" onClick={() => handlePreview(`${fileBaseUrl}${visaStatus.optEAD.files[0]}`)}>
             View Uploaded OPT EAD
           </Button>
         )}
-
-        {/* Render the rest of the content */}
         {renderContent()}
-
-        {/* Modal to preview the PDF */}
         <Modal
           title="PDF Preview"
           visible={isModalVisible}

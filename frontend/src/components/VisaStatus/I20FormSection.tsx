@@ -51,7 +51,7 @@ const I20FormSection = ({ employeeId }: { employeeId: string }) => {
         return (
           <>
             <p>Please upload your I-20 Form.</p>
-            <Upload multiple onChange={handleFileChange} fileList={files}>
+            <Upload multiple onChange={handleFileChange} fileList={files} beforeUpload={() => false}>
               <Button>Select File</Button>
             </Upload>
             <Button type="primary" onClick={handleSubmit} className="mt-3">
@@ -67,7 +67,7 @@ const I20FormSection = ({ employeeId }: { employeeId: string }) => {
         return (
           <>
             <p>Your I-20 Form was rejected. Feedback: {visaStatus.i20Form.feedback}</p>
-            <Upload multiple onChange={handleFileChange} fileList={files}>
+            <Upload multiple onChange={handleFileChange} fileList={files} beforeUpload={() => false}>
               <Button>Select File</Button>
             </Upload>
             <Button type="primary" onClick={handleSubmit} className="mt-3">
@@ -80,27 +80,16 @@ const I20FormSection = ({ employeeId }: { employeeId: string }) => {
     }
   };
 
-  // Base URL for serving uploaded files
   const fileBaseUrl = "http://localhost:3000/";
-
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <Card title="I-20 Form" bordered={false} style={{ width: 400, textAlign: 'center' }}>
-        
-        {/* Conditionally render the previously uploaded file if status is not 'Unsubmitted' */}
         {visaStatus?.i20Form?.status !== 'Unsubmitted' && visaStatus?.i20Form?.files?.[0] && (
-          <Button
-            type="link"
-            onClick={() => handlePreview(`${fileBaseUrl}${visaStatus.i20Form.files[0]}`)}
-          >
+          <Button type="link" onClick={() => handlePreview(`${fileBaseUrl}${visaStatus.i20Form.files[0]}`)}>
             View Uploaded I-20 Form
           </Button>
         )}
-
-        {/* Render the rest of the content */}
         {renderContent()}
-
-        {/* Modal to preview the PDF */}
         <Modal
           title="PDF Preview"
           visible={isModalVisible}

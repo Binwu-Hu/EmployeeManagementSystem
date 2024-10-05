@@ -42,7 +42,7 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
         return (
           <>
             <p>Please upload your I-983 Form.</p>
-            <Upload multiple onChange={handleFileChange} fileList={files}>
+            <Upload multiple onChange={handleFileChange} fileList={files} beforeUpload={() => false}>
               <Button>Select File</Button>
             </Upload>
             <Button type="primary" onClick={handleSubmit} className="mt-3">
@@ -58,7 +58,7 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
         return (
           <>
             <p>Your I-983 Form was rejected. Feedback: {visaStatus.i983Form.feedback}</p>
-            <Upload multiple onChange={handleFileChange} fileList={files}>
+            <Upload multiple onChange={handleFileChange} fileList={files} beforeUpload={() => false}>
               <Button>Select File</Button>
             </Upload>
             <Button type="primary" onClick={handleSubmit} className="mt-3">
