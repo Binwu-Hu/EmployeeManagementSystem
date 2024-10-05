@@ -8,25 +8,34 @@ import { fetchVisaStatuses } from '../../features/visaStatus/visaStatusSlice';
 const { Search } = Input;
 
 const VisaStatusManagement: React.FC = () => {
-    const [visaStatuses, setVisaStatuses] = useState<VisaStatusType[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-  
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          setLoading(true);
-          const response = await fetchVisaStatusesApi();
-          setVisaStatuses(response);
-          setLoading(false);
-        } catch (err: any) {
-          setError(err.message);
-          setLoading(false);
-        }
-      };
-  
-      fetchData();
-    }, []);
+  const [visaStatuses, setVisaStatuses] = useState<VisaStatusType[]>([]);
+  const [filteredStatuses, setFilteredStatuses] = useState<VisaStatusType[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchVisaStatusesApi();
+        setVisaStatuses(response);
+        setFilteredStatuses(response); 
+        setLoading(false);
+      } catch (err: any) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleSearch = (value: string) => {
+    const filteredData = visaStatuses.filter((status: any) =>
+      `${status.employee.firstName} ${status.employee.lastName}`.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredStatuses(filteredData);
+  };
 
   const columns = [
     {
@@ -80,13 +89,12 @@ const VisaStatusManagement: React.FC = () => {
       <h1>Visa Status Management</h1>
       <Search
         placeholder="Search by employee name"
-        onSearch={(value) => {
-        }}
+        onSearch={handleSearch}
         enterButton
         style={{ marginBottom: 20, maxWidth: 400 }}
       />
       <Table
-        dataSource={visaStatuses.map((status: any) => ({
+        dataSource={filteredStatuses.map((status: any) => ({
           key: status._id,
           employee: status.employee,
           visaType: status.visaType,
