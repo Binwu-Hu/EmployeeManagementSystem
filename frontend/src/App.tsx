@@ -12,6 +12,7 @@ import SendRegistrationLink from './pages/protected/SendRegistrationLink';
 import Signup from './pages/auth/Signup';
 import VisaStatus from './pages/protected/VisaStatus';
 import HiringManagement from './pages/hr/HiringManagement';
+import ApplicationManagement from './pages/hr/ApplicationManagement';
 
 const App = () => {
   return (
@@ -58,6 +59,14 @@ const App = () => {
             element={
               <PrivateRoute requiredRole='HR'>
                 <EmployeeProfiles />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path='/hiring/user/:userId'
+            element={
+              <PrivateRoute requiredRole='HR'>
+                <ApplicationManagement />
               </PrivateRoute>
             }
           />

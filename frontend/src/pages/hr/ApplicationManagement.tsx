@@ -1,11 +1,13 @@
 import { AppDispatch, RootState } from '../../app/store';
 import { Button, Form, Layout, Menu, message } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+
 import {
   fetchEmployeeByUserId,
   updateEmployee,
 } from '../../features/employee/employeeSlice';
-import { useDispatch, useSelector } from 'react-redux';
 
 import AddressSection from '../../components/personalInfo/AddressSection';
 import ContactInfoSection from '../../components/personalInfo/ContactInfoSection';
@@ -21,9 +23,8 @@ import axios from 'axios';
 
 const { Sider, Content } = Layout;
 
-const OnboardingPage: React.FC = () => {
+const ApplicationManagement: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { user } = useSelector((state: RootState) => state.user);
   const { employee, loading, error } = useSelector(
     (state: RootState) => state.employee
   );
@@ -34,9 +35,11 @@ const OnboardingPage: React.FC = () => {
     loading: applicationLoading,
   } = useSelector((state: RootState) => state.application);
 
-  const userId = user?.id;
+ 
+  const { userId } = useParams<{ userId: string }>();
+  console.log('Received userId:', userId);
 
-  const [form] = Form.useForm(); // Create a form instance
+  const [form] = Form.useForm(); 
   const [updatedData, setUpdatedData] = useState(employee);
 
   useEffect(() => {
@@ -57,7 +60,7 @@ const OnboardingPage: React.FC = () => {
 
   const handleSubmit = () => {
     form
-      .validateFields() // Validate required fields before submission
+      .validateFields() 
       .then(() => {
         if (updatedData && userId) {
           dispatch(updateEmployee({ userId, updatedData }))
@@ -171,7 +174,7 @@ const OnboardingPage: React.FC = () => {
         <Layout className='bg-gray-50'>
           <Content className='p-6'>
             <Form form={form} layout='vertical'>
-              {/* Submit button */}
+              {/* 提交按钮 */}
               <div className='flex justify-end space-x-4 mb-4'>
                 <Button type='primary' htmlType='submit' onClick={handleSubmit}>
                   Submit
@@ -261,4 +264,4 @@ const OnboardingPage: React.FC = () => {
   return <div>pending</div>;
 };
 
-export default OnboardingPage;
+export default ApplicationManagement;

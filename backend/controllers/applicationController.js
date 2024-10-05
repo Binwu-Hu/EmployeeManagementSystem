@@ -95,11 +95,9 @@ const getApplicationStatus = asyncHandler(async (req, res) => {
 
   if (!application) {
     // i. Never submitted: they need to fill out and submit the application for the first time
-    res
-      .status(200)
-      .json({
-        applicationMessage: 'Please fill in the application fields and submit.',
-      });
+    res.status(200).json({
+      applicationMessage: 'Please fill in the application fields and submit.',
+    });
   } else {
     switch (application.status) {
       case 'Rejected':
@@ -307,13 +305,13 @@ const getAllApplications = asyncHandler(async (req, res) => {
 
   const pendingApplications = await Application.find({
     status: 'Pending',
-  }).populate('employee', 'firstName lastName email');
+  }).populate('employee', 'firstName lastName email userId');
   const rejectedApplications = await Application.find({
     status: 'Rejected',
-  }).populate('employee', 'firstName lastName email');
+  }).populate('employee', 'firstName lastName email userId');
   const approvedApplications = await Application.find({
     status: 'Approved',
-  }).populate('employee', 'firstName lastName email');
+  }).populate('employee', 'firstName lastName email userId');
 
   const formatApplication = (application) => ({
     fullName: `${application.employee.firstName} ${application.employee.lastName}`,
@@ -322,6 +320,7 @@ const getAllApplications = asyncHandler(async (req, res) => {
     submittedAt: application.submittedAt,
     feedback: application.feedback || '',
     employeeId: application.employee._id,
+    userId: application.employee.userId,
   });
 
   res.status(200).json({

@@ -53,18 +53,14 @@ const HiringManagement: React.FC = () => {
       key: 'fullName',
     },
     { title: 'Email', dataIndex: 'email', key: 'email' },
-    { title: 'Status', dataIndex: 'status', key: 'status' },
     { title: 'Submitted At', dataIndex: 'submittedAt', key: 'submittedAt' },
     { title: 'Feedback', dataIndex: 'feedback', key: 'feedback' },
     {
       title: 'Actions',
       key: 'actions',
       render: (text: string, record: any) =>
-        record.employeeId ? (
-          <Link
-            to={`/hiring-management/user/${record.employeeId}`}
-            target='_blank'
-          >
+        record.userId ? (
+          <Link to={`/hiring/user/${record.userId}`} target='_blank'>
             <Button type='primary'>View Application</Button>
           </Link>
         ) : null,
@@ -88,13 +84,13 @@ const HiringManagement: React.FC = () => {
       <h2>Pending Applications</h2>
       <Table
         dataSource={filteredPending.map((application) => ({
-          key: application.employeeId,
+          key: application.userId,
           fullName: application.fullName,
           email: application.email,
-          status: application.status,
           submittedAt: new Date(application.submittedAt).toLocaleString(),
           feedback: application.feedback,
           employeeId: application.employeeId,
+          userId: application.userId,
         }))}
         columns={columns}
         pagination={{ pageSize: 10 }}
@@ -106,7 +102,6 @@ const HiringManagement: React.FC = () => {
           key: application.employeeId,
           fullName: application.fullName,
           email: application.email,
-          status: application.status,
           submittedAt: new Date(application.submittedAt).toLocaleString(),
           feedback: application.feedback,
           employeeId: application.employeeId,
@@ -121,7 +116,6 @@ const HiringManagement: React.FC = () => {
           key: application.employeeId,
           fullName: application.fullName,
           email: application.email,
-          status: application.status,
           submittedAt: new Date(application.submittedAt).toLocaleString(),
           feedback: application.feedback,
           employeeId: application.employeeId,

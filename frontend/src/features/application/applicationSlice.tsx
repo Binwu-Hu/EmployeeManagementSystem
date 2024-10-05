@@ -7,6 +7,7 @@ export interface Application {
   feedback?: string;
   submittedAt?: string;
   employeeId: string;
+  userId:string;
 }
 
 // Define ApplicationState interface
