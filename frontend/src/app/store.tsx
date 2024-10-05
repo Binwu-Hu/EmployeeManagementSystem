@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; 
+import storage from 'redux-persist/lib/storage';
 import { combineReducers } from 'redux';
 import userReducer from '../features/user/userSlice';
+import applicationReducer from '../features/application/applicationSlice';
+
 import visaStatusReducer from '../features/visaStatus/visaStatusSlice';
 import employeeReducer from '../features/employee/employeeSlice';
 
@@ -15,8 +17,8 @@ const rootReducer = combineReducers({
   user: userReducer,
   visaStatus: visaStatusReducer,
   employee: employeeReducer,
+  application: applicationReducer,
 });
-
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
