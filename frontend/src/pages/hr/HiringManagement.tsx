@@ -99,12 +99,13 @@ const HiringManagement: React.FC = () => {
       <h2>Rejected Applications</h2>
       <Table
         dataSource={filteredRejected.map((application) => ({
-          key: application.employeeId,
+          key: application.userId,
           fullName: application.fullName,
           email: application.email,
           submittedAt: new Date(application.submittedAt).toLocaleString(),
           feedback: application.feedback,
           employeeId: application.employeeId,
+          userId: application.userId,
         }))}
         columns={columns}
         pagination={{ pageSize: 10 }}
@@ -113,12 +114,13 @@ const HiringManagement: React.FC = () => {
       <h2>Approved Applications</h2>
       <Table
         dataSource={filteredApproved.map((application) => ({
-          key: application.employeeId,
+          key: application.userId,
           fullName: application.fullName,
           email: application.email,
           submittedAt: new Date(application.submittedAt).toLocaleString(),
           feedback: application.feedback,
           employeeId: application.employeeId,
+          userId: application.userId,
         }))}
         columns={columns}
         pagination={{ pageSize: 10 }}

@@ -220,8 +220,14 @@ const updateApplication = asyncHandler(async (req, res) => {
 // @desc    update application by HR
 // @route   PUT /api/application/:id
 const updateApplicationStatus = asyncHandler(async (req, res) => {
-  const employeeId = req.params.id;
+  const userId = req.params.id;
   const { status, feedback } = req.body;
+
+  const employee = await Employee.findOne({ userId });
+
+  if (!employee) {
+    return res.status(404).json({ message: 'Employee not found' });
+  }
 
   const { email } = req.user;
 
@@ -235,16 +241,6 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
     return res.status(401).json({
       message: 'Unauthorized for employee',
     });
-  }
-
-  if (!mongoose.Types.ObjectId.isValid(employeeId)) {
-    return res.status(400).json({ message: 'Invalid employee ID format.' });
-  }
-
-  const employee = await Employee.findById(employeeId);
-
-  if (!employee) {
-    return res.status(404).json({ message: 'Employee not found.' });
   }
 
   const application = await Application.findOne({ employee });
