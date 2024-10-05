@@ -97,13 +97,15 @@ const getApplicationStatus = asyncHandler(async (req, res) => {
     // i. Never submitted: they need to fill out and submit the application for the first time
     res
       .status(200)
-      .json({ message: 'Please fill in the application fields and submit.' });
+      .json({
+        applicationMessage: 'Please fill in the application fields and submit.',
+      });
   } else {
     switch (application.status) {
       case 'Rejected':
         // ii. Rejected: they can view feedback, make changes, and resubmit
         res.status(200).json({
-          message:
+          applicationMessage:
             'Your application was rejected. Please review the feedback, make changes, and resubmit.',
           feedback: application.feedback,
           application: application, // Allow user to edit and resubmit
@@ -114,7 +116,7 @@ const getApplicationStatus = asyncHandler(async (req, res) => {
         // iii. Pending: they can view the submitted application (not editable) and list of uploaded documents
 
         res.status(200).json({
-          message: 'Please wait for HR to review your application.',
+          applicationMessage: 'Please wait for HR to review your application.',
           application: application, // Application is not editable
         });
         break;
@@ -122,13 +124,15 @@ const getApplicationStatus = asyncHandler(async (req, res) => {
       case 'Approved':
         // iv. Approved: they should be redirected to the home page
         res.status(200).json({
-          message:
+          applicationMessage:
             'Your application has been approved. Redirecting to the home page...',
         });
         break;
 
       default:
-        res.status(400).json({ message: 'Invalid application status.' });
+        res
+          .status(400)
+          .json({ applicationMessage: 'Invalid application status.' });
         break;
     }
   }

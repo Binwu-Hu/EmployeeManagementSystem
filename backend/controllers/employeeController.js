@@ -5,7 +5,6 @@ import asyncHandler from 'express-async-handler';
 export const getEmployeeByUserId = async (req, res) => {
   try {
     const userId = req.params.id;
-    console.log('req.params: ', req.params);
     const employee = await Employee.findOne({ userId });
 
     if (!employee) {

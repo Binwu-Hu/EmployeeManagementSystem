@@ -28,7 +28,7 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
         message.error(error.message);
       });
   };
-
+//   console.log('Current visaStatus.optReceipt:', visaStatus.visaStatus.optReceipt.status); 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <Card
@@ -36,9 +36,10 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
         bordered={false}
         style={{ width: 400, textAlign: 'center' }}
       >
-        {visaStatus?.optReceipt?.status !== 'Approved' ? (
+        {visaStatus?.visaStatus?.optReceipt?.status !== 'Approved' ? (
           <>
             <p>Waiting for HR to approve your OPT Receipt</p>
+            {/* Show upload functionality only if not approved */}
             <Upload multiple onChange={handleFileChange} fileList={files}>
               <Button>Select File</Button>
             </Upload>
@@ -47,7 +48,15 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
             </Button>
           </>
         ) : (
-          <p>Your OPT Receipt is approved.</p>
+          <>
+            <p>OPT Receipt Approved</p>
+            {/* Add view link here if you want users to view the uploaded file */}
+            {visaStatus.optReceipt?.files?.[0] && (
+              <Button type="link" onClick={() => window.open(visaStatus.optReceipt.files[0], '_blank')}>
+                View Uploaded OPT Receipt
+              </Button>
+            )}
+          </>
         )}
       </Card>
     </div>

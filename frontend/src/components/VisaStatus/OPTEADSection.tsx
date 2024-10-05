@@ -36,7 +36,7 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
         bordered={false}
         style={{ width: 400, textAlign: 'center' }}
       >
-        {visaStatus?.optEAD?.status !== 'Approved' ? (
+        {visaStatus?.visaStatus?.optEAD?.status !== 'Approved' ? (
           <>
             <p>Waiting for HR to approve your OPT EAD</p>
             <Upload multiple onChange={handleFileChange} fileList={files}>

@@ -36,6 +36,7 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
             referencePhone: employee.reference?.phone || '',
             referenceEmail: employee.reference?.email || '',
             referenceRelationship: employee.reference?.relationship || '',
+            emergencyContacts: employee.emergencyContacts || [],
           }}
         >
           {/* Reference Inputs */}
@@ -62,18 +63,12 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
               onChange={(e) => onChange('reference.middleName', e.target.value)}
             />
           </Form.Item>
-          <Form.Item
-            name='referencePhone'
-            label='Phone'
-          >
+          <Form.Item name='referencePhone' label='Phone'>
             <Input
               onChange={(e) => onChange('reference.phone', e.target.value)}
             />
           </Form.Item>
-          <Form.Item
-            name='referenceEmail'
-            label='Email'
-          >
+          <Form.Item name='referenceEmail' label='Email'>
             <Input
               onChange={(e) => onChange('reference.email', e.target.value)}
             />
@@ -89,151 +84,128 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
               }
             />
           </Form.Item>
+
+          {/* Emergency Contacts Section */}
+          <h3 className='text-lg font-semibold mt-4'>Emergency Contacts</h3>
+          <Form.List name='emergencyContacts'>
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map((field, index) => (
+                  <div key={index} style={{ display: 'flex', marginBottom: 8 }}>
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'firstName']}
+                      label='First Name'
+                      rules={[
+                        { required: true, message: 'First Name is required' },
+                      ]}
+                    >
+                      <Input
+                        onChange={(e) =>
+                          onChange(
+                            `emergencyContacts[${index}].firstName`,
+                            e.target.value
+                          )
+                        }
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'lastName']}
+                      label='Last Name'
+                      rules={[
+                        { required: true, message: 'Last Name is required' },
+                      ]}
+                    >
+                      <Input
+                        onChange={(e) =>
+                          onChange(
+                            `emergencyContacts[${index}].lastName`,
+                            e.target.value
+                          )
+                        }
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'middleName']}
+                      label='Middle Name'
+                    >
+                      <Input
+                        onChange={(e) =>
+                          onChange(
+                            `emergencyContacts[${index}].middleName`,
+                            e.target.value
+                          )
+                        }
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'phone']}
+                      label='Phone'
+                    >
+                      <Input
+                        onChange={(e) =>
+                          onChange(
+                            `emergencyContacts[${index}].phone`,
+                            e.target.value
+                          )
+                        }
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'email']}
+                      label='Email'
+                    >
+                      <Input
+                        onChange={(e) =>
+                          onChange(
+                            `emergencyContacts[${index}].email`,
+                            e.target.value
+                          )
+                        }
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'relationship']}
+                      label='Relationship'
+                      rules={[
+                        { required: true, message: 'Relationship is required' },
+                      ]}
+                    >
+                      <Input
+                        onChange={(e) =>
+                          onChange(
+                            `emergencyContacts[${index}].relationship`,
+                            e.target.value
+                          )
+                        }
+                      />
+                    </Form.Item>
+
+                    <MinusCircleOutlined
+                      onClick={() => remove(field.name)}
+                      style={{ marginLeft: 8, marginTop: 40 }}
+                    />
+                  </div>
+                ))}
+
+                <Form.Item>
+                  <Button
+                    type='dashed'
+                    onClick={() => add()}
+                    icon={<PlusOutlined />}
+                  >
+                    Add Emergency Contact
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
         </Form>
-      ) : (
-        <div>
-          <p>
-            <strong>First Name:</strong> {employee.reference?.firstName}
-          </p>
-          <p>
-            <strong>Last Name:</strong> {employee.reference?.lastName}
-          </p>
-          <p>
-            <strong>Middle Name:</strong> {employee.reference?.middleName || ''}
-          </p>
-          <p>
-            <strong>Phone:</strong> {employee.reference?.phone}
-          </p>
-          <p>
-            <strong>Email:</strong> {employee.reference?.email}
-          </p>
-          <p>
-            <strong>Relationship:</strong> {employee.reference?.relationship}
-          </p>
-        </div>
-      )}
-
-      {/* Emergency Contacts Section */}
-      <h3 className='text-lg font-semibold mt-4'>Emergency Contacts</h3>
-      {isEditing ? (
-        <Form.List name='emergencyContacts'>
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map((field, index) => (
-                <div key={index} style={{ display: 'flex', marginBottom: 8 }}>
-                  <Form.Item
-                    {...field}
-                    name={[field.name, 'firstName']}
-                    label='First Name'
-                    rules={[
-                      { required: true, message: 'First Name is required' },
-                    ]}
-                  >
-                    <Input
-                      onChange={(e) =>
-                        onChange(
-                          `emergencyContacts[${index}].firstName`,
-                          e.target.value
-                        )
-                      }
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    {...field}
-                    name={[field.name, 'lastName']}
-                    label='Last Name'
-                    rules={[
-                      { required: true, message: 'Last Name is required' },
-                    ]}
-                  >
-                    <Input
-                      onChange={(e) =>
-                        onChange(
-                          `emergencyContacts[${index}].lastName`,
-                          e.target.value
-                        )
-                      }
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    {...field}
-                    name={[field.name, 'middleName']}
-                    label='Middle Name'
-                  >
-                    <Input
-                      onChange={(e) =>
-                        onChange(
-                          `emergencyContacts[${index}].middleName`,
-                          e.target.value
-                        )
-                      }
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    {...field}
-                    name={[field.name, 'phone']}
-                    label='Phone'
-                  >
-                    <Input
-                      onChange={(e) =>
-                        onChange(
-                          `emergencyContacts[${index}].phone`,
-                          e.target.value
-                        )
-                      }
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    {...field}
-                    name={[field.name, 'email']}
-                    label='Email'
-                  >
-                    <Input
-                      onChange={(e) =>
-                        onChange(
-                          `emergencyContacts[${index}].email`,
-                          e.target.value
-                        )
-                      }
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    {...field}
-                    name={[field.name, 'relationship']}
-                    label='Relationship'
-                    rules={[
-                      { required: true, message: 'Relationship is required' },
-                    ]}
-                  >
-                    <Input
-                      onChange={(e) =>
-                        onChange(
-                          `emergencyContacts[${index}].relationship`,
-                          e.target.value
-                        )
-                      }
-                    />
-                  </Form.Item>
-
-                  <MinusCircleOutlined
-                    onClick={() => remove(field.name)}
-                    style={{ marginLeft: 8, marginTop: 40 }}
-                  />
-                </div>
-              ))}
-
-              <Form.Item>
-                <Button
-                  type='dashed'
-                  onClick={() => add()}
-                  icon={<PlusOutlined />}
-                >
-                  Add Emergency Contact
-                </Button>
-              </Form.Item>
-            </>
-          )}
-        </Form.List>
       ) : (
         <div>
           {employee.emergencyContacts?.length > 0 ? (
