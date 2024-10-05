@@ -170,10 +170,10 @@ const OnboardingPage: React.FC = () => {
 
         <Layout className='bg-gray-50'>
           <Content className='p-6'>
-            <Form form={form} layout='vertical' onFinish={handleSubmit}>
+            <Form form={form} layout='vertical'>
               {/* Submit button */}
               <div className='flex justify-end space-x-4 mb-4'>
-                <Button type='primary' htmlType='submit'>
+                <Button type='primary' htmlType='submit' onClick={handleSubmit}>
                   Submit
                 </Button>
 
