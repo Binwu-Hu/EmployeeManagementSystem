@@ -15,11 +15,12 @@ export const fetchVisaStatusApi = (employeeId: string) => {
 // Upload visa document (multiple files)
 export const uploadVisaDocumentApi = (employeeId: string, fileType: string, files: any[]) => {
   const formData = new FormData();
-  // console.log('formData', formData);  
   files.forEach((file) => {
-    formData.append('files', file.originFileObj); // Use originFileObj for Ant Design Upload component
+    formData.append('files', file); // Use originFileObj for Ant Design Upload component
+    console.log('file', file);
   });
   formData.append('fileType', fileType); // E.g., optReceipt, optEAD, i983Form
+  console.log('formData', formData);
   return post(`/visa-status/upload/${employeeId}`, formData, true); // Indicate it's form data
 };
 

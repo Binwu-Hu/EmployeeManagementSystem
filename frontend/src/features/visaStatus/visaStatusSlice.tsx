@@ -33,6 +33,7 @@ export const uploadVisaDocument = createAsyncThunk(
   async ({ employeeId, fileType, files }: { employeeId: string, fileType: string, files: File[] }, { rejectWithValue }) => {
     try {
       const response = await uploadVisaDocumentApi(employeeId, fileType, files);
+      // console.log('response', response);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message);

@@ -30,11 +30,12 @@ export const updateEmployee = async (req, res) => {
       { $set: req.body },
       { new: true, runValidators: true } // Return updated employee, run validation
     );
+    console.log('updatedEmployee:', updatedEmployee);
 
     if (!updatedEmployee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
-
+    
     res.status(200).json(updatedEmployee);
   } catch (error) {
     res
