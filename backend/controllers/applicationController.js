@@ -71,6 +71,19 @@ const createApplication = asyncHandler(async (req, res) => {
     }
   }
 
+  // Check if employee's visaType is 'H1-B', 'L2', 'F1', or 'H4'
+  const validVisaTypes = ['H1-B', 'L2', 'F1', 'H4'];
+  if (validVisaTypes.includes(employee.workAuthorization.visaType)) {
+    // Create a new VisaStatus model and save it
+    const newVisaStatus = new VisaStatus({
+      employee: employee._id,
+      visaType: employee.workAuthorization.visaType,
+      // Initialize other visa fields if necessary
+    });
+
+    await newVisaStatus.save();
+  }
+
   const application = new Application({
     employee: employee._id,
     status: 'Pending',
@@ -202,6 +215,28 @@ const updateApplication = asyncHandler(async (req, res) => {
         message:
           'Each emergency contact must have a first name, last name, and relationship.',
       });
+    }
+  }
+
+  // Check if employee's visaType is 'H1-B', 'L2', 'F1', or 'H4'
+  const validVisaTypes = ['H1-B', 'L2', 'F1', 'H4'];
+  if (validVisaTypes.includes(employee.workAuthorization.visaType)) {
+    // Check if a VisaStatus already exists for this employee
+    let visaStatus = await VisaStatus.findOne({ employee: employee._id });
+
+    if (visaStatus) {
+      // Update the existing VisaStatus
+      visaStatus.visaType = employee.workAuthorization.visaType;
+      // Update other visa-related fields as necessary
+      await visaStatus.save();
+    } else {
+      // Create a new VisaStatus if none exists
+      visaStatus = new VisaStatus({
+        employee: employee._id,
+        visaType: employee.workAuthorization.visaType,
+        // Initialize other visa fields if necessary
+      });
+      await visaStatus.save();
     }
   }
 
