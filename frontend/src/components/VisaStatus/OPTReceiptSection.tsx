@@ -31,7 +31,7 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
 
   const renderContent = () => {
     const status = visaStatus?.optReceipt?.status;
-    console.log('status', visaStatus);
+    // console.log('status', visaStatus);
     switch (status) {
       case 'Unsubmitted':
         return (
@@ -51,11 +51,6 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
         return (
           <>
             <p>Your OPT Receipt is approved.</p>
-            {visaStatus.optReceipt?.files?.[0] && (
-              <Button type="link" onClick={() => window.open(visaStatus.optReceipt.files[0], '_blank')}>
-                View Uploaded OPT Receipt
-              </Button>
-            )}
           </>
         );
       case 'Rejected':
@@ -74,10 +69,23 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
         return <p>Unknown status.</p>;
     }
   };
-
+  
+  const fileBaseUrl = "http://localhost:3000/";
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <Card title="OPT Receipt" bordered={false} style={{ width: 400, textAlign: 'center' }}>
+        
+        {/* Conditionally render the previously uploaded file if status is not 'Unsubmitted' */}
+        {visaStatus?.optReceipt?.status !== 'Unsubmitted' && visaStatus?.optReceipt?.files?.[0] && (
+          <Button
+            type="link"
+            onClick={() => window.open(`${fileBaseUrl}${visaStatus.optReceipt.files[0]}`, '_blank')}
+          >
+            View Uploaded OPT Receipt
+          </Button>
+        )}
+        
+        {/* Render the rest of the content */}
         {renderContent()}
       </Card>
     </div>

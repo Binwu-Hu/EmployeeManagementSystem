@@ -31,12 +31,12 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
 
   const renderContent = () => {
     const status = visaStatus?.i983Form?.status;
-    const OPTEADStatus = visaStatus?.optEAD?.status; // Check OPT Receipt status
-    // console.log('status', status);
-    if (status == 'Unsubmitted' && OPTEADStatus != 'Approved') {
+    const OPTEADStatus = visaStatus?.optEAD?.status;
+
+    if (status === 'Unsubmitted' && OPTEADStatus !== 'Approved') {
       return <p>Please upload your OPT EAD first before submitting your I-983.</p>;
     }
-    console.log('status', visaStatus.i983Form.status);
+
     switch (status) {
       case 'Unsubmitted':
         return (
@@ -71,15 +71,18 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
     }
   };
 
+  // Base URL for serving uploaded files
+  const fileBaseUrl = "http://localhost:3000/";
+
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <Card title="I-983 Form" bordered={false} style={{ width: 400, textAlign: 'center' }}>
-        {/* Display preview and download options for the two templates */}
+        
+        {/* Always display the two template buttons */}
         <div style={{ marginBottom: '20px' }}>
           <p>Download/Preview Templates:</p>
 
           <div style={{ marginBottom: '10px' }}>
-            {/* Preview Empty Template */}
             <Button
               type="link"
               href="http://localhost:3000/static/i983-empty-template.pdf"
@@ -88,7 +91,6 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
             >
               Preview Empty Template
             </Button>
-            {/* Download Empty Template */}
             <a
               href="http://localhost:3000/static/i983-empty-template.pdf"
               download="I-983_Empty_Template.pdf"
@@ -98,7 +100,6 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
           </div>
 
           <div style={{ marginBottom: '10px' }}>
-            {/* Preview Sample Template */}
             <Button
               type="link"
               href="http://localhost:3000/static/i983-sample-template.pdf"
@@ -107,7 +108,6 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
             >
               Preview Sample Template
             </Button>
-            {/* Download Sample Template */}
             <a
               href="http://localhost:3000/static/i983-sample-template.pdf"
               download="I-983_Sample_Template.pdf"
@@ -117,6 +117,17 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
           </div>
         </div>
 
+        {/* Conditionally render the previously uploaded file if status is not 'Unsubmitted' */}
+        {visaStatus?.i983Form?.status !== 'Unsubmitted' && visaStatus?.i983Form?.files?.[0] && (
+          <Button
+            type="link"
+            onClick={() => window.open(`${fileBaseUrl}${visaStatus.i983Form.files[0]}`, '_blank')}
+          >
+            View Uploaded I-983 Form
+          </Button>
+        )}
+        
+        {/* Render the rest of the content based on the form status */}
         {renderContent()}
       </Card>
     </div>

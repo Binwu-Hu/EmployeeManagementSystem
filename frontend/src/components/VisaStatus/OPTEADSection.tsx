@@ -31,11 +31,12 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
 
   const renderContent = () => {
     const status = visaStatus?.optEAD?.status;
-    const optReceiptStatus = visaStatus?.optReceipt?.status; // Check OPT Receipt status
-    // console.log('status', status);
-    if (status == 'Unsubmitted' && optReceiptStatus != 'Approved') {
+    const optReceiptStatus = visaStatus?.optReceipt?.status;
+
+    if (status === 'Unsubmitted' && optReceiptStatus !== 'Approved') {
       return <p>Please upload your OPT Receipt first before submitting your OPT EAD.</p>;
     }
+
     switch (status) {
       case 'Unsubmitted':
         return (
@@ -70,9 +71,24 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
     }
   };
 
+  // Base URL for serving uploaded files
+  const fileBaseUrl = "http://localhost:3000/";
+
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <Card title="OPT EAD" bordered={false} style={{ width: 400, textAlign: 'center' }}>
+        
+        {/* Conditionally render the previously uploaded file if status is not 'Unsubmitted' */}
+        {visaStatus?.optEAD?.status !== 'Unsubmitted' && visaStatus?.optEAD?.files?.[0] && (
+          <Button
+            type="link"
+            onClick={() => window.open(`${fileBaseUrl}${visaStatus.optEAD.files[0]}`, '_blank')}
+          >
+            View Uploaded OPT EAD
+          </Button>
+        )}
+        
+        {/* Render the rest of the content */}
         {renderContent()}
       </Card>
     </div>
