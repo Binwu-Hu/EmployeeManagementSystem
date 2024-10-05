@@ -258,7 +258,7 @@ const OnboardingPage: React.FC = () => {
     );
   }
 
-  return null;
+  return <div>pending</div>;
 };
 
 export default OnboardingPage;
