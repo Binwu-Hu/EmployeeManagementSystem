@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '../../app/store';
-import { Button, Form, Layout, Menu, message, Modal } from 'antd';
+import { Button, Form, Layout, Menu, Modal, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
   fetchEmployeeByUserId,
@@ -15,9 +15,8 @@ import NameSection from '../../components/personalInfo/NameSection';
 import ProfilePictureSection from '../../components/personalInfo/ProfilePictureSection';
 import UserSection from '../../components/personalInfo/UserSection';
 import WorkAuthorizationSection from '../../components/personalInfo/WorkAuthorizationSection';
-
-import { fetchApplicationByEmployeeId } from '../../features/application/applicationSlice';
 import axios from 'axios';
+import { fetchApplicationByEmployeeId } from '../../features/application/applicationSlice';
 
 const { Sider, Content } = Layout;
 
@@ -98,9 +97,23 @@ const OnboardingPage: React.FC = () => {
   const handleFieldChange = (field: string, value: any) => {
     setUpdatedData((prev) => {
       if (!prev) return prev;
+      const fieldParts = field.split('.');
+
+      if (fieldParts.length === 1) {
+        return {
+          ...prev,
+          [fieldParts[0]]: value,
+        };
+      }
+
+      const [topLevelField, ...nestedFields] = fieldParts;
+
       return {
         ...prev,
-        [field]: value,
+        [topLevelField]: {
+          ...(prev as any)[topLevelField], // Ensure existing values for nested object remain intact
+          [nestedFields.join('.')]: value, // Update the nested field
+        },
       };
     });
   };

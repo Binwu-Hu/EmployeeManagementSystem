@@ -22,6 +22,7 @@ export const getEmployeeByUserId = async (req, res) => {
 
 export const updateEmployee = async (req, res) => {
   const userId = req.params.id;
+  //   console.log("body: ", req.body);
 
   try {
     const updatedEmployee = await Employee.findOneAndUpdate(
