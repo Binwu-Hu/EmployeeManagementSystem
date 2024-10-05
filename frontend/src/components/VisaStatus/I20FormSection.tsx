@@ -31,6 +31,11 @@ const I20FormSection = ({ employeeId }: { employeeId: string }) => {
 
   const renderContent = () => {
     const status = visaStatus?.i20Form?.status;
+    const i983Status = visaStatus?.i983Form?.status; // Check i983Form  status
+    // console.log('status', status);
+    if (status == 'Unsubmitted' && i983Status != 'Approved') {
+      return <p>Please upload your I-983 first before submitting your I-20.</p>;
+    }
     console.log('status', status);
     switch (status) {
       case 'Unsubmitted':
@@ -48,7 +53,7 @@ const I20FormSection = ({ employeeId }: { employeeId: string }) => {
       case 'Pending':
         return <p>Waiting for HR to approve your I-20 Form.</p>;
       case 'Approved':
-        return <p>Your I-20 Form is approved.</p>;
+        return <p>All documents have been approved.</p>;
       case 'Rejected':
         return (
           <>

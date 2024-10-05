@@ -31,6 +31,11 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
 
   const renderContent = () => {
     const status = visaStatus?.i983Form?.status;
+    const OPTEADStatus = visaStatus?.optEAD?.status; // Check OPT Receipt status
+    // console.log('status', status);
+    if (status == 'Unsubmitted' && OPTEADStatus != 'Approved') {
+      return <p>Please upload your OPT EAD first before submitting your I-983.</p>;
+    }
     console.log('status', visaStatus.i983Form.status);
     switch (status) {
       case 'Unsubmitted':

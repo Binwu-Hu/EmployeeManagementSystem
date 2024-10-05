@@ -31,7 +31,11 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
 
   const renderContent = () => {
     const status = visaStatus?.optEAD?.status;
-    console.log('status', status);
+    const optReceiptStatus = visaStatus?.optReceipt?.status; // Check OPT Receipt status
+    // console.log('status', status);
+    if (status == 'Unsubmitted' && optReceiptStatus != 'Approved') {
+      return <p>Please upload your OPT Receipt first before submitting your OPT EAD.</p>;
+    }
     switch (status) {
       case 'Unsubmitted':
         return (
