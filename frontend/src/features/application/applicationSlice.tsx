@@ -1,34 +1,53 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Define Application interface (based on your model)
 export interface Application {
   status: 'Pending' | 'Approved' | 'Rejected';
   feedback?: string;
   submittedAt?: string;
   employeeId: string;
-  userId:string;
+  userId: string;
 }
 
-// Define ApplicationState interface
 export interface ApplicationState {
   applications: Application[];
   application: Application | null;
+  tokens: any[];
   loading: boolean;
   error: string | null;
   applicationMessage: string | null;
 }
 
-// Initial state
 const initialState: ApplicationState = {
   applications: [],
   application: null,
+  tokens: [],
   loading: false,
   error: null,
   applicationMessage: null,
 };
 
-// Thunk to fetch the application status
+export const fetchTokenList = createAsyncThunk(
+  'application/fetchTokenList',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/application/tokenlist', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
 export const getApplicationStatus = createAsyncThunk(
   'application/getApplicationStatus',
   async (_, { rejectWithValue }) => {
@@ -39,7 +58,7 @@ export const getApplicationStatus = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      return response.data; // Return the data which contains applicationMessage and application
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(
         error.response && error.response.data.applicationMessage
@@ -50,7 +69,6 @@ export const getApplicationStatus = createAsyncThunk(
   }
 );
 
-// Thunk to fetch the application by employee ID
 export const fetchApplicationByEmployeeId = createAsyncThunk(
   'application/fetchByEmployeeId',
   async (employeeId: string, { rejectWithValue }) => {
@@ -72,7 +90,6 @@ export const fetchApplicationByEmployeeId = createAsyncThunk(
   }
 );
 
-// Thunk to fetch all applications (for HR)
 export const fetchAllApplications = createAsyncThunk(
   'application/fetchAllApplications',
   async (_, { rejectWithValue }) => {
@@ -94,51 +111,47 @@ export const fetchAllApplications = createAsyncThunk(
   }
 );
 
-// Slice
 const applicationSlice = createSlice({
   name: 'application',
   initialState,
   reducers: {
     clearApplication: (state) => {
       state.application = null;
-      state.applicationMessage = null; // Clear the applicationMessage when the application is cleared
+      state.applicationMessage = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Handle getApplicationStatus
       .addCase(getApplicationStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.applicationMessage = null; // Clear previous applicationMessage when fetching begins
+        state.applicationMessage = null;
       })
       .addCase(getApplicationStatus.fulfilled, (state, action) => {
         state.loading = false;
         state.application = action.payload.application || null;
-        state.applicationMessage = action.payload.applicationMessage || null; // Store the applicationMessage from the response
+        state.applicationMessage = action.payload.applicationMessage || null;
       })
       .addCase(getApplicationStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
 
-      // Handle fetchApplicationByEmployeeId
       .addCase(fetchApplicationByEmployeeId.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.applicationMessage = null; // Clear previous applicationMessage when fetching begins
+        state.applicationMessage = null;
       })
       .addCase(fetchApplicationByEmployeeId.fulfilled, (state, action) => {
         state.loading = false;
         state.application = action.payload.application || null;
-        state.applicationMessage = action.payload.applicationMessage || null; // Store the applicationMessage from the response
+        state.applicationMessage = action.payload.applicationMessage || null;
       })
       .addCase(fetchApplicationByEmployeeId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
 
-      // Handle fetchAllApplications
       .addCase(fetchAllApplications.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -149,6 +162,19 @@ const applicationSlice = createSlice({
         state.applications = action.payload;
       })
       .addCase(fetchAllApplications.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      .addCase(fetchTokenList.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTokenList.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tokens = action.payload;
+      })
+      .addCase(fetchTokenList.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
