@@ -29,16 +29,19 @@ const I20FormSection = ({ employeeId }: { employeeId: string }) => {
       });
   };
 
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-      <Card
-        title="I-20 Form"
-        bordered={false}
-        style={{ width: 400, textAlign: 'center' }}
-      >
-        {visaStatus?.visaStatus?.i20Form?.status !== 'Approved' ? (
+  const renderContent = () => {
+    const status = visaStatus?.i20Form?.status;
+    const i983Status = visaStatus?.i983Form?.status;
+
+    if (status === 'Unsubmitted' && i983Status !== 'Approved') {
+      return <p>Please upload your I-983 first before submitting your I-20.</p>;
+    }
+
+    switch (status) {
+      case 'Unsubmitted':
+        return (
           <>
-            <p>Waiting for HR to approve your I-20 Form</p>
+            <p>Please upload your I-20 Form.</p>
             <Upload multiple onChange={handleFileChange} fileList={files}>
               <Button>Select File</Button>
             </Upload>
@@ -46,9 +49,47 @@ const I20FormSection = ({ employeeId }: { employeeId: string }) => {
               Upload I-20 Form
             </Button>
           </>
-        ) : (
-          <p>Your I-20 Form is approved.</p>
+        );
+      case 'Pending':
+        return <p>Waiting for HR to approve your I-20 Form.</p>;
+      case 'Approved':
+        return <p>All documents have been approved.</p>;
+      case 'Rejected':
+        return (
+          <>
+            <p>Your I-20 Form was rejected. Feedback: {visaStatus.i20Form.feedback}</p>
+            <Upload multiple onChange={handleFileChange} fileList={files}>
+              <Button>Select File</Button>
+            </Upload>
+            <Button type="primary" onClick={handleSubmit} className="mt-3">
+              Re-upload I-20 Form
+            </Button>
+          </>
+        );
+      default:
+        return <p>Unknown status.</p>;
+    }
+  };
+
+  // Base URL for serving uploaded files
+  const fileBaseUrl = "http://localhost:3000/";
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+      <Card title="I-20 Form" bordered={false} style={{ width: 400, textAlign: 'center' }}>
+        
+        {/* Conditionally render the previously uploaded file if status is not 'Unsubmitted' */}
+        {visaStatus?.i20Form?.status !== 'Unsubmitted' && visaStatus?.i20Form?.files?.[0] && (
+          <Button
+            type="link"
+            onClick={() => window.open(`${fileBaseUrl}${visaStatus.i20Form.files[0]}`, '_blank')}
+          >
+            View Uploaded I-20 Form
+          </Button>
         )}
+        
+        {/* Render the rest of the content */}
+        {renderContent()}
       </Card>
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
 import { fetchEmployeeByUserId } from '../../features/employee/employeeSlice';
+import { fetchVisaStatus } from '../../features/visaStatus/visaStatusSlice'; // Fetch visa status
 import OPTReceiptSection from '../../components/VisaStatus/OPTReceiptSection';
 import OPTEADSection from '../../components/VisaStatus/OPTEADSection';
 import I983FormSection from '../../components/VisaStatus/I983FormSection';
@@ -14,16 +15,22 @@ const VisaStatusPage = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
   const { employee, loading, error } = useSelector((state: RootState) => state.employee);
+  const { visaStatus } = useSelector((state: RootState) => state.visaStatus); // Fetch visa status from Redux store
   const [selectedKey, setSelectedKey] = useState('optReceipt');
 
+  // Fetch employee and visa status data on component mount
   useEffect(() => {
     if (user?.email) {
       dispatch(fetchEmployeeByUserId(user.id));
     }
   }, [dispatch, user]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  // Fetch visa status once employee is loaded
+  useEffect(() => {
+    if (employee?._id) {
+      dispatch(fetchVisaStatus(employee._id)); // Fetch visa status for the employee
+    }
+  }, [dispatch, employee]);
 
   const handleMenuClick = (key: string) => {
     setSelectedKey(key);
@@ -44,27 +51,30 @@ const VisaStatusPage = () => {
     }
   };
 
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
-    <Layout className='min-h-screen'>
-      <Sider width={200} className='bg-gray-800 text-white h-screen sticky top-0'>
+    <Layout className="min-h-screen">
+      <Sider width={200} className="bg-gray-800 text-white h-screen sticky top-0">
         <Menu
-          mode='inline'
-          theme='dark'
-          className='h-full'
+          mode="inline"
+          theme="dark"
+          className="h-full"
           selectedKeys={[selectedKey]}
           onClick={(e) => handleMenuClick(e.key)}
         >
-          <Menu.Item key='optReceipt'>OPT Receipt</Menu.Item>
-          <Menu.Item key='optEAD'>OPT EAD</Menu.Item>
-          <Menu.Item key='i983Form'>I-983 Form</Menu.Item>
-          <Menu.Item key='i20Form'>I-20 Form</Menu.Item>
+          <Menu.Item key="optReceipt">OPT Receipt</Menu.Item>
+          <Menu.Item key="optEAD">OPT EAD</Menu.Item>
+          <Menu.Item key="i983Form">I-983 Form</Menu.Item>
+          <Menu.Item key="i20Form">I-20 Form</Menu.Item>
         </Menu>
       </Sider>
 
-      <Layout className='bg-gray-50'>
-        <Content className='p-6'>
-          <h1 className='text-2xl font-bold mb-4'>Visa Status Management</h1>
-          {employee && renderSection()}
+      <Layout className="bg-gray-50">
+        <Content className="p-6">
+          <h1 className="text-2xl font-bold mb-4">Visa Status Management</h1>
+          {employee && visaStatus && renderSection()}
         </Content>
       </Layout>
     </Layout>
