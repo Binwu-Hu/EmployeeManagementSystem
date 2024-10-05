@@ -1,12 +1,10 @@
 import { AppDispatch, RootState } from '../../app/store';
-import { Button, Form, Layout, Menu, message, Input } from 'antd'; // Add Input for feedback
+import { Button, Form, Layout, Menu, message, Input, Modal } from 'antd'; // Add Input for feedback
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
-import {
-  fetchEmployeeByUserId
-} from '../../features/employee/employeeSlice';
+import { fetchEmployeeByUserId } from '../../features/employee/employeeSlice';
 
 import AddressSection from '../../components/personalInfo/AddressSection';
 import ContactInfoSection from '../../components/personalInfo/ContactInfoSection';
@@ -17,7 +15,7 @@ import ProfilePictureSection from '../../components/personalInfo/ProfilePictureS
 import UserSection from '../../components/personalInfo/UserSection';
 import WorkAuthorizationSection from '../../components/personalInfo/WorkAuthorizationSection';
 
-import { fetchAllApplications } from '../../features/application/applicationSlice';
+import { fetchApplicationByEmployeeId } from '../../features/application/applicationSlice';
 import axios from 'axios';
 
 const { Sider, Content } = Layout;
@@ -28,18 +26,14 @@ const ApplicationManagement: React.FC = () => {
     (state: RootState) => state.employee
   );
 
-  const { applications, loading: applicationLoading } = useSelector(
+  const { application, loading: applicationLoading } = useSelector(
     (state: RootState) => state.application
   );
 
   const { userId } = useParams<{ userId: string }>();
-  console.log('Received userId:', userId);
 
   const [form] = Form.useForm();
-  //const [updatedData, setUpdatedData] = useState(employee);
-  const [applicationStatus, setApplicationStatus] = useState<string | null>(
-    null
-  );
+
   const [feedback, setFeedback] = useState<string>('');
 
   useEffect(() => {
@@ -49,37 +43,10 @@ const ApplicationManagement: React.FC = () => {
   }, [dispatch, userId]);
 
   useEffect(() => {
-    dispatch(fetchAllApplications());
-  }, [dispatch]);
-
-  // useEffect(() => {
-  //   setUpdatedData(employee);
-  // }, [employee]);
-
-  useEffect(() => {
-    if (applications && userId) {
-      const pendingApp = applications.pending.find(
-        (app: any) => app.userId === userId
-      );
-      const rejectedApp = applications.rejected.find(
-        (app: any) => app.userId === userId
-      );
-      const approvedApp = applications.approved.find(
-        (app: any) => app.userId === userId
-      );
-
-      if (pendingApp) {
-        setApplicationStatus(pendingApp.status);
-      } else if (rejectedApp) {
-        setApplicationStatus(rejectedApp.status);
-        setFeedback(rejectedApp.feedback);
-      } else if (approvedApp) {
-        setApplicationStatus(approvedApp.status);
-      } else {
-        setApplicationStatus('No application found');
-      }
+    if (employee?._id) {
+      dispatch(fetchApplicationByEmployeeId(employee?._id));
     }
-  }, [applications, userId]);
+  }, [dispatch, employee?._id]);
 
   const handleFieldChange = (field: string, value: any) => {
     // setUpdatedData((prev) => {
@@ -92,61 +59,79 @@ const ApplicationManagement: React.FC = () => {
   };
 
   const handleApprove = () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      message.error('No authentication token found.');
-      return;
-    }
-
-    axios
-      .put(
-        `/api/application/${userId}`,
-        { status: 'Approved' },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    Modal.confirm({
+      title: 'Confirm Approval',
+      content: 'Are you sure you want to approve the application?',
+      okText: 'Yes',
+      cancelText: 'No',
+      onOk: () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          message.error('No authentication token found.');
+          return;
         }
-      )
-      .then((response) => {
-        message.success('Application approved successfully!', 0.8, () => {
-          window.location.reload();
-        });
-        console.log('Response:', response.data);
-      })
-      .catch((error) => {
-        message.error(error.response?.data?.message || 'Failed to approve.');
-        console.error('Error:', error);
-      });
+
+        axios
+          .put(
+            `/api/application/${userId}`,
+            { status: 'Approved' },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            message.success('Application approved successfully!', 0.8, () => {
+              window.location.reload();
+            });
+            console.log('Response:', response.data);
+          })
+          .catch((error) => {
+            message.error(
+              error.response?.data?.message || 'Failed to approve.'
+            );
+            console.error('Error:', error);
+          });
+      },
+    });
   };
 
   const handleReject = () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      message.error('No authentication token found.');
-      return;
-    }
-
-    axios
-      .put(
-        `/api/application/${userId}`,
-        { status: 'Rejected', feedback },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    Modal.confirm({
+      title: 'Confirm Rejection',
+      content: 'Are you sure you want to reject the application?',
+      okText: 'Yes',
+      cancelText: 'No',
+      onOk: () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          message.error('No authentication token found.');
+          return;
         }
-      )
-      .then((response) => {
-        message.success('Application rejected successfully!', 0.8, () => {
-          window.location.reload();
-        });
-        console.log('Response:', response.data);
-      })
-      .catch((error) => {
-        message.error(error.response?.data?.message || 'Failed to reject.');
-        console.error('Error:', error);
-      });
+
+        axios
+          .put(
+            `/api/application/${userId}`,
+            { status: 'Rejected', feedback },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            message.success('Application rejected successfully!', 0.8, () => {
+              window.location.reload();
+            });
+            console.log('Response:', response.data);
+          })
+          .catch((error) => {
+            message.error(error.response?.data?.message || 'Failed to reject.');
+            console.error('Error:', error);
+          });
+      },
+    });
   };
 
   if (loading || applicationLoading) return <div>Loading...</div>;
@@ -190,7 +175,7 @@ const ApplicationManagement: React.FC = () => {
       <Layout className='bg-gray-50'>
         <Content className='p-6'>
           <Form form={form} layout='vertical'>
-            {applicationStatus === 'Pending' && (
+            {application?.status === 'Pending' && (
               <div className='flex justify-end space-x-4 mb-4'>
                 <Button
                   type='primary'
@@ -206,12 +191,12 @@ const ApplicationManagement: React.FC = () => {
               </div>
             )}
 
-            {applicationStatus && (
+            {application?.status && (
               <div className='mb-6'>
                 <h3 className='text-lg font-bold'>Application Status</h3>
-                <p>{applicationStatus}</p>
+                <p>{application?.status}</p>
 
-                {applicationStatus === 'Pending' && (
+                {application?.status === 'Pending' && (
                   <>
                     <h3 className='text-lg font-bold'>Feedback</h3>
                     <Input.TextArea
@@ -222,12 +207,13 @@ const ApplicationManagement: React.FC = () => {
                   </>
                 )}
 
-                {applicationStatus === 'Rejected' && feedback && (
-                  <>
-                    <h3 className='text-lg font-bold'>Feedback</h3>
-                    <p>{feedback}</p>
-                  </>
-                )}
+                {application?.status === 'Rejected' &&
+                  application?.feedback && (
+                    <>
+                      <h3 className='text-lg font-bold'>Feedback</h3>
+                      <p>{application?.feedback}</p>
+                    </>
+                  )}
               </div>
             )}
 
