@@ -22,9 +22,72 @@ const createApplication = asyncHandler(async (req, res) => {
   });
 
   if (existingApplication) {
-    return res
-      .status(400)
-      .json({ message: 'Application already exists for this employee.' });
+    if (existingApplication.status === 'Pending') {
+      return res.status(401).json({ message: 'Pending for Application...' });
+    } else if (existingApplication.status === 'Approved') {
+      return res.status(401).json({ message: 'Application has been approved' });
+    } else if (existingApplication.status === 'Rejected') {
+      // Update the existing application if rejected
+      if (
+        !employee.firstName ||
+        !employee.lastName ||
+        !employee.address ||
+        !employee.address.building ||
+        !employee.address.street ||
+        !employee.address.city ||
+        !employee.address.state ||
+        !employee.address.zip ||
+        !employee.phone ||
+        !employee.phone.cellPhone ||
+        !employee.ssn ||
+        !employee.dateOfBirth ||
+        !employee.gender ||
+        !employee.workAuthorization ||
+        !employee.workAuthorization.visaType ||
+        !employee.workAuthorization.startDate ||
+        !employee.workAuthorization.endDate ||
+        !employee.reference ||
+        !employee.reference.firstName ||
+        !employee.reference.lastName ||
+        !employee.reference.relationship
+      ) {
+        return res.status(400).json({
+          message:
+            'Missing required employee information. Please complete and save all fields before updating the application.',
+        });
+      }
+
+      if (
+        !employee.emergencyContacts ||
+        employee.emergencyContacts.length === 0
+      ) {
+        return res
+          .status(400)
+          .json({ message: 'At least one emergency contact is required.' });
+      }
+
+      for (const contact of employee.emergencyContacts) {
+        if (!contact.firstName || !contact.lastName || !contact.relationship) {
+          return res.status(400).json({
+            message:
+              'Each emergency contact must have a first name, last name, and relationship.',
+          });
+        }
+      }
+
+      // Update the status back to 'Pending' and clear the feedback
+      existingApplication.status = 'Pending';
+      existingApplication.feedback = '';
+
+      await existingApplication.save();
+
+      return res.status(200).json({
+        message: 'Application has been resubmitted successfully.',
+        application: existingApplication,
+      });
+    } else {
+      return res.status(500).json({ message: 'Application status error' });
+    }
   }
 
   if (
@@ -52,7 +115,7 @@ const createApplication = asyncHandler(async (req, res) => {
   ) {
     return res.status(400).json({
       message:
-        'Missing required employee information. Please complete all fields before creating an application.',
+        'Missing required employee information. Please complete and save all fields before creating an application.',
     });
   }
 
@@ -376,81 +439,26 @@ const getApplicationDetail = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: 'Employee not found.' });
   }
 
-  const { email } = req.user;
-
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    return res.status(404).json({ message: 'User not found.' });
-  }
-
-  if (user.role !== 'HR' && employee.email !== email) {
-    return res
-      .status(401)
-      .json({ message: 'Unauthorized for other employees.' });
-  }
-
   const application = await Application.findOne({ employee });
+  //.populate('employee', 'firstName lastName email userId');;
 
   if (!application) {
-    return res.status(404).json({ message: 'Application not found.' });
+    return res.status(200).json({
+      applicationMessage: 'Please fill in the application fields and submit.',
+    });
   }
 
-  res.status(200).json({
-    employee: {
-      fullName: `${employee.firstName} ${employee.lastName}`,
-      middleName: employee.middleName || '',
-      preferredName: employee.preferredName || '',
-      email: employee.email,
-      profilePicture: employee.profilePicture,
-      address: {
-        building: employee.address.building,
-        street: employee.address.street,
-        city: employee.address.city,
-        state: employee.address.state,
-        zip: employee.address.zip,
-      },
-      phone: {
-        cellPhone: employee.phone.cellPhone,
-        workPhone: employee.phone.workPhone || '',
-      },
-      ssn: employee.ssn,
-      dateOfBirth: employee.dateOfBirth,
-      gender: employee.gender,
-      visaStatus: employee.visaStatus,
-      workAuthorization: {
-        visaType: employee.workAuthorization.visaType,
-        startDate: employee.workAuthorization.startDate,
-        endDate: employee.workAuthorization.endDate,
-      },
-      reference: {
-        firstName: employee.reference.firstName,
-        lastName: employee.reference.lastName,
-        middleName: employee.reference.middleName || '',
-        phone: employee.reference.phone || '',
-        email: employee.reference.email || '',
-        relationship: employee.reference.relationship,
-      },
-      emergencyContacts: employee.emergencyContacts.map((contact) => ({
-        firstName: contact.firstName,
-        lastName: contact.lastName,
-        middleName: contact.middleName || '',
-        phone: contact.phone || '',
-        email: contact.email || '',
-        relationship: contact.relationship,
-      })),
-      documents: {
-        profilePicture: employee.documents.profilePicture || '',
-        driverLicense: employee.documents.driverLicense || '',
-        workAuthorization: employee.documents.workAuthorization || '',
-      },
-    },
-    application: {
-      status: application.status,
-      feedback: application.feedback || '',
-      submittedAt: application.submittedAt,
-    },
-  });
+  // const formatApplication = (application) => ({
+  //   fullName: `${application.employee.firstName} ${application.employee.lastName}`,
+  //   email: application.employee.email,
+  //   status: application.status,
+  //   submittedAt: application.submittedAt,
+  //   feedback: application.feedback || '',
+  //   employeeId: application.employee._id,
+  //   userId: application.employee.userId,
+  // });
+
+  res.status(200).json({ application });
 });
 
 // @desc    Get all tokens, email, Employee name, and Application status
