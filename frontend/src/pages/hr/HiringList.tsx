@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '../../app/store';
-import { Input, Table, Button } from 'antd';
+import { Input, Table, Button, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { fetchAllApplications } from '../../features/application/applicationSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -67,7 +67,12 @@ const HiringList: React.FC = () => {
     },
   ];
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className='flex justify-center items-center h-96'>
+        <Spin size='large' />
+      </div>
+    );
   if (error) return <div>Error: {error}</div>;
 
   return (
