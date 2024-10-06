@@ -28,7 +28,6 @@ const ProfilePictureSection: React.FC<ProfilePictureSectionProps> = ({
       ? `http://localhost:3000${employee.profilePicture}`
       : '../../../public/default-avatar.jpg'
   );
-  console.log("src", profilePictureSrc);
 
   const handleFileUpload = (file: any) => {
     const userId = user?.id;
@@ -36,8 +35,6 @@ const ProfilePictureSection: React.FC<ProfilePictureSectionProps> = ({
       dispatch(uploadEmployeeFile({ userId, file }))
         .unwrap()
         .then(({ filePath }) => {
-          console.log('File uploaded:', filePath);
-
           //   onChange('profilePicture', filePath);
           const imageUrl = `http://localhost:3000${filePath}`;
           setProfilePictureSrc(imageUrl);

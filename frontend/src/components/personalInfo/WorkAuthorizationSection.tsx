@@ -1,9 +1,12 @@
-import { Button, DatePicker, Form, Input, Radio, Upload } from 'antd';
+import { AppDispatch, RootState } from '../../app/store';
+import { Button, DatePicker, Form, Input, Radio, Upload, message } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Employee } from '../../utils/type';
 import React from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import moment from 'moment';
+import { uploadEmployeeFile } from '../../features/employee/employeeSlice';
 
 interface WorkAuthorizationSectionProps {
   employee: Employee;
@@ -20,6 +23,28 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
   form,
   unchangeable,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.user);
+  const handleUpload = (file: any) => {
+    const userId = user?.id;
+    if (userId) {
+      dispatch(uploadEmployeeFile({ userId, file }))
+        .unwrap()
+        .then(({ filePath }) => {
+          console.log('File uploaded:', filePath);
+
+          // Update the OPT receipt field with the file path
+          //   onChange('documents.workAuthorization.optReceipt', filePath);
+
+          message.success('OPT Receipt uploaded successfully!');
+        })
+        .catch((error) => {
+          console.error('Upload failed:', error);
+          message.error('Failed to upload OPT Receipt');
+        });
+    }
+  };
+
   return (
     <div className='bg-white p-4 rounded shadow-md'>
       <h2 className='text-xl font-semibold'>Work Authorization</h2>
@@ -106,12 +131,25 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
 
             {/* Show Upload Field Only if Visa Type is F1 */}
             {form.getFieldValue('visaType') === 'F1' && (
-              <Form.Item label='Upload OPT Receipt'>
+              <Form.Item
+                label='Upload OPT Receipt'
+                name='optReceipt'
+                rules={[
+                  {
+                    required: form.getFieldValue('visaType') === 'F1',
+                    message: 'OPT Receipt is required for F1 visa type',
+                  },
+                ]}
+              >
                 <Upload
+                  listType='text'
+                  accept='.pdf' // Accept only PDF files
                   disabled={unchangeable || !isEditing}
-                  onChange={(info) =>
-                    onChange('documents.workAuthorization', info.file.name)
-                  }
+                  beforeUpload={(file) => {
+                    handleUpload(file);
+                    return false;
+                  }}
+                  showUploadList={false}
                 >
                   <Button
                     icon={<UploadOutlined />}

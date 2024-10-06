@@ -88,7 +88,7 @@ export const uploadEmployeeFile = asyncHandler(async (req, res) => {
   if (fileType === '.pdf') {
     // save in employee model
     employee.workAuthorization.files = employee.workAuthorization.files || [];
-    employee.workAuthorization.files.push({ fileType: 'pdf', filePath });
+    employee.workAuthorization.files.push(filePath);
     await employee.save();
 
     // save in visa status model
