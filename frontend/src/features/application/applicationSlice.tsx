@@ -120,7 +120,6 @@ const applicationSlice = createSlice({
       state.application = null;
       state.applications = [];
       state.applicationMessage = null;
-      localStorage.clear();
     },
   },
   extraReducers: (builder) => {
