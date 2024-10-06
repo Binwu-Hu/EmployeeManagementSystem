@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Input } from 'antd';
+import { Table, Input, Button } from 'antd';
 import { fetchVisaStatusesApi } from '../../api/visaStatus';
+import moment from 'moment';
 
 const { Search } = Input;
 
@@ -34,6 +35,33 @@ const VisaStatusInProgress: React.FC = () => {
     setFilteredStatuses(filteredData);
   };
 
+  const getDaysRemaining = (endDate: string) => {
+    const today = moment();
+    const end = moment(endDate);
+    return end.diff(today, 'days');
+  };
+
+  const getNextStep = (visaStatus: any) => {
+    if (visaStatus.optReceipt.status === 'Pending') return 'Wait for OPT Receipt approval';
+    if (visaStatus.optEAD.status === 'Pending') return 'Wait for OPT EAD approval';
+    if (visaStatus.i983Form.status === 'Pending') return 'Wait for I-983 Form approval';
+    if (visaStatus.i20Form.status === 'Pending') return 'Wait for I-20 Form approval';
+
+    if (visaStatus.optReceipt.status === 'Unsubmitted') return 'Submit OPT Receipt';
+    if (visaStatus.optEAD.status === 'Unsubmitted') return 'Submit OPT EAD';
+    if (visaStatus.i983Form.status === 'Unsubmitted') return 'Submit I-983 Form';
+    if (visaStatus.i20Form.status === 'Unsubmitted') return 'Submit I-20 Form';
+
+    return 'All documents approved';
+  };
+
+  const handleAction = (visaStatus: any) => {
+    if (getNextStep(visaStatus).includes('Submit')) {
+      return <Button type="primary">Send Notification</Button>;
+    }
+    return null;
+  };
+
   const columns = [
     {
       title: 'Name',
@@ -42,39 +70,46 @@ const VisaStatusInProgress: React.FC = () => {
       render: (employee: any) => `${employee.firstName} ${employee.lastName}`,
     },
     {
-      title: 'SSN',
-      dataIndex: 'employee',
-      key: 'ssn',
-      render: (employee: any) => employee.ssn || 'N/A',
-    },
-    {
       title: 'Work Authorization',
-      dataIndex: 'visaType',
+      dataIndex: 'employee',
       key: 'visaType',
+      render: (employee: any) => employee.workAuthorization.visaType,
     },
     {
-      title: 'OPT Receipt Status',
-      dataIndex: 'optReceipt',
-      key: 'optReceipt',
-      render: (optReceipt: any) => optReceipt?.status || 'N/A',
+      title: 'Start Date',
+      dataIndex: 'employee',
+      key: 'startDate',
+      render: (employee: any) =>
+        employee.workAuthorization.startDate
+          ? moment(employee.workAuthorization.startDate).format('YYYY-MM-DD')
+          : 'N/A',
     },
     {
-      title: 'OPT EAD Status',
-      dataIndex: 'optEAD',
-      key: 'optEAD',
-      render: (optEAD: any) => optEAD?.status || 'N/A',
+      title: 'End Date',
+      dataIndex: 'employee',
+      key: 'endDate',
+      render: (employee: any) =>
+        employee.workAuthorization.endDate
+          ? moment(employee.workAuthorization.endDate).format('YYYY-MM-DD')
+          : 'N/A',
     },
     {
-      title: 'I-983 Form Status',
-      dataIndex: 'i983Form',
-      key: 'i983Form',
-      render: (i983Form: any) => i983Form?.status || 'N/A',
+      title: 'Number of Days Remaining',
+      key: 'daysRemaining',
+      render: (visaStatus: any) =>
+        visaStatus.employee.workAuthorization.endDate
+          ? getDaysRemaining(visaStatus.employee.workAuthorization.endDate)
+          : 'N/A',
     },
     {
-      title: 'I-20 Form Status',
-      dataIndex: 'i20Form',
-      key: 'i20Form',
-      render: (i20Form: any) => i20Form?.status || 'N/A',
+      title: 'Next Steps',
+      key: 'nextSteps',
+      render: (visaStatus: any) => getNextStep(visaStatus),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (visaStatus: any) => handleAction(visaStatus),
     },
   ];
 
