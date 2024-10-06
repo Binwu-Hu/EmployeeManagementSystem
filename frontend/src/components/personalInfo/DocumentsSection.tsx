@@ -1,6 +1,6 @@
 import '@react-pdf-viewer/core/lib/styles/index.css'; // Import the core styles
 
-import { Button, Modal, Upload, message } from 'antd';
+import { Button, Modal, message } from 'antd';
 import { DownloadOutlined, EyeOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
@@ -35,6 +35,37 @@ const DocumentsSection: React.FC<DocumentsSectionProps> = ({
     setModalPdfUrl(null);
   };
 
+  const handleDownload = async (filePath: string) => {
+    try {
+      const response = await fetch(`http://localhost:3000${filePath}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/pdf',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to download file');
+      }
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.setAttribute('download', filePath.split('/').pop() || 'file.pdf'); // Set file name
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+
+      // Revoke the object URL after download (clean up)
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Download error:', error);
+      message.error('Failed to download the file');
+    }
+  };
+
   return (
     <div className='bg-white p-4 rounded shadow-md'>
       <h2 className='text-xl font-semibold'>Documents</h2>
@@ -53,13 +84,12 @@ const DocumentsSection: React.FC<DocumentsSectionProps> = ({
                   >
                     Preview
                   </Button>
-                  <a
-                    href={`http://localhost:3000${filePath}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
+                  <Button
+                    icon={<DownloadOutlined />}
+                    onClick={() => handleDownload(filePath)}
                   >
-                    <Button icon={<DownloadOutlined />}>Download</Button>
-                  </a>
+                    Download
+                  </Button>
                 </li>
               );
             })}
