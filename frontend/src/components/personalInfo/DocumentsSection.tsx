@@ -1,8 +1,11 @@
-import { Button, Upload } from 'antd';
+import '@react-pdf-viewer/core/lib/styles/index.css'; // Import the core styles
+
+import { Button, Modal, Upload, message } from 'antd';
+import { DownloadOutlined, EyeOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Viewer, Worker } from '@react-pdf-viewer/core';
 
 import { Employee } from '../../utils/type';
-import React from 'react';
-import { UploadOutlined } from '@ant-design/icons';
 
 interface DocumentsSectionProps {
   employee: Employee;
@@ -19,55 +22,70 @@ const DocumentsSection: React.FC<DocumentsSectionProps> = ({
   form,
   unchangeable,
 }) => {
+  const [visible, setVisible] = useState(false);
+  const [modalPdfUrl, setModalPdfUrl] = useState<string | null>(null);
+
+  const handlePreview = (filePath: string) => {
+    setModalPdfUrl(`http://localhost:3000${filePath}`);
+    setVisible(true);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+    setModalPdfUrl(null);
+  };
+
   return (
     <div className='bg-white p-4 rounded shadow-md'>
       <h2 className='text-xl font-semibold'>Documents</h2>
-      {isEditing ? (
-        <>
-          <Upload
-            onChange={(info) =>
-              onChange('documents.profilePicture', info.file.name)
-            }
-          >
-            <Button disabled={unchangeable} icon={<UploadOutlined />}>
-              Upload Profile Picture
-            </Button>
-          </Upload>
-          <Upload
-            onChange={(info) =>
-              onChange('documents.driverLicense', info.file.name)
-            }
-          >
-            <Button disabled={unchangeable} icon={<UploadOutlined />}>
-              Upload Driver License
-            </Button>
-          </Upload>
-          <Upload
-            onChange={(info) =>
-              onChange('documents.workAuthorization', info.file.name)
-            }
-          >
-            <Button disabled={unchangeable} icon={<UploadOutlined />}>
-              Upload Work Authorization
-            </Button>
-          </Upload>
-        </>
-      ) : (
+      {employee.workAuthorization?.files?.length > 0 ? (
         <div>
-          <p>
-            <strong>Profile Picture:</strong>{' '}
-            {employee.documents?.profilePicture || 'No Profile Picture'}
-          </p>
-          <p>
-            <strong>Driver License:</strong>{' '}
-            {employee.documents?.driverLicense || 'No Driver License'}
-          </p>
-          <p>
-            <strong>Work Authorization:</strong>{' '}
-            {employee.documents?.workAuthorization || 'No Work Authorization'}
-          </p>
+          <h3>Work Authorization Files:</h3>
+          <ul>
+            {employee.workAuthorization.files.map((filePath, index) => {
+              const fileName = filePath.split('/').pop();
+              return (
+                <li key={index} className='flex items-center space-x-2'>
+                  <span>{fileName}</span>
+                  <Button
+                    icon={<EyeOutlined />}
+                    onClick={() => handlePreview(filePath)}
+                  >
+                    Preview
+                  </Button>
+                  <a
+                    href={`http://localhost:3000${filePath}`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    <Button icon={<DownloadOutlined />}>Download</Button>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
         </div>
+      ) : (
+        'No files uploaded'
       )}
+
+      <Modal
+        title='PDF Preview'
+        visible={visible}
+        onCancel={handleCancel}
+        footer={null}
+        width='80%'
+      >
+        {modalPdfUrl && (
+          <Worker
+            workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}
+          >
+            <div style={{ height: '750px' }}>
+              <Viewer fileUrl={modalPdfUrl} />
+            </div>
+          </Worker>
+        )}
+      </Modal>
     </div>
   );
 };
