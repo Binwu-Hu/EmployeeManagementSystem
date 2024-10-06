@@ -1,137 +1,45 @@
-import { AppDispatch, RootState } from '../../app/store';
-import { Input, Table, Button } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { fetchAllApplications } from '../../features/application/applicationSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Layout, Menu } from 'antd';
+import SendRegistrationLink from '../protected/SendRegistrationLink';
+import LinkHistory from './LinkHistory';
+import HiringList from './HiringList';
 
-const { Search } = Input;
+const { Sider, Content } = Layout;
 
 const HiringManagement: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { applications, loading, error } = useSelector(
-    (state: RootState) => state.application
-  );
-
-  const [filteredPending, setFilteredPending] = useState(
-    applications?.pending || []
-  );
-  const [filteredRejected, setFilteredRejected] = useState(
-    applications?.rejected || []
-  );
-  const [filteredApproved, setFilteredApproved] = useState(
-    applications?.approved || []
+  const [selectedKey, setSelectedKey] = useState<string>(
+    localStorage.getItem('selectedKey') || '1'
   );
 
   useEffect(() => {
-    dispatch(fetchAllApplications());
-  }, [dispatch]);
-
-  useEffect(() => {
-    setFilteredPending(applications?.pending || []);
-    setFilteredRejected(applications?.rejected || []);
-    setFilteredApproved(applications?.approved || []);
-  }, [applications]);
-
-  const handleSearch = (value: string) => {
-    const filterByName = (list: any[]) =>
-      list.filter(
-        (application) =>
-          application.fullName?.toLowerCase().includes(value.toLowerCase()) ||
-          application.email?.toLowerCase().includes(value.toLowerCase())
-      );
-
-    setFilteredPending(filterByName(applications?.pending || []));
-    setFilteredRejected(filterByName(applications?.rejected || []));
-    setFilteredApproved(filterByName(applications?.approved || []));
-  };
-
-  const columns = [
-    {
-      title: 'Full Name',
-      dataIndex: 'fullName',
-      key: 'fullName',
-    },
-    { title: 'Email', dataIndex: 'email', key: 'email' },
-    { title: 'Submitted At', dataIndex: 'submittedAt', key: 'submittedAt' },
-    { title: 'Feedback', dataIndex: 'feedback', key: 'feedback' },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (text: string, record: any) =>
-        record.userId ? (
-          <Link to={`/hiring/user/${record.userId}`} target='_blank'>
-            <Button type='primary'>View Application</Button>
-          </Link>
-        ) : null,
-    },
-  ];
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+    localStorage.setItem('selectedKey', selectedKey);
+  }, [selectedKey]);
 
   return (
-    <div style={{ margin: '20px 0' }}>
-      <h1 style={{ fontSize: '2rem', marginBottom: '20px' }}>
-        Application Management
-      </h1>
-      <div style={{ marginBottom: '20px' }}>
-        <Link to='/link-history'>
-          <Button type='primary' style={{ marginRight: '10px' }}>
-            Link History
-          </Button>
-        </Link>
-
-        <Search
-          placeholder='Search by name or email'
-          onSearch={handleSearch}
-          enterButton
-          style={{ marginBottom: 10, maxWidth: 400 }}
-        />
-      </div>
-      <h2>Pending Applications</h2>
-      <Table
-        dataSource={filteredPending.map((application) => ({
-          key: application.userId,
-          fullName: application.fullName,
-          email: application.email,
-          submittedAt: new Date(application.submittedAt).toLocaleString(),
-          feedback: application.feedback,
-          employeeId: application.employeeId,
-          userId: application.userId,
-        }))}
-        columns={columns}
-        pagination={{ pageSize: 10 }}
-      />
-      <h2>Rejected Applications</h2>
-      <Table
-        dataSource={filteredRejected.map((application) => ({
-          key: application.userId,
-          fullName: application.fullName,
-          email: application.email,
-          submittedAt: new Date(application.submittedAt).toLocaleString(),
-          feedback: application.feedback,
-          employeeId: application.employeeId,
-          userId: application.userId,
-        }))}
-        columns={columns}
-        pagination={{ pageSize: 10 }}
-      />
-      <h2>Approved Applications</h2>
-      <Table
-        dataSource={filteredApproved.map((application) => ({
-          key: application.userId,
-          fullName: application.fullName,
-          email: application.email,
-          submittedAt: new Date(application.submittedAt).toLocaleString(),
-          feedback: application.feedback,
-          employeeId: application.employeeId,
-          userId: application.userId,
-        }))}
-        columns={columns}
-        pagination={{ pageSize: 10 }}
-      />
-    </div>
+    <Layout className='min-h-screen'>
+      <Sider
+        width={200}
+        className='bg-gray-800 text-white h-screen sticky top-0'
+      >
+        <Menu
+          mode='inline'
+          theme='dark'
+          selectedKeys={[selectedKey]}
+          onClick={({ key }) => setSelectedKey(key)}
+        >
+          <Menu.Item key='1'>SendRegistrationLink</Menu.Item>
+          <Menu.Item key='2'>RegistrationLinkHistory</Menu.Item>
+          <Menu.Item key='3'>ApplicationList</Menu.Item>
+        </Menu>
+      </Sider>
+      <Layout className='bg-gray-50'>
+        <Content className='p-6'>
+          {selectedKey === '1' && <SendRegistrationLink />}
+          {selectedKey === '2' && <LinkHistory />}
+          {selectedKey === '3' && <HiringList />}
+        </Content>
+      </Layout>
+    </Layout>
   );
 };
 
