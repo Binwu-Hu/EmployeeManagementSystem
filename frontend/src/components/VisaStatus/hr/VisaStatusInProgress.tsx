@@ -20,6 +20,7 @@ const VisaStatusInProgress: React.FC = () => {
   const [feedback, setFeedback] = useState<string>('');
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [pdfFile, setPdfFile] = useState<string | null>(null); // URL of the PDF file
+  const [rejecting, setRejecting] = useState<boolean>(false); // Track if we are rejecting
 
   // Separate fetch function to be reused
   const fetchVisaStatuses = async () => {
@@ -93,26 +94,46 @@ const VisaStatusInProgress: React.FC = () => {
         console.error('No pending document found to approve/reject.');
         return;
       }
-  
-      // Call the API to update the document status
-      await updateVisaDocumentStatusApi(employeeId, fileType, action);
-  
-      alert(`Document ${fileType} has been ${action}`);
 
-      // Re-fetch visa statuses to reflect the update
-      fetchVisaStatuses();
+      if (action === 'Rejected') {
+        // Set rejecting flag and open modal for feedback
+        setSelectedDocument({ employeeId, fileType, action });
+        setRejecting(true);
+        setIsModalVisible(true);
+      } else {
+        // Directly approve
+        await updateVisaDocumentStatusApi(employeeId, fileType, action);
+        alert(`Document ${fileType} has been ${action}`);
+        fetchVisaStatuses(); // Re-fetch visa statuses to reflect the update
+      }
     } catch (error) {
       console.error('Error updating visa status:', error);
       alert('Error updating visa status');
     }
   };
 
-  const handleModalSubmit = () => {
-    // Submit approval result and feedback
+  const handleModalSubmit = async () => {
+    if (rejecting) {
+      const { employeeId, fileType, action } = selectedDocument;
+      
+      try {
+        // Include feedback when rejecting
+        await updateVisaDocumentStatusApi(employeeId, fileType, action, feedback);
+        alert(`Document ${fileType} has been ${action} with feedback: ${feedback}`);
+        fetchVisaStatuses(); // Re-fetch visa statuses after rejection
+      } catch (error) {
+        console.error('Error updating visa status:', error);
+        alert('Error updating visa status');
+      }
+  
+      setRejecting(false); // Reset rejecting state
+    }
+  
+    // Close modal and clear feedback
     setIsModalVisible(false);
     setFeedback('');
     setPdfFile(null); // Clear current PDF preview
-  };
+  };  
 
   const handleAction = (visaStatus: any) => {
     const pendingDocs = [
@@ -216,7 +237,9 @@ const VisaStatusInProgress: React.FC = () => {
         onOk={handleModalSubmit}
         onCancel={() => {
           setIsModalVisible(false);
-          setPdfFile(null); // Clear PDF preview
+          setRejecting(false); // Reset rejecting state if modal closed
+          setFeedback('');
+          setPdfFile(null); // Clear current PDF preview
         }}
         width={800} // Increase modal width
       >
