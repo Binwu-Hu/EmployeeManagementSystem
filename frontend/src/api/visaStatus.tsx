@@ -27,5 +27,11 @@ export const uploadVisaDocumentApi = (employeeId: string, fileType: string, file
 // Update the visa document status by HR (approve or reject)
 export const updateVisaDocumentStatusApi = (employeeId: string, fileType: string, action: string) => {
   const data = { fileType, action };
-  return patch(`/visa-status/${employeeId}/status`, data);
+  return patch(`/visa-status/update/${employeeId}`, data);
 };
+
+// // API call to update visa status
+// export const updateVisaStatusApi = (visaStatusId: string, status: string) => {
+//   const data = { status };  // Payload containing the new status
+//   return patch(`/visa-status/${visaStatusId}/status`, data);  // Use your base API patch function
+// };
