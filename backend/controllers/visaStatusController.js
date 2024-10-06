@@ -1,5 +1,7 @@
 import Employee from '../models/employeeModel.js';
 import VisaStatus from '../models/visaStatusModel.js';
+import sgMail from '@sendgrid/mail';
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Upload Visa Documents
 export const uploadVisaDocuments = async (req, res) => {
@@ -143,12 +145,34 @@ export const approveOrRejectVisaDocument = async (req, res) => {
 export const sendNotification = async (req, res) => {
   try {
     const { employeeId } = req.params;
-    const { fileType } = req.body; // Capture fileType from the request body
+    const { fileType } = req.body;
+    console.log('employeeId:', employeeId);
+    console.log('fileType:', fileType);
+    const employee = await Employee.findById(employeeId);
 
-    // Your logic to send the notification (e.g., send email, log notification, etc.)
-    console.log(`Sending notification for employee ${employeeId} about ${fileType}`);
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
 
-    // Respond with success
+    const { email, firstName } = employee; 
+
+    const message = `
+      <p>Hi ${firstName},</p>
+      <p>Your document for <strong>${fileType}</strong> is pending approval or needs attention. Please review the status and take necessary actions.</p>
+      <p>Thank you,</p>
+      <p>Your HR Team</p>
+    `;
+
+    console.log('Sending notification to:', email);
+    console.log('Message:', message);
+
+    await sgMail.send({
+      to: email,
+      from: 'ecommercemanagementchuwa@gmail.com',
+      subject: `Notification for ${fileType} Document`,
+      html: message,
+    });
+
     res.status(200).json({ message: 'Notification sent successfully' });
   } catch (error) {
     console.error('Error sending notification:', error);
