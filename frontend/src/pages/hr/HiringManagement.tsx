@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu } from 'antd';
-import SendRegistrationLink from '../protected/SendRegistrationLink';
+import SendRegistrationLink from '../../components/auth/SendRegistrationLink';
 import LinkHistory from './LinkHistory';
 import HiringList from './HiringList';
 
