@@ -40,7 +40,7 @@ export const loginUser = createAsyncThunk(
           id: response._id,
           name: response.name,
           email: response.email,
-          role: response.role, 
+          role: response.role,
         })
       );
 
@@ -56,8 +56,9 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      // localStorage.removeItem('token');
+      // localStorage.removeItem('user');
+      localStorage.clear();
       state.user = null;
       state.isAuthenticated = false;
     },

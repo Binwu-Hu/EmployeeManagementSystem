@@ -173,8 +173,8 @@ const OnboardingPage: React.FC = () => {
 
   if (application?.status === 'Approved') {
     return (
-      <div>
-        Your application has been approved. Redirecting to the home page...
+      <div className='bg-white p-10 rounded shadow-md text-xl font-semibold text-green-500'>
+        Your application has been approved.
       </div>
     );
   }
@@ -237,14 +237,25 @@ const OnboardingPage: React.FC = () => {
               </Button>
             </div>
 
-            {applicationMessage ===
-              'Please fill in the application fields and submit.' &&
-              `${applicationMessage}`}
+            <div className='bg-white p-4 rounded shadow-md '>
+              <h2 className='text-xl font-semibold mb-2'>
+                {applicationMessage ===
+                  'Please fill in the application fields and submit.' &&
+                  `${applicationMessage}`}
 
-            <div>{application?.status}</div>
-            <div>
-              {application?.status === 'Rejected' &&
-                `HR feedback: ${application?.feedback}`}
+                <div
+                  className={
+                    application?.status === 'Rejected' ? 'text-red-500' : ''
+                  }
+                >
+                  {application?.status}
+                </div>
+              </h2>
+
+              <h2 className='text-xl font-semibold'>
+                {application?.status === 'Rejected' &&
+                  `HR feedback: ${application?.feedback}`}
+              </h2>
             </div>
 
             {employee && (
