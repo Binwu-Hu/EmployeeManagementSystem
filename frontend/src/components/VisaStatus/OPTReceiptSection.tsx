@@ -43,7 +43,7 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
 
   const renderContent = () => {
     const status = visaStatus?.optReceipt?.status;
-    console.log('status', status);
+    // console.log('status', status);
     switch (status) {
       case 'Unsubmitted':
         return (

@@ -109,7 +109,7 @@ export const approveOrRejectVisaDocument = async (req, res) => {
   console.log('req.body:', req.body);
   try {
     const { employeeId } = req.params;
-    const { fileType, action } = req.body;
+    const { fileType, action, feedback } = req.body;
 
     let visaStatus = await VisaStatus.findOne({ employee: employeeId });
 
@@ -120,12 +120,16 @@ export const approveOrRejectVisaDocument = async (req, res) => {
     // Update the document status based on the action (Approve/Reject)
     if (fileType === 'optReceipt') {
       visaStatus.optReceipt.status = action;
+      if (action === 'Rejected') visaStatus.optReceipt.feedback = feedback; // Add feedback if rejected
     } else if (fileType === 'optEAD') {
       visaStatus.optEAD.status = action;
+      if (action === 'Rejected') visaStatus.optEAD.feedback = feedback;
     } else if (fileType === 'i983Form') {
       visaStatus.i983Form.status = action;
+      if (action === 'Rejected') visaStatus.i983Form.feedback = feedback;
     } else if (fileType === 'i20Form') {
       visaStatus.i20Form.status = action;
+      if (action === 'Rejected') visaStatus.i20Form.feedback = feedback;
     }
 
     await visaStatus.save();
