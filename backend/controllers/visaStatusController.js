@@ -5,10 +5,9 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Upload Visa Documents
 export const uploadVisaDocuments = async (req, res) => {
-    try {
+  try {
       const { employeeId } = req.params;
       const { fileType } = req.body;
-        // console.log('req.files:', req.files);
       let visaStatus = await VisaStatus.findOne({ employee: employeeId });
       if (!visaStatus) {
         visaStatus = new VisaStatus({ employee: employeeId, visaType: 'OPT' });
@@ -23,28 +22,31 @@ export const uploadVisaDocuments = async (req, res) => {
       if (fileType === 'i20Form' && visaStatus.i983Form.status !== 'Approved') {
         return res.status(400).json({ message: 'You must upload I-983 and get it approved before uploading I-20.' });
       }
-  
+
+      // Clear the previous files and set the new ones
       if (fileType === 'optReceipt') {
-        if (!visaStatus.optReceipt.files) visaStatus.optReceipt.files = []; 
+        visaStatus.optReceipt.files = []; // Clear previous files
         visaStatus.optReceipt.files.push(...req.files.map(file => file.path));
         visaStatus.optReceipt.status = 'Pending';
       } else if (fileType === 'optEAD') {
-        if (!visaStatus.optEAD.files) visaStatus.optEAD.files = [];
+        visaStatus.optEAD.files = []; // Clear previous files
         visaStatus.optEAD.files.push(...req.files.map(file => file.path));
         visaStatus.optEAD.status = 'Pending';
       } else if (fileType === 'i983Form') {
-        if (!visaStatus.i983Form.files) visaStatus.i983Form.files = [];
+        visaStatus.i983Form.files = []; // Clear previous files
         visaStatus.i983Form.files.push(...req.files.map(file => file.path));
         visaStatus.i983Form.status = 'Pending';
       } else if (fileType === 'i20Form') {
-        if (!visaStatus.i20Form.files) visaStatus.i20Form.files = [];
+        visaStatus.i20Form.files = []; // Clear previous files
         visaStatus.i20Form.files.push(...req.files.map(file => file.path));
         visaStatus.i20Form.status = 'Pending';
       }
-    //   console.log('visaStatus:', visaStatus);
+
+      // Save the visa status
       await visaStatus.save();
       res.status(200).json({ message: 'Files uploaded successfully', visaStatus });
-    } catch (error) {
+
+  } catch (error) {
       console.error('Error uploading files:', error);
       res.status(500).json({ message: 'Error uploading files', error: error.message });
     }
