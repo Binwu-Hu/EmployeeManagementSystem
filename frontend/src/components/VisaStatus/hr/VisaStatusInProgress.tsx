@@ -21,21 +21,23 @@ const VisaStatusInProgress: React.FC = () => {
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [pdfFile, setPdfFile] = useState<string | null>(null); // URL of the PDF file
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetchVisaStatusesApi();
-        setVisaStatuses(response);
-        setFilteredStatuses(response);
-        setLoading(false);
-      } catch (err: any) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
+  // Separate fetch function to be reused
+  const fetchVisaStatuses = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchVisaStatusesApi();
+      setVisaStatuses(response);
+      setFilteredStatuses(response);
+      setLoading(false);
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
 
-    fetchData();
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchVisaStatuses();
   }, []);
 
   const handleSearch = (value: string) => {
@@ -70,8 +72,6 @@ const VisaStatusInProgress: React.FC = () => {
       ? document
       : `http://localhost:3000/${document}`;
 
-    console.log('correctPath', correctPath);
-
     setPdfFile(correctPath); // Set the URL of the PDF file
     setIsModalVisible(true);
   };
@@ -97,8 +97,10 @@ const VisaStatusInProgress: React.FC = () => {
       // Call the API to update the document status
       await updateVisaDocumentStatusApi(employeeId, fileType, action);
   
-      // Optionally: refresh the visa status or show a success message
       alert(`Document ${fileType} has been ${action}`);
+
+      // Re-fetch visa statuses to reflect the update
+      fetchVisaStatuses();
     } catch (error) {
       console.error('Error updating visa status:', error);
       alert('Error updating visa status');
