@@ -32,13 +32,12 @@ const OnboardingPage: React.FC = () => {
   const {
     application,
     applicationMessage,
-    //application.status,
     loading: applicationLoading,
   } = useSelector((state: RootState) => state.application);
 
   const userId = user?.id;
 
-  const [form] = Form.useForm(); // Create a form instance
+  const [form] = Form.useForm();
   const [updatedData, setUpdatedData] = useState(employee);
 
   useEffect(() => {
@@ -46,12 +45,6 @@ const OnboardingPage: React.FC = () => {
       dispatch(fetchEmployeeByUserId(userId));
     }
   }, [dispatch, userId]);
-
-  // useEffect(() => {
-  //   if (employee?._id) {
-  //     dispatch(getApplicationStatus());
-  //   }
-  // }, [dispatch, employee?._id]);
 
   useEffect(() => {
     if (employee?._id) {
@@ -75,9 +68,13 @@ const OnboardingPage: React.FC = () => {
     }
   }, [application?.status]);
 
+  useEffect(() => {
+    setUpdatedData(employee);
+  }, [employee]);
+
   const handleSubmit = () => {
     form
-      .validateFields() // Validate required fields before submission
+      .validateFields()
       .then(() => {
         if (updatedData && userId) {
           dispatch(updateEmployee({ userId, updatedData }))
@@ -111,8 +108,8 @@ const OnboardingPage: React.FC = () => {
       return {
         ...prev,
         [topLevelField]: {
-          ...(prev as any)[topLevelField], // Ensure existing values for nested object remain intact
-          [nestedFields.join('.')]: value, // Update the nested field
+          ...(prev as any)[topLevelField],
+          [nestedFields.join('.')]: value,
         },
       };
     });
@@ -127,7 +124,7 @@ const OnboardingPage: React.FC = () => {
       cancelText: 'Cancel',
       onOk: () => {
         form
-          .validateFields() // Validate required fields before submission
+          .validateFields()
           .then(() => {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -238,18 +235,12 @@ const OnboardingPage: React.FC = () => {
             </div>
 
             <div className='bg-white p-4 rounded shadow-md '>
-              <h2 className='text-xl font-semibold mb-2'>
+              <h2 className='text-xl font-semibold mb-2 text-red-500'>
                 {applicationMessage ===
                   'Please fill in the application fields and submit.' &&
                   `${applicationMessage}`}
 
-                <div
-                  className={
-                    application?.status === 'Rejected' ? 'text-red-500' : ''
-                  }
-                >
-                  {application?.status}
-                </div>
+                <div className={'text-red-500'}>{application?.status}</div>
               </h2>
 
               <h2 className='text-xl font-semibold'>
