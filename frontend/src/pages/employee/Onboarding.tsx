@@ -52,25 +52,37 @@ const OnboardingPage: React.FC = () => {
     }
   }, [dispatch, employee?._id]);
 
-  useEffect(() => {
-    setUpdatedData(employee);
-  }, [employee]);
+  // useEffect(() => {
+  //   if (
+  //     applicationMessage ===
+  //       'Please fill in the application fields and submit.' ||
+  //     application?.status === 'Rejected'
+  //   ) {
+  //     setUnchangeable(false);
+  //   } else {
+  //     setUnchangeable(true);
+  //   }
+  // }, [application?.status]);
+
+  // useEffect(() => {
+  //   setUpdatedData(employee);
+  // }, [employee, unchangeable]);
 
   useEffect(() => {
-    if (
-      applicationMessage ===
-        'Please fill in the application fields and submit.' ||
-      application?.status === 'Rejected'
-    ) {
-      setUnchangeable(false);
-    } else {
-      setUnchangeable(true);
+    if (employee) {
+      if (
+        applicationMessage ===
+          'Please fill in the application fields and submit.' ||
+        application?.status === 'Rejected'
+      ) {
+        setUnchangeable(false);
+      } else {
+        setUnchangeable(true);
+      }
+
+      setUpdatedData(employee);
     }
-  }, [application?.status]);
-
-  useEffect(() => {
-    setUpdatedData(employee);
-  }, [employee]);
+  }, [employee, applicationMessage, application?.status]);
 
   const handleSubmit = () => {
     form
