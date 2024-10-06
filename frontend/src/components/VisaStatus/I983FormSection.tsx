@@ -55,7 +55,6 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
   };
 
   const renderFileLink = (files: string[], employeeName: string, fileType: string) => {
-    console.log('files.length', files.length);
     return files?.map((file, index) => (
       <div key={index}>
         <Button type="link" onClick={() => handlePreview(`http://localhost:3000/${file}`)}>
@@ -122,37 +121,26 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
           <p>Download/Preview Templates:</p>
 
           <div style={{ marginBottom: '10px' }}>
-            <Button
-              type="link"
-              href="http://localhost:3000/static/i983-empty-template.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            {/* Use Modal for Preview */}
+            <Button type="link" onClick={() => handlePreview('http://localhost:3000/static/i983-empty-template.pdf')}>
               Preview Empty Template
             </Button>
-            <a
-              href="http://localhost:3000/static/i983-empty-template.pdf"
-              download="I-983_Empty_Template.pdf"
+            <Button
+              onClick={() => handleDownload('http://localhost:3000/static/i983-empty-template.pdf', 'Employee', 'i983-empty-template')}
             >
-              <Button>Download Empty Template</Button>
-            </a>
+              Download Empty Template
+            </Button>
           </div>
 
           <div style={{ marginBottom: '10px' }}>
-            <Button
-              type="link"
-              href="http://localhost:3000/static/i983-sample-template.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Button type="link" onClick={() => handlePreview('http://localhost:3000/static/i983-sample-template.pdf')}>
               Preview Sample Template
             </Button>
-            <a
-              href="http://localhost:3000/static/i983-sample-template.pdf"
-              download="I-983_Sample_Template.pdf"
+            <Button
+              onClick={() => handleDownload('http://localhost:3000/static/i983-sample-template.pdf', 'Employee', 'i983-sample-template')}
             >
-              <Button>Download Sample Template</Button>
-            </a>
+              Download Sample Template
+            </Button>
           </div>
         </div>
 
