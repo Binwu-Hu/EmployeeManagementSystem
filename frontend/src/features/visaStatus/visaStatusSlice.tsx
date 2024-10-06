@@ -57,7 +57,14 @@ const visaStatusSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearVisaStatus: (state) => {
+      state.visaStatus = null;
+      state.visaStatuses = [];
+      state.loading = false;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Fetch single visa status
@@ -95,4 +102,5 @@ const visaStatusSlice = createSlice({
   }
 });
 
+export const { clearVisaStatus } = visaStatusSlice.actions;
 export default visaStatusSlice.reducer;

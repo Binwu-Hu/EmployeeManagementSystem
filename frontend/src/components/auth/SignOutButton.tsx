@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Modal } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { logout } from '../../features/user/userSlice';
+import { clearVisaStatus } from '../../features/visaStatus/visaStatusSlice';
 import { useState } from 'react';
 
 const SignOutButton = () => {
@@ -20,6 +21,7 @@ const SignOutButton = () => {
 
   const handleConfirmLogout = () => {
     dispatch(logout());
+    dispatch(clearVisaStatus());
     navigate('/login');
     setIsModalVisible(false);
   };
