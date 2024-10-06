@@ -103,27 +103,88 @@ const OnboardingPage: React.FC = () => {
       });
   };
 
+  // const handleFieldChange = (field: string, value: any) => {
+  //   setUpdatedData((prev) => {
+  //     if (!prev) return prev;
+  //     const fieldParts = field.split('.');
+
+  //     if (fieldParts.length === 1) {
+  //       return {
+  //         ...prev,
+  //         [fieldParts[0]]: value,
+  //       };
+  //     }
+
+  //     const [topLevelField, ...nestedFields] = fieldParts;
+
+  //     return {
+  //       ...prev,
+  //       [topLevelField]: {
+  //         ...(prev as any)[topLevelField],
+  //         [nestedFields.join('.')]: value,
+  //       },
+  //     };
+  //   });
+  // };
+
   const handleFieldChange = (field: string, value: any) => {
     setUpdatedData((prev) => {
       if (!prev) return prev;
+
       const fieldParts = field.split('.');
 
-      if (fieldParts.length === 1) {
-        return {
-          ...prev,
-          [fieldParts[0]]: value,
-        };
-      }
+      const updateNestedField = (
+        object: any,
+        keys: string[],
+        value: any
+      ): any => {
+        const [currentKey, ...restKeys] = keys;
 
-      const [topLevelField, ...nestedFields] = fieldParts;
+        if (!currentKey) return object;
 
-      return {
-        ...prev,
-        [topLevelField]: {
-          ...(prev as any)[topLevelField],
-          [nestedFields.join('.')]: value,
-        },
+        const arrayMatch = currentKey.match(/^(\w+)\[(\d+)\]$/);
+        if (arrayMatch) {
+          const arrayKey = arrayMatch[1];
+          const index = parseInt(arrayMatch[2], 10);
+
+          const array = object[arrayKey] ? [...object[arrayKey]] : [];
+
+          while (array.length <= index) {
+            array.push({});
+          }
+
+          array[index] = updateNestedField(array[index], restKeys, value);
+
+          return {
+            ...object,
+            [arrayKey]: array,
+          };
+        } else {
+          if (restKeys.length === 0) {
+            return {
+              ...object,
+              [currentKey]: value,
+            };
+          } else {
+            return {
+              ...object,
+              [currentKey]: updateNestedField(
+                object[currentKey] || {},
+                restKeys,
+                value
+              ),
+            };
+          }
+        }
       };
+
+      const newData = updateNestedField(prev, fieldParts, value);
+
+      console.log('Field:', field);
+      console.log('Value:', value);
+      console.log('UpdatedData:', newData);
+
+      return newData;
     });
   };
 

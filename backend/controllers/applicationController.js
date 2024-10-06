@@ -45,8 +45,8 @@ const createApplication = asyncHandler(async (req, res) => {
         !employee.gender ||
         !employee.workAuthorization ||
         !employee.workAuthorization.visaType ||
-        !employee.workAuthorization.startDate ||
-        !employee.workAuthorization.endDate ||
+        // !employee.workAuthorization.startDate ||
+        // !employee.workAuthorization.endDate ||
         !employee.reference ||
         !employee.reference.firstName ||
         !employee.reference.lastName ||
@@ -107,8 +107,8 @@ const createApplication = asyncHandler(async (req, res) => {
     !employee.gender ||
     !employee.workAuthorization ||
     !employee.workAuthorization.visaType ||
-    !employee.workAuthorization.startDate ||
-    !employee.workAuthorization.endDate ||
+    // !employee.workAuthorization.startDate ||
+    // !employee.workAuthorization.endDate ||
     !employee.reference ||
     !employee.reference.firstName ||
     !employee.reference.lastName ||
