@@ -1,6 +1,9 @@
 import Employee from '../models/employeeModel.js';
-import { updateVisaStatus } from './visaStatusController.js';
+import VisaStatus from '../models/visaStatusModel.js';
 import asyncHandler from 'express-async-handler';
+import fs from 'fs';
+import path from 'path';
+import { updateVisaStatus } from './visaStatusController.js';
 
 // Controller to get employee by userId
 export const getEmployeeByUserId = async (req, res) => {
@@ -62,3 +65,46 @@ export const getAllEmployees = async (req, res) => {
     res.status(500).json({ message: 'Error fetching employees', error });
   }
 };
+
+// upload profile picture or documents (e.g., PDFs)
+export const uploadEmployeeFile = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+
+  const employee = await Employee.findOne({ userId });
+
+  if (!employee) {
+    return res.status(404).json({ message: 'Employee not found' });
+  }
+
+  // Check if a file was uploaded
+  if (!req.file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+
+  // Determine if the upload is a profile picture or document (PDF)
+  const filePath = `/uploads/${req.file.filename}`;
+  const fileType = path.extname(req.file.filename).toLowerCase();
+
+  if (fileType === '.pdf') {
+    // save in employee model
+    employee.workAuthorization.files = employee.workAuthorization.files || [];
+    employee.workAuthorization.files.push({ fileType: 'pdf', filePath });
+    await employee.save();
+
+    // save in visa status model
+    const visaStatus = await VisaStatus.findOne({ employee: employee._id });
+    if (!visaStatus) {
+      return res
+        .status(404)
+        .json({ message: 'VisaStatus not found for the employee' });
+    }
+    visaStatus.optReceipt.files.push(filePath);
+    await visaStatus.save();
+  } else {
+    employee.profilePicture = filePath;
+    await employee.save();
+  }
+
+  res.status(200).json({ message: 'File uploaded successfully', filePath, fileType });
+});
+

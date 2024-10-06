@@ -38,6 +38,7 @@ const employeeSchema = new mongoose.Schema(
         type: String,
         enum: ['Green Card', 'Citizen', 'H1-B', 'L2', 'F1', 'H4', 'Other'],
       },
+      files: [{ type: String }],
       startDate: { type: Date },
       endDate: { type: Date },
     },
@@ -59,11 +60,6 @@ const employeeSchema = new mongoose.Schema(
         relationship: { type: String },
       },
     ],
-    documents: {
-      profilePicture: { type: String },
-      driverLicense: { type: String },
-      workAuthorization: { type: String },
-    },
     registrationTokens: [
       { type: mongoose.Schema.Types.ObjectId, ref: 'RegistrationToken' },
     ],
