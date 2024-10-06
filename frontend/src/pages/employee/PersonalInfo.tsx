@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '../../app/store';
-import { Button, Form, Layout, Menu, message } from 'antd';
+import { Button, Form, Layout, Menu, message, Spin } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   clearEmployee,
@@ -73,78 +73,83 @@ const PersonalInfoPage: React.FC = () => {
     message.info('Changes discarded');
   };
 
-//   const handleFieldChange = (field: string, value: any) => {
-//     setUpdatedData((prev) => {
-//       if (!prev) return prev;
-//       return {
-//         ...prev,
-//         [field]: value,
-//       };
-//     });
-//   };
+  //   const handleFieldChange = (field: string, value: any) => {
+  //     setUpdatedData((prev) => {
+  //       if (!prev) return prev;
+  //       return {
+  //         ...prev,
+  //         [field]: value,
+  //       };
+  //     });
+  //   };
 
-const handleFieldChange = (field: string, value: any) => {
-  setUpdatedData((prev) => {
-    if (!prev) return prev;
+  const handleFieldChange = (field: string, value: any) => {
+    setUpdatedData((prev) => {
+      if (!prev) return prev;
 
-    const fieldParts = field.split('.');
+      const fieldParts = field.split('.');
 
-    const updateNestedField = (
-      object: any,
-      keys: string[],
-      value: any
-    ): any => {
-      const [currentKey, ...restKeys] = keys;
+      const updateNestedField = (
+        object: any,
+        keys: string[],
+        value: any
+      ): any => {
+        const [currentKey, ...restKeys] = keys;
 
-      if (!currentKey) return object;
+        if (!currentKey) return object;
 
-      const arrayMatch = currentKey.match(/^(\w+)\[(\d+)\]$/);
-      if (arrayMatch) {
-        const arrayKey = arrayMatch[1];
-        const index = parseInt(arrayMatch[2], 10);
+        const arrayMatch = currentKey.match(/^(\w+)\[(\d+)\]$/);
+        if (arrayMatch) {
+          const arrayKey = arrayMatch[1];
+          const index = parseInt(arrayMatch[2], 10);
 
-        const array = object[arrayKey] ? [...object[arrayKey]] : [];
+          const array = object[arrayKey] ? [...object[arrayKey]] : [];
 
-        while (array.length <= index) {
-          array.push({});
-        }
+          while (array.length <= index) {
+            array.push({});
+          }
 
-        array[index] = updateNestedField(array[index], restKeys, value);
+          array[index] = updateNestedField(array[index], restKeys, value);
 
-        return {
-          ...object,
-          [arrayKey]: array,
-        };
-      } else {
-        if (restKeys.length === 0) {
           return {
             ...object,
-            [currentKey]: value,
+            [arrayKey]: array,
           };
         } else {
-          return {
-            ...object,
-            [currentKey]: updateNestedField(
-              object[currentKey] || {},
-              restKeys,
-              value
-            ),
-          };
+          if (restKeys.length === 0) {
+            return {
+              ...object,
+              [currentKey]: value,
+            };
+          } else {
+            return {
+              ...object,
+              [currentKey]: updateNestedField(
+                object[currentKey] || {},
+                restKeys,
+                value
+              ),
+            };
+          }
         }
-      }
-    };
+      };
 
-    const newData = updateNestedField(prev, fieldParts, value);
+      const newData = updateNestedField(prev, fieldParts, value);
 
-    console.log('Field:', field);
-    console.log('Value:', value);
-    console.log('UpdatedData:', newData);
+      console.log('Field:', field);
+      console.log('Value:', value);
+      console.log('UpdatedData:', newData);
 
-    return newData;
-  });
-};
+      return newData;
+    });
+  };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className='flex justify-center items-center h-96'>
+        <Spin size='large' />
+      </div>
+    );
   if (error) return <div>Error: {error}</div>;
 
   return (

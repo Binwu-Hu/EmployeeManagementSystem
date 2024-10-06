@@ -4,7 +4,6 @@ import User from '../models/userModel.js';
 import RegistrationToken from '../models/registrationTokenModel.js';
 import asyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
-import VisaStatus from '../models/visaStatusModel.js';
 
 // @desc    Create application
 // @route   POST /api/application
@@ -136,16 +135,16 @@ const createApplication = asyncHandler(async (req, res) => {
   }
 
   // Check if employee's visaType is 'H1-B', 'L2', 'F1', or 'H4'
-  const validVisaTypes = ['H1-B', 'L2', 'F1', 'H4'];
-  if (validVisaTypes.includes(employee.workAuthorization.visaType)) {
-    try {
-      const result = await updateVisaStatus(employee._id, employee.workAuthorization.visaType);
-      console.log(result.message);
-    } catch (error) {
-      console.error('Error updating visa status:', error.message);
-      return res.status(500).json({ message: 'Error updating visa status', error: error.message });
-    }
-  }
+  // const validVisaTypes = ['H1-B', 'L2', 'F1', 'H4'];
+  // if (validVisaTypes.includes(employee.workAuthorization.visaType)) {
+  //   try {
+  //     const result = await updateVisaStatus(employee._id, employee.workAuthorization.visaType);
+  //     console.log(result.message);
+  //   } catch (error) {
+  //     console.error('Error updating visa status:', error.message);
+  //     return res.status(500).json({ message: 'Error updating visa status', error: error.message });
+  //   }
+  // }
 
   const application = new Application({
     employee: employee._id,
@@ -285,11 +284,16 @@ const updateApplication = asyncHandler(async (req, res) => {
   const validVisaTypes = ['H1-B', 'L2', 'F1', 'H4'];
   if (validVisaTypes.includes(employee.workAuthorization.visaType)) {
     try {
-      const result = await updateVisaStatus(employee._id, employee.workAuthorization.visaType);
+      const result = await updateVisaStatus(
+        employee._id,
+        employee.workAuthorization.visaType
+      );
       console.log(result.message);
     } catch (error) {
       console.error('Error updating visa status:', error.message);
-      return res.status(500).json({ message: 'Error updating visa status', error: error.message });
+      return res
+        .status(500)
+        .json({ message: 'Error updating visa status', error: error.message });
     }
   }
 
