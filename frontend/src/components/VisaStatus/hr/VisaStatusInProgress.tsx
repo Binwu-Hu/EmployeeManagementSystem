@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Table, Input, Button, Modal, Form, Input as AntInput } from 'antd';
+import { Table, Input, Button, Modal, Form, Dropdown, Menu, Input as AntInput } from 'antd';
 import { fetchVisaStatusesApi, updateVisaDocumentStatusApi, sendNotificationApi } from '../../../api/visaStatus';
 import { approveVisaStatus } from '../../../features/visaStatus/visaStatusSlice';
 import moment from 'moment';
@@ -187,35 +187,39 @@ const VisaStatusInProgress: React.FC = () => {
       { name: 'I-983 Form', status: visaStatus.i983Form.status, files: visaStatus.i983Form.files },
       { name: 'I-20 Form', status: visaStatus.i20Form.status, files: visaStatus.i20Form.files }
     ];
+    const handleMenuClick = ({ key }: { key: string }) => {
+      handleViewDocument(key); // key will be the file URL
+    };
+  
+    const documentFiles = documents
+      .filter(doc => doc.status === 'Pending' && doc.files?.length > 0)
+      .flatMap((doc, docIndex) =>
+        doc.files.map((file: string, index: number) => ({
+          label: `Document ${index + 1}`, 
+          key: file // The file URL to be viewed
+        }))
+      );
+  
+    const menu = (
+      <Menu onClick={handleMenuClick} items={documentFiles} />
+    );
 
     return (
-      <>
-        {documents.map((doc, docIndex) => {
-          if (doc.status === 'Pending' && doc.files?.length > 0) {
-            return (
-              <div key={docIndex}>
-                <p>{doc.name}</p>
-                {doc.files.map((file: string, index: number) => (
-                  <Button key={index} onClick={() => handleViewDocument(file)}>
-                    View Document {index + 1}
-                  </Button>
-                ))}
-                <Button
-                  type="default"
-                  style={{ color: 'blue', border: '0.5px solid blue', backgroundColor: 'white' }}
-                  onClick={() => handleApproveReject(visaStatus, 'Approved')}
-                >
-                  Approve
-                </Button>
-                <Button danger onClick={() => handleApproveReject(visaStatus, 'Rejected')}>
-                  Reject
-                </Button>
-                </div>
-            );
-          }
-          return null;
-        })}
-      </>
+      <div>
+        <Dropdown overlay={menu} trigger={['click']}>
+          <Button type="default">View</Button>
+        </Dropdown>
+        <Button
+          type="default"
+          style={{ color: 'blue', border: '0.5px solid blue', backgroundColor: 'white' }}
+          onClick={() => handleApproveReject(visaStatus, 'Approved')}
+        >
+          Approve
+        </Button>
+        <Button danger onClick={() => handleApproveReject(visaStatus, 'Rejected')}>
+          Reject
+        </Button>
+      </div>
     );
   };
 
