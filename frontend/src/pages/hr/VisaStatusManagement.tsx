@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Layout, Menu } from 'antd';
-import VisaStatusInProgress from '../../components/VisaStatus/VisaStatusInProgress';
+import VisaStatusInProgress from '../../components/VisaStatus/hr/VisaStatusInProgress';
+import VisaStatusAllEmployees from '../../components/VisaStatus/hr/VisaStatusAllEmployees';
 
 const { Sider, Content } = Layout;
 
@@ -16,20 +17,14 @@ const VisaStatusManagement: React.FC = () => {
           selectedKeys={[selectedKey]}
           onClick={({ key }) => setSelectedKey(key)}
         >
-          <Menu.Item
-            key="1"
-            style={{
-              backgroundColor: selectedKey === '1' ? 'transparent' : '',
-              color: selectedKey === '1' ? '#fff' : '',
-            }}
-          >
-            Visa Status In Progress
-          </Menu.Item>
+          <Menu.Item key="1">Visa Status In Progress</Menu.Item>
+          <Menu.Item key="2">All Employees Visa Status</Menu.Item>
         </Menu>
       </Sider>
       <Layout className="bg-gray-50">
         <Content className="p-6">
           {selectedKey === '1' && <VisaStatusInProgress />}
+          {selectedKey === '2' && <VisaStatusAllEmployees />}
         </Content>
       </Layout>
     </Layout>

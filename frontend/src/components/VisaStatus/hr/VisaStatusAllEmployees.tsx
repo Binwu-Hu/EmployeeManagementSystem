@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Input, Button } from 'antd';
-import { fetchVisaStatusesApi } from '../../api/visaStatus';
+import { fetchVisaStatusesApi } from '../../../api/visaStatus';
 import moment from 'moment';
 
 const { Search } = Input;
 
-const VisaStatusInProgress: React.FC = () => {
+const VisaStatusAllEmployees: React.FC = () => {
   const [visaStatuses, setVisaStatuses] = useState<VisaStatusType[]>([]);
   const [filteredStatuses, setFilteredStatuses] = useState<VisaStatusType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -35,31 +35,18 @@ const VisaStatusInProgress: React.FC = () => {
     setFilteredStatuses(filteredData);
   };
 
-  const getDaysRemaining = (endDate: string) => {
-    const today = moment();
-    const end = moment(endDate);
-    return end.diff(today, 'days');
-  };
-
-  const getNextStep = (visaStatus: any) => {
-    if (visaStatus.optReceipt.status === 'Pending') return 'Wait for OPT Receipt approval';
-    if (visaStatus.optEAD.status === 'Pending') return 'Wait for OPT EAD approval';
-    if (visaStatus.i983Form.status === 'Pending') return 'Wait for I-983 Form approval';
-    if (visaStatus.i20Form.status === 'Pending') return 'Wait for I-20 Form approval';
-
-    if (visaStatus.optReceipt.status === 'Unsubmitted') return 'Submit OPT Receipt';
-    if (visaStatus.optEAD.status === 'Unsubmitted') return 'Submit OPT EAD';
-    if (visaStatus.i983Form.status === 'Unsubmitted') return 'Submit I-983 Form';
-    if (visaStatus.i20Form.status === 'Unsubmitted') return 'Submit I-20 Form';
-
-    return 'All documents approved';
-  };
-
-  const handleAction = (visaStatus: any) => {
-    if (getNextStep(visaStatus).includes('Submit')) {
-      return <Button type="primary">Send Notification</Button>;
-    }
-    return null;
+  const renderFileLink = (files: string[]) => {
+    return files?.map((file, index) => (
+      <div key={index}>
+        <a href={`http://localhost:3000/${file}`} target="_blank" rel="noopener noreferrer">
+          Preview
+        </a>{' '}
+        |{' '}
+        <a href={`http://localhost:3000/${file}`} download>
+          Download
+        </a>
+      </div>
+    ));
   };
 
   const columns = [
@@ -94,22 +81,28 @@ const VisaStatusInProgress: React.FC = () => {
           : 'N/A',
     },
     {
-      title: 'Number of Days Remaining',
-      key: 'daysRemaining',
-      render: (visaStatus: any) =>
-        visaStatus.employee.workAuthorization.endDate
-          ? getDaysRemaining(visaStatus.employee.workAuthorization.endDate)
-          : 'N/A',
+      title: 'OPT Receipt Files',
+      dataIndex: 'optReceipt',
+      key: 'optReceiptFiles',
+      render: (optReceipt: any) => (optReceipt.status === 'Approved' ? renderFileLink(optReceipt.files) : 'N/A'),
     },
     {
-      title: 'Next Steps',
-      key: 'nextSteps',
-      render: (visaStatus: any) => getNextStep(visaStatus),
+      title: 'OPT EAD Files',
+      dataIndex: 'optEAD',
+      key: 'optEADFiles',
+      render: (optEAD: any) => (optEAD.status === 'Approved' ? renderFileLink(optEAD.files) : 'N/A'),
     },
     {
-      title: 'Action',
-      key: 'action',
-      render: (visaStatus: any) => handleAction(visaStatus),
+      title: 'I-983 Form Files',
+      dataIndex: 'i983Form',
+      key: 'i983FormFiles',
+      render: (i983Form: any) => (i983Form.status === 'Approved' ? renderFileLink(i983Form.files) : 'N/A'),
+    },
+    {
+      title: 'I-20 Form Files',
+      dataIndex: 'i20Form',
+      key: 'i20FormFiles',
+      render: (i20Form: any) => (i20Form.status === 'Approved' ? renderFileLink(i20Form.files) : 'N/A'),
     },
   ];
 
@@ -128,7 +121,6 @@ const VisaStatusInProgress: React.FC = () => {
         dataSource={filteredStatuses.map((status: any) => ({
           key: status._id,
           employee: status.employee,
-          visaType: status.visaType,
           optReceipt: status.optReceipt,
           optEAD: status.optEAD,
           i983Form: status.i983Form,
@@ -141,4 +133,4 @@ const VisaStatusInProgress: React.FC = () => {
   );
 };
 
-export default VisaStatusInProgress;
+export default VisaStatusAllEmployees;
