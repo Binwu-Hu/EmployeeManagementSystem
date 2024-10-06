@@ -5,7 +5,6 @@ import RegistrationToken from '../models/registrationTokenModel.js';
 import { updateVisaStatus } from '../controllers/visaStatusController.js';
 import asyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
-import VisaStatus from '../models/visaStatusModel.js';
 
 // @desc    Create application
 // @route   POST /api/application
@@ -135,7 +134,7 @@ const createApplication = asyncHandler(async (req, res) => {
       });
     }
   }
-
+  
   try {
     const result = await updateVisaStatus(employee._id, employee.workAuthorization.visaType);
     console.log(result.message);
@@ -143,7 +142,7 @@ const createApplication = asyncHandler(async (req, res) => {
     console.error('Error updating visa status:', error.message);
     return res.status(500).json({ message: 'Error updating visa status', error: error.message });
   }
-
+  
   const application = new Application({
     employee: employee._id,
     status: 'Pending',

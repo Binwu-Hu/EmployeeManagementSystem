@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '../../app/store';
-import { Table } from 'antd';
+import { Table, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { fetchTokenList } from '../../features/application/applicationSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -54,7 +54,12 @@ const LinkHistory: React.FC = () => {
     },
   ];
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className='flex justify-center items-center h-96'>
+        <Spin size='large' />
+      </div>
+    );
   if (error) return <div>Error: {error}</div>;
 
   return (

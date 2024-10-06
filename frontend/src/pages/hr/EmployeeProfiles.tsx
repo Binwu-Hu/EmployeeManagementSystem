@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '../../app/store';
-import { Input, Table } from 'antd';
+import { Input, Table, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
   fetchEmployees,
@@ -66,7 +66,12 @@ const EmployeeProfilesPage: React.FC = () => {
     { title: 'Email', dataIndex: 'email', key: 'email' },
   ];
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className='flex justify-center items-center h-96'>
+        <Spin size='large' />
+      </div>
+    );
   if (error) return <div>Error: {error}</div>;
 
   return (
