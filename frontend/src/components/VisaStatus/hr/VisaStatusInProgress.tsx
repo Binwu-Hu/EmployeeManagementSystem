@@ -74,25 +74,27 @@ const VisaStatusInProgress: React.FC = () => {
   };
 
   const getNextStep = (visaStatus) => {
-    // Check for rejected documents first
-    if (visaStatus.optEAD.status === 'Rejected') return 'Resubmit OPT EAD';
-    if (visaStatus.i983Form.status === 'Rejected') return 'Resubmit I-983 Form';
-    if (visaStatus.i20Form.status === 'Rejected') return 'Resubmit I-20 Form';
-  
-    // Check for unsubmitted documents next
-    if (visaStatus.optEAD.status === 'Unsubmitted') return 'Submit OPT EAD';
-    if (visaStatus.i983Form.status === 'Unsubmitted') return 'Submit I-983 Form';
-    if (visaStatus.i20Form.status === 'Unsubmitted') return 'Submit I-20 Form';
-    
-    // Fallback to pending approvals
+    // Check for pending documents first
     if (visaStatus.optReceipt.status === 'Pending') return 'Wait for OPT Receipt approval';
     if (visaStatus.optEAD.status === 'Pending') return 'Wait for OPT EAD approval';
     if (visaStatus.i983Form.status === 'Pending') return 'Wait for I-983 Form approval';
     if (visaStatus.i20Form.status === 'Pending') return 'Wait for I-20 Form approval';
-
+  
+    // If no pending, check for rejected documents
+    if (visaStatus.optReceipt.status === 'Rejected') return 'Resubmit OPT Receipt';
+    if (visaStatus.optEAD.status === 'Rejected') return 'Resubmit OPT EAD';
+    if (visaStatus.i983Form.status === 'Rejected') return 'Resubmit I-983 Form';
+    if (visaStatus.i20Form.status === 'Rejected') return 'Resubmit I-20 Form';
+    
+    // Finally, check for unsubmitted documents
+    if (visaStatus.optReceipt.status === 'Unsubmitted') return 'Submit OPT Receipt';
+    if (visaStatus.optEAD.status === 'Unsubmitted') return 'Submit OPT EAD';
+    if (visaStatus.i983Form.status === 'Unsubmitted') return 'Submit I-983 Form';
+    if (visaStatus.i20Form.status === 'Unsubmitted') return 'Submit I-20 Form';
+      
     // Default case when all documents are approved
     return 'All documents approved';
-};
+  };  
 
   const handleViewDocument = (document: string) => {
     const correctPath = document.startsWith('http')
@@ -195,19 +197,8 @@ const VisaStatusInProgress: React.FC = () => {
       { name: 'I-20 Form', status: visaStatus.i20Form.status, files: visaStatus.i20Form.files }
     ];
   
-    // Check for any document that is "Rejected" or "Unsubmitted"
-    const firstRejectedOrUnsubmitted = documents.find(doc => doc.status === 'Rejected' || doc.status === 'Unsubmitted');
-    if (firstRejectedOrUnsubmitted) {
-      const fileType = getRejectedOrUnsubmittedFileType(visaStatus);
-      return (
-        <Button type="primary" onClick={() => handleSendNotification(visaStatus.employee._id, fileType)}>
-          Send Notification
-        </Button>
-      );
-    }
-  
-    // If no rejected or unsubmitted documents, show the approval/rejection UI for pending documents
-    const documentFiles = documents
+    // Check for pending documents and show approval/rejection UI if any are found
+    const pendingDocuments = documents
       .filter(doc => doc.status === 'Pending' && doc.files?.length > 0)
       .flatMap((doc, docIndex) =>
         doc.files.map((file: string, index: number) => ({
@@ -216,13 +207,13 @@ const VisaStatusInProgress: React.FC = () => {
         }))
       );
   
-    if (documentFiles.length > 0) {
+    if (pendingDocuments.length > 0) {
       const handleMenuClick = ({ key }: { key: string }) => {
         handleViewDocument(key); // key will be the file URL
       };
   
       const menu = (
-        <Menu onClick={handleMenuClick} items={documentFiles} />
+        <Menu onClick={handleMenuClick} items={pendingDocuments} />
       );
   
       return (
@@ -244,8 +235,21 @@ const VisaStatusInProgress: React.FC = () => {
       );
     }
   
-    return null; // If no actions available, return nothing
-  };  
+    // If no pending documents, check for rejected or unsubmitted documents
+    const firstRejectedOrUnsubmitted = documents.find(doc => doc.status === 'Rejected' || doc.status === 'Unsubmitted');
+    if (firstRejectedOrUnsubmitted) {
+      const fileType = getRejectedOrUnsubmittedFileType(visaStatus);
+      return (
+        <Button type="primary" onClick={() => handleSendNotification(visaStatus.employee._id, fileType)}>
+          Send Notification
+        </Button>
+      );
+    }
+  
+    // No actions available
+    return null;
+  };
+  
 
   const columns = [
     {
