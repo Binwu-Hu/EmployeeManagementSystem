@@ -1,14 +1,14 @@
 import applicationRoutes from './routes/applicationRoutes.js';
 import connectDB from './db/index.js';
+import cors from 'cors'
 import dotenv from 'dotenv';
-import path from 'path';
 import employeeRoutes from './routes/employeeRoutes.js';
 import { errorHandlerMiddleware } from './middleware/errorHandler.js';
 import express from 'express';
+import path from 'path';
 import registrationRoutes from './routes/registrationRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import visaStatusRoutes from './routes/visaStatusRoutes.js';
-import cors from 'cors'
 
 dotenv.config();
 
@@ -40,6 +40,7 @@ app.use('/api/employees', employeeRoutes);
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/static', express.static(path.join(__dirname, 'static')));
+
 
 app.use(errorHandlerMiddleware);
 const port = 3000;

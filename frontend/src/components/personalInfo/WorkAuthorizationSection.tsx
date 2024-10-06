@@ -1,9 +1,12 @@
-import { Button, DatePicker, Form, Input, Radio, Upload } from 'antd';
+import { AppDispatch, RootState } from '../../app/store';
+import { Button, DatePicker, Form, Input, Radio, Upload, message } from 'antd';
+import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Employee } from '../../utils/type';
-import React from 'react';
-import { UploadOutlined } from '@ant-design/icons';
 import moment from 'moment';
+import { uploadEmployeeFile } from '../../features/employee/employeeSlice';
 
 interface WorkAuthorizationSectionProps {
   employee: Employee;
@@ -20,6 +23,43 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
   form,
   unchangeable,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.user);
+
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>(
+    employee?.workAuthorization?.files || []
+  );
+  const handleUpload = (file: any) => {
+    const userId = user?.id;
+    if (userId) {
+      dispatch(uploadEmployeeFile({ userId, file }))
+        .unwrap()
+        .then(({ filePath }) => {
+          console.log('File uploaded:', filePath);
+          const newFiles = [...uploadedFiles, filePath];
+          setUploadedFiles(newFiles);
+
+          // Update the OPT receipt field with the file path
+          onChange('workAuthorization.files', newFiles);
+          message.success('OPT Receipt uploaded successfully!');
+        })
+        .catch((error) => {
+          console.error('Upload failed:', error);
+          message.error('Failed to upload OPT Receipt');
+        });
+    }
+  };
+
+  const handleFileRemove = (filePath: string) => {
+    // Remove the file from the list and update the state and form
+    const updatedFiles = uploadedFiles.filter((file) => file !== filePath);
+    setUploadedFiles(updatedFiles);
+    onChange('workAuthorization.files', updatedFiles);
+
+    // Optionally, make a request to delete the file from the server
+    message.success('File removed successfully');
+  };
+
   return (
     <div className='bg-white p-4 rounded shadow-md'>
       <h2 className='text-xl font-semibold'>Work Authorization</h2>
@@ -106,21 +146,59 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
 
             {/* Show Upload Field Only if Visa Type is F1 */}
             {form.getFieldValue('visaType') === 'F1' && (
-              <Form.Item label='Upload OPT Receipt'>
-                <Upload
-                  disabled={unchangeable || !isEditing}
-                  onChange={(info) =>
-                    onChange('documents.workAuthorization', info.file.name)
-                  }
+              <>
+                <Form.Item
+                  label='Upload OPT Receipt'
+                  name='optReceipt'
+                  rules={[
+                    {
+                      required: form.getFieldValue('visaType') === 'F1',
+                      message: 'OPT Receipt is required for F1 visa type',
+                    },
+                  ]}
                 >
-                  <Button
-                    icon={<UploadOutlined />}
+                  <Upload
+                    listType='text'
+                    accept='.pdf' // Accept only PDF files
                     disabled={unchangeable || !isEditing}
+                    beforeUpload={(file) => {
+                      handleUpload(file);
+                      return false;
+                    }}
+                    showUploadList={false}
                   >
-                    Upload OPT Receipt
-                  </Button>
-                </Upload>
-              </Form.Item>
+                    <Button
+                      icon={<UploadOutlined />}
+                      disabled={unchangeable || !isEditing}
+                    >
+                      Upload OPT Receipt
+                    </Button>
+                  </Upload>
+                </Form.Item>
+                <ul>
+                  {uploadedFiles.map((filePath) => (
+                    <li key={filePath} className='flex items-center space-x-2'>
+                      <a
+                        href={`http://localhost:3000${filePath}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
+                        {filePath.split('/').pop()}{' '}
+                        {/* Display the file name */}
+                      </a>
+                      {isEditing && (
+                        <Button
+                          type='link'
+                          icon={<DeleteOutlined />}
+                          onClick={() => handleFileRemove(filePath)}
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </>
             )}
 
             {form.getFieldValue('visaType') === 'Other' && (

@@ -84,12 +84,13 @@ export const getVisaStatusByEmployee = async (req, res) => {
 };
 
 // Update visa status function
-export const updateVisaStatus = async (employeeId, visaType) => {
+export const updateVisaStatus = async (employeeId, visaType, files=[]) => {
   try {
     let visaStatus = await VisaStatus.findOne({ employee: employeeId });
 
     if (visaStatus) {
       visaStatus.visaType = visaType;
+      visaStatus.optReceipt.files = files;
       await visaStatus.save();
       return { message: 'Visa status updated successfully', visaStatus };
     } else {

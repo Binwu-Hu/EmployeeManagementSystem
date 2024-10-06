@@ -15,6 +15,7 @@ interface WorkAuthorization {
   visaType: 'Green Card' | 'Citizen' | 'H1-B' | 'L2' | 'F1' | 'H4' | 'Other';
   startDate: string; // ISO format date
   endDate: string; // ISO format date
+  files: string[];
 }
 
 interface Reference {
@@ -35,12 +36,6 @@ interface EmergencyContact {
   relationship: string;
 }
 
-interface Documents {
-  profilePicture: string;
-  driverLicense: string;
-  workAuthorization: string;
-}
-
 export interface Employee {
   _id: string;
   firstName: string;
@@ -58,7 +53,6 @@ export interface Employee {
   workAuthorization: WorkAuthorization;
   reference?: Reference;
   emergencyContacts: EmergencyContact[];
-  documents: Documents;
   registrationTokens?: string[]; // Array of registration token IDs
   userId: string;
   createdAt?: string; // ISO format date

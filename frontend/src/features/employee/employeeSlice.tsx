@@ -28,7 +28,7 @@ export const fetchEmployeeByUserId = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-    //   console.log('employee:', response.data);
+      //   console.log('employee:', response.data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(
@@ -88,6 +88,41 @@ export const fetchEmployees = createAsyncThunk(
   }
 );
 
+export const uploadEmployeeFile = createAsyncThunk(
+  'employee/uploadFile',
+  async (
+    { userId, file }: { userId: string; file: File },
+    { rejectWithValue }
+  ) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      // Prepare the form data for file upload
+      const formData = new FormData();
+      formData.append('file', file); // Append the file
+
+      const response = await axios.post(
+        `/api/employees/upload/${userId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data', // Required for file uploads
+          },
+        }
+      );
+
+      const { filePath, fileType } = response.data;
+      return {filePath, fileType};
+    } catch (error: any) {
+      // Return the error message in case of failure
+      return rejectWithValue(
+        error.response?.data?.message || 'File upload failed'
+      );
+    }
+  }
+);
+
 const employeeSlice = createSlice({
   name: 'employee',
   initialState,
@@ -135,6 +170,25 @@ const employeeSlice = createSlice({
         state.employees = action.payload;
       })
       .addCase(fetchEmployees.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(uploadEmployeeFile.pending, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(uploadEmployeeFile.fulfilled, (state, action) => {
+        state.loading = false;
+        if (state.employee) {
+            const { filePath, fileType } = action.payload;
+          if (fileType === '.pdf') {
+            state.employee.workAuthorization.files.push(filePath);
+          } else {
+            state.employee.profilePicture = filePath
+          }
+        }
+      })
+      .addCase(uploadEmployeeFile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
