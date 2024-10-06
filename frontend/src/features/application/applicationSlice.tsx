@@ -118,7 +118,9 @@ const applicationSlice = createSlice({
   reducers: {
     clearApplication: (state) => {
       state.application = null;
+      state.applications = [];
       state.applicationMessage = null;
+      localStorage.clear();
     },
   },
   extraReducers: (builder) => {

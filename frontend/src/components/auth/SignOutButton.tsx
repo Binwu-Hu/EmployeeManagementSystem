@@ -4,6 +4,8 @@ import { Modal } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { logout } from '../../features/user/userSlice';
 import { clearVisaStatus } from '../../features/visaStatus/visaStatusSlice';
+import { clearEmployee } from '../../features/employee/employeeSlice';
+import { clearApplication } from '../../features/application/applicationSlice';
 import { useState } from 'react';
 
 const SignOutButton = () => {
@@ -22,6 +24,8 @@ const SignOutButton = () => {
   const handleConfirmLogout = () => {
     dispatch(logout());
     dispatch(clearVisaStatus());
+    dispatch(clearEmployee());
+    dispatch(clearApplication());
     navigate('/login');
     setIsModalVisible(false);
   };
@@ -34,12 +38,12 @@ const SignOutButton = () => {
       </div>
 
       <Modal
-        title="Confirm Logout"
+        title='Confirm Logout'
         visible={isModalVisible}
         onOk={handleConfirmLogout}
         onCancel={handleCancel}
-        okText="Yes"
-        cancelText="No"
+        okText='Yes'
+        cancelText='No'
         centered
       >
         <p>Are you sure you want to sign out?</p>
