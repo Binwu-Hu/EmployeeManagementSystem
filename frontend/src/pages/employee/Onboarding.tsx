@@ -52,22 +52,6 @@ const OnboardingPage: React.FC = () => {
     }
   }, [dispatch, employee?._id]);
 
-  // useEffect(() => {
-  //   if (
-  //     applicationMessage ===
-  //       'Please fill in the application fields and submit.' ||
-  //     application?.status === 'Rejected'
-  //   ) {
-  //     setUnchangeable(false);
-  //   } else {
-  //     setUnchangeable(true);
-  //   }
-  // }, [application?.status]);
-
-  // useEffect(() => {
-  //   setUpdatedData(employee);
-  // }, [employee, unchangeable]);
-
   useEffect(() => {
     if (employee) {
       if (
@@ -102,30 +86,6 @@ const OnboardingPage: React.FC = () => {
         message.error('Please fill in all required fields.');
       });
   };
-
-  // const handleFieldChange = (field: string, value: any) => {
-  //   setUpdatedData((prev) => {
-  //     if (!prev) return prev;
-  //     const fieldParts = field.split('.');
-
-  //     if (fieldParts.length === 1) {
-  //       return {
-  //         ...prev,
-  //         [fieldParts[0]]: value,
-  //       };
-  //     }
-
-  //     const [topLevelField, ...nestedFields] = fieldParts;
-
-  //     return {
-  //       ...prev,
-  //       [topLevelField]: {
-  //         ...(prev as any)[topLevelField],
-  //         [nestedFields.join('.')]: value,
-  //       },
-  //     };
-  //   });
-  // };
 
   const handleFieldChange = (field: string, value: any) => {
     setUpdatedData((prev) => {
@@ -303,7 +263,7 @@ const OnboardingPage: React.FC = () => {
                 onClick={handleApply}
                 disabled={application?.status === 'Pending'}
               >
-                {application?.status === 'Rejected' ? 'Resubmit' : 'Apply'}
+                {application?.status === 'Rejected' ? 'Resubmit' : 'Submit'}
               </Button>
             </div>
 
