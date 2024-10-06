@@ -181,29 +181,42 @@ const VisaStatusInProgress: React.FC = () => {
   };  
 
   const handleAction = (visaStatus: any) => {
-    const pendingDocs = [
+    const documents = [
       { name: 'OPT Receipt', status: visaStatus.optReceipt.status, files: visaStatus.optReceipt.files },
       { name: 'OPT EAD', status: visaStatus.optEAD.status, files: visaStatus.optEAD.files },
       { name: 'I-983 Form', status: visaStatus.i983Form.status, files: visaStatus.i983Form.files },
       { name: 'I-20 Form', status: visaStatus.i20Form.status, files: visaStatus.i20Form.files }
     ];
 
-    const pendingDoc = pendingDocs.find(doc => doc.status === 'Pending');
-
-    if (pendingDoc) {
-      return (
-        <>
-          <Button onClick={() => handleViewDocument(pendingDoc.files[0])}>View</Button>
-          <Button type="default" style={{ color: 'blue', border: '0.5px solid blue', backgroundColor: 'white' }} onClick={() => handleApproveReject(visaStatus, 'Approved')}>Approve</Button>
-          <Button danger onClick={() => handleApproveReject(visaStatus, 'Rejected')}>Reject</Button>
-        </>
-      );
-    } else {
-      const fileType = getRejectedOrUnsubmittedFileType(visaStatus); 
-      console.log('fileType', fileType);
-      return <Button type="primary" onClick={() => handleSendNotification(visaStatus.employee._id, fileType)}>Send Notification</Button>;
-
-    }
+    return (
+      <>
+        {documents.map((doc, docIndex) => {
+          if (doc.status === 'Pending' && doc.files?.length > 0) {
+            return (
+              <div key={docIndex}>
+                <p>{doc.name}</p>
+                {doc.files.map((file: string, index: number) => (
+                  <Button key={index} onClick={() => handleViewDocument(file)}>
+                    View Document {index + 1}
+                  </Button>
+                ))}
+                <Button
+                  type="default"
+                  style={{ color: 'blue', border: '0.5px solid blue', backgroundColor: 'white' }}
+                  onClick={() => handleApproveReject(visaStatus, 'Approved')}
+                >
+                  Approve
+                </Button>
+                <Button danger onClick={() => handleApproveReject(visaStatus, 'Rejected')}>
+                  Reject
+                </Button>
+                </div>
+            );
+          }
+          return null;
+        })}
+      </>
+    );
   };
 
   const columns = [
