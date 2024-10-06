@@ -330,7 +330,11 @@ const OnboardingPage: React.FC = () => {
                   'Please fill in the application fields and submit.' &&
                   `${applicationMessage}`}
 
-                <div className={'text-red-500'}>{application?.status}</div>
+                <div className={'text-red-500'}>
+                  {application?.status}
+                  {application?.status === 'Pending' &&
+                    ' - Please wait for HR to review your application.'}
+                </div>
               </h2>
 
               <h2 className='text-xl font-semibold'>
