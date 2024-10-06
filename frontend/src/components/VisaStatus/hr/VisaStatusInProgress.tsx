@@ -99,7 +99,7 @@ const VisaStatusInProgress: React.FC = () => {
       return (
         <>
           <Button onClick={() => handleViewDocument(pendingDoc.files[0])}>View</Button>
-          <Button type="primary" onClick={() => handleApproveReject(visaStatus, 'Approved')}>Approve</Button>
+          <Button type="default" style={{ color: 'blue', border: '0.5px solid blue', backgroundColor: 'white' }} onClick={() => handleApproveReject(visaStatus, 'Approved')}>Approve</Button>
           <Button danger onClick={() => handleApproveReject(visaStatus, 'Rejected')}>Reject</Button>
         </>
       );
