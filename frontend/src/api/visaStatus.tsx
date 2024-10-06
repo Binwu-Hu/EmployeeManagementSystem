@@ -30,6 +30,11 @@ export const updateVisaDocumentStatusApi = (employeeId: string, fileType: string
   return patch(`/visa-status/update/${employeeId}`, data);
 };
 
+export const sendNotificationApi = (employeeId: string, fileType: string) => {
+  const data = { fileType }; // Send fileType as data payload
+  return post(`/visa-status/notify/${employeeId}`, data);
+};
+
 // // API call to update visa status
 // export const updateVisaStatusApi = (visaStatusId: string, status: string) => {
 //   const data = { status };  // Payload containing the new status
