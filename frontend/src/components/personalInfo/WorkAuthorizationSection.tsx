@@ -40,8 +40,7 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
           setUploadedFiles(newFiles);
 
           // Update the OPT receipt field with the file path
-          //   onChange('documents.workAuthorization.optReceipt', filePath);
-
+          onChange('workAuthorization.files', newFiles);
           message.success('OPT Receipt uploaded successfully!');
         })
         .catch((error) => {
@@ -55,7 +54,7 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
     // Remove the file from the list and update the state and form
     const updatedFiles = uploadedFiles.filter((file) => file !== filePath);
     setUploadedFiles(updatedFiles);
-    // onChange('workAuthorization.files', updatedFiles);
+    onChange('workAuthorization.files', updatedFiles);
 
     // Optionally, make a request to delete the file from the server
     message.success('File removed successfully');

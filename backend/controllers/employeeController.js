@@ -85,26 +85,6 @@ export const uploadEmployeeFile = asyncHandler(async (req, res) => {
   const filePath = `/uploads/${req.file.filename}`;
   const fileType = path.extname(req.file.filename).toLowerCase();
 
-  if (fileType === '.pdf') {
-    // save in employee model
-    employee.workAuthorization.files = employee.workAuthorization.files || [];
-    employee.workAuthorization.files.push(filePath);
-    await employee.save();
-
-    // save in visa status model
-    const visaStatus = await VisaStatus.findOne({ employee: employee._id });
-    if (!visaStatus) {
-      return res
-        .status(404)
-        .json({ message: 'VisaStatus not found for the employee' });
-    }
-    visaStatus.optReceipt.files.push(filePath);
-    await visaStatus.save();
-  } else {
-    employee.profilePicture = filePath;
-    await employee.save();
-  }
-
   res.status(200).json({ message: 'File uploaded successfully', filePath, fileType });
 });
 
