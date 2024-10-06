@@ -53,6 +53,17 @@ const VisaStatusPage = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+  console.log('visaStatus', visaStatus);
+  if (visaStatus?.visaType !== 'F1') {
+    return (
+      <Layout className="min-h-screen">
+        <Content className="p-6">
+          <h1 className="text-2xl font-bold mb-4">Visa Status Management</h1>
+          <p>This feature is only available for F-1 visa holders. Please contact your HR for further assistance.</p>
+        </Content>
+      </Layout>
+    );
+  }
 
   return (
     <Layout className="min-h-screen">
