@@ -2,7 +2,7 @@ import { Button, Form, Input } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { Employee } from '../../utils/type';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface EmergencyContactSectionProps {
   employee: Employee;
@@ -19,6 +19,26 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
   form,
   unchangeable,
 }) => {
+  useEffect(() => {
+    if (
+      isEditing &&
+      (!employee.emergencyContacts || employee.emergencyContacts.length === 0)
+    ) {
+      form.setFieldsValue({
+        emergencyContacts: [
+          {
+            firstName: '',
+            lastName: '',
+            middleName: '',
+            phone: '',
+            email: '',
+            relationship: '',
+          },
+        ],
+      });
+    }
+  }, [form, employee.emergencyContacts, isEditing]);
+
   return (
     <div className='bg-white p-4 rounded shadow-md'>
       <h2 className='text-xl font-semibold'>
