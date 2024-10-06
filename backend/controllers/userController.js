@@ -71,9 +71,6 @@ const loginUser = asyncHandler(async (req, res) => {
   if (user && (await bcrypt.compare(password, user.password))) {
     // Respond with user details and JWT token
     const token = generateToken(user._id);
-    console.log('New token generated for user:', token);
-    // Log the token to the console
-    console.log('New token generated for user:', token);
     res.json({
       _id: user._id,
       firstName: user.firstName,

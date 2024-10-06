@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Table, Input, Button, Modal, Form, Input as AntInput } from 'antd';
-import { fetchVisaStatusesApi, updateVisaDocumentStatusApi } from '../../../api/visaStatus';
+import { fetchVisaStatusesApi, updateVisaDocumentStatusApi, sendNotificationApi } from '../../../api/visaStatus';
 import { approveVisaStatus } from '../../../features/visaStatus/visaStatusSlice';
 import moment from 'moment';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
@@ -85,6 +85,22 @@ const VisaStatusInProgress: React.FC = () => {
     return null; // No pending fileType found
   };  
 
+
+  const getRejectedOrUnsubmittedFileType = (visaStatus: any) => {
+    if (visaStatus.optReceipt.status === 'Rejected') return 'optReceipt';
+    if (visaStatus.optEAD.status === 'Rejected') return 'optEAD';
+    if (visaStatus.i983Form.status === 'Rejected') return 'i983Form';
+    if (visaStatus.i20Form.status === 'Rejected') return 'i20Form';
+  
+    if (visaStatus.optReceipt.status === 'Unsubmitted') return 'optReceipt';
+    if (visaStatus.optEAD.status === 'Unsubmitted') return 'optEAD';
+    if (visaStatus.i983Form.status === 'Unsubmitted') return 'i983Form';
+    if (visaStatus.i20Form.status === 'Unsubmitted') return 'i20Form';
+  
+    return null;
+  };
+
+  
   const handleApproveReject = async (visaStatus: any, action: 'Approved' | 'Rejected') => {
     try {
       const { _id: employeeId } = visaStatus.employee;
@@ -109,6 +125,16 @@ const VisaStatusInProgress: React.FC = () => {
     } catch (error) {
       console.error('Error updating visa status:', error);
       alert('Error updating visa status');
+    }
+  };
+
+  const handleSendNotification = async (employeeId: string, fileType: string) => {
+    try {
+      await sendNotificationApi(employeeId, fileType); 
+      alert('Notification sent successfully');
+    } catch (error) {
+      console.error('Error sending notification:', error);
+      alert('Error sending notification');
     }
   };
 
@@ -154,7 +180,10 @@ const VisaStatusInProgress: React.FC = () => {
         </>
       );
     } else {
-      return <Button type="primary">Send Notification</Button>;
+      const fileType = getRejectedOrUnsubmittedFileType(visaStatus); 
+      console.log('fileType', fileType);
+      return <Button type="primary" onClick={() => handleSendNotification(visaStatus.employee._id, fileType)}>Send Notification</Button>;
+
     }
   };
 

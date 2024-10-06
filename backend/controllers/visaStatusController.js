@@ -143,9 +143,15 @@ export const approveOrRejectVisaDocument = async (req, res) => {
 export const sendNotification = async (req, res) => {
   try {
     const { employeeId } = req.params;
-    // You can implement your email sending logic here using a service like nodemailer
-    res.status(200).json({ message: 'Notification sent to employee' });
+    const { fileType } = req.body; // Capture fileType from the request body
+
+    // Your logic to send the notification (e.g., send email, log notification, etc.)
+    console.log(`Sending notification for employee ${employeeId} about ${fileType}`);
+
+    // Respond with success
+    res.status(200).json({ message: 'Notification sent successfully' });
   } catch (error) {
+    console.error('Error sending notification:', error);
     res.status(500).json({ message: 'Error sending notification', error });
   }
 };
