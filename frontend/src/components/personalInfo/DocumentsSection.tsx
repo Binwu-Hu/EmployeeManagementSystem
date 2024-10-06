@@ -9,18 +9,10 @@ import { Employee } from '../../utils/type';
 
 interface DocumentsSectionProps {
   employee: Employee;
-  isEditing: boolean;
-  onChange: (field: string, value: any) => void;
-  form: any;
-  unchangeable: boolean;
 }
 
 const DocumentsSection: React.FC<DocumentsSectionProps> = ({
   employee,
-  isEditing,
-  onChange,
-  form,
-  unchangeable,
 }) => {
   const [visible, setVisible] = useState(false);
   const [modalPdfUrl, setModalPdfUrl] = useState<string | null>(null);

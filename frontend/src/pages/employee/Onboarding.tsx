@@ -68,26 +68,24 @@ const OnboardingPage: React.FC = () => {
     }
   }, [employee, applicationMessage, application?.status]);
 
-  
-
-//   const handleSubmit = () => {
-//     form
-//       .validateFields()
-//       .then(() => {
-//         if (updatedData && userId) {
-//           dispatch(updateEmployee({ userId, updatedData }))
-//             .then(() => {
-//               message.success('Onboarding information submitted successfully!');
-//             })
-//             .catch(() => {
-//               message.error('Failed to submit onboarding information');
-//             });
-//         }
-//       })
-//       .catch(() => {
-//         message.error('Please fill in all required fields.');
-//       });
-//   };
+  //   const handleSubmit = () => {
+  //     form
+  //       .validateFields()
+  //       .then(() => {
+  //         if (updatedData && userId) {
+  //           dispatch(updateEmployee({ userId, updatedData }))
+  //             .then(() => {
+  //               message.success('Onboarding information submitted successfully!');
+  //             })
+  //             .catch(() => {
+  //               message.error('Failed to submit onboarding information');
+  //             });
+  //         }
+  //       })
+  //       .catch(() => {
+  //         message.error('Please fill in all required fields.');
+  //       });
+  //   };
 
   const handleFieldChange = (field: string, value: any) => {
     setUpdatedData((prev) => {
@@ -207,54 +205,54 @@ const OnboardingPage: React.FC = () => {
       });
   };
 
-//   const handleApply = () => {
-//     Modal.confirm({
-//       title: 'Confirm Submission',
-//       content:
-//         'Unsaved changes will not be updated. Are you sure you want to submit the application?',
-//       okText: 'Yes, Submit',
-//       cancelText: 'Cancel',
-//       onOk: () => {
-//         form
-//           .validateFields()
-//           .then(() => {
-//             const token = localStorage.getItem('token');
-//             if (!token) {
-//               message.error('No authentication token found.');
-//               return;
-//             }
+  //   const handleApply = () => {
+  //     Modal.confirm({
+  //       title: 'Confirm Submission',
+  //       content:
+  //         'Unsaved changes will not be updated. Are you sure you want to submit the application?',
+  //       okText: 'Yes, Submit',
+  //       cancelText: 'Cancel',
+  //       onOk: () => {
+  //         form
+  //           .validateFields()
+  //           .then(() => {
+  //             const token = localStorage.getItem('token');
+  //             if (!token) {
+  //               message.error('No authentication token found.');
+  //               return;
+  //             }
 
-//             axios
-//               .post(
-//                 '/api/application',
-//                 {},
-//                 {
-//                   headers: {
-//                     Authorization: `Bearer ${token}`,
-//                   },
-//                 }
-//               )
-//               .then((response) => {
-//                 message.success(
-//                   'Application submitted successfully!',
-//                   0.8,
-//                   () => {
-//                     window.location.reload();
-//                   }
-//                 );
-//                 console.log('Response:', response.data);
-//               });
-//           })
-//           .catch((error) => {
-//             message.error(
-//               error.response?.data?.message ||
-//                 'Failed to apply. Please fill in all required fields.'
-//             );
-//             console.error('Error:', error);
-//           });
-//       },
-//     });
-//   };
+  //             axios
+  //               .post(
+  //                 '/api/application',
+  //                 {},
+  //                 {
+  //                   headers: {
+  //                     Authorization: `Bearer ${token}`,
+  //                   },
+  //                 }
+  //               )
+  //               .then((response) => {
+  //                 message.success(
+  //                   'Application submitted successfully!',
+  //                   0.8,
+  //                   () => {
+  //                     window.location.reload();
+  //                   }
+  //                 );
+  //                 console.log('Response:', response.data);
+  //               });
+  //           })
+  //           .catch((error) => {
+  //             message.error(
+  //               error.response?.data?.message ||
+  //                 'Failed to apply. Please fill in all required fields.'
+  //             );
+  //             console.error('Error:', error);
+  //           });
+  //       },
+  //     });
+  //   };
 
   if (loading || applicationLoading) return <div>Loading...</div>;
 
@@ -406,13 +404,7 @@ const OnboardingPage: React.FC = () => {
                 </div>
 
                 <div id='documentsSection' className='mt-6'>
-                  <DocumentsSection
-                    unchangeable={unchangeable}
-                    employee={employee}
-                    isEditing={true}
-                    onChange={handleFieldChange}
-                    form={form}
-                  />
+                  <DocumentsSection employee={employee} />
                 </div>
               </>
             )}

@@ -1,6 +1,6 @@
 import { AppDispatch, RootState } from '../../app/store';
 import { Button, Form, Layout, Menu, message } from 'antd';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   clearEmployee,
   fetchEmployeeByUserId,
@@ -108,9 +108,9 @@ const PersonalInfoPage: React.FC = () => {
               Contact Info
             </Link>
           </Menu.Item>
-          <Menu.Item key='employment'>
-            <Link to='employmentSection' smooth={true} offset={-70}>
-              Employment
+          <Menu.Item key='work-authorization'>
+            <Link to='workAuthorizationSection' smooth={true} offset={-70}>
+              Work Authorization
             </Link>
           </Menu.Item>
           <Menu.Item key='emergency-contacts'>
@@ -171,7 +171,7 @@ const PersonalInfoPage: React.FC = () => {
                   form={form}
                 />
               </div>
-              <div id='employmentSection' className='mt-6'>
+              <div id='workAuthorizationSection' className='mt-6'>
                 <EmploymentSection
                   employee={employee}
                   isEditing={isEditing}
@@ -189,12 +189,7 @@ const PersonalInfoPage: React.FC = () => {
               </div>
 
               <div id='documentsSection' className='mt-6'>
-                <DocumentsSection
-                  employee={employee}
-                  isEditing={isEditing}
-                  onChange={handleFieldChange}
-                  form={form}
-                />
+                <DocumentsSection employee={employee} />
               </div>
             </>
           )}

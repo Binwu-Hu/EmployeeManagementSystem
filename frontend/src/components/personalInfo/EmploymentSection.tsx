@@ -1,8 +1,6 @@
-import { DatePicker, Form, Input } from 'antd';
-
 import { Employee } from '../../utils/type';
 import React from 'react';
-import moment from 'moment';
+import WorkAuthorizationSection from './WorkAuthorizationSection';
 
 interface EmploymentSectionProps {
   employee: Employee;
@@ -17,63 +15,35 @@ const EmploymentSection: React.FC<EmploymentSectionProps> = ({
   onChange,
   form,
 }) => {
-
   return (
-    <div className='bg-white p-4 rounded shadow-md'>
-      <h2 className='text-xl font-semibold'>Employment</h2>
+    <>
       {isEditing ? (
-        <Form
+        <WorkAuthorizationSection
+          employee={employee}
+          isEditing={isEditing}
+          onChange={onChange}
           form={form}
-          layout='vertical'
-          initialValues={{
-            visaType: employee.workAuthorization?.visaType,
-            startDate: employee.workAuthorization?.startDate
-              ? moment(employee.workAuthorization.startDate)
-              : undefined,
-            endDate: employee.workAuthorization?.endDate
-              ? moment(employee.workAuthorization.endDate)
-              : undefined,
-          }}
-        >
-          <Form.Item name='visaType' label='Visa Type'>
-            <Input
-              onChange={(e) =>
-                onChange('workAuthorization.visaType', e.target.value)
-              }
-            />
-          </Form.Item>
-          <Form.Item name='startDate' label='Start Date'>
-            <DatePicker
-              onChange={(date, dateString) =>
-                onChange('workAuthorization.startDate', dateString)
-              }
-            />
-          </Form.Item>
-          <Form.Item name='endDate' label='End Date'>
-            <DatePicker
-              onChange={(date, dateString) =>
-                onChange('workAuthorization.endDate', dateString)
-              }
-            />
-          </Form.Item>
-        </Form>
+        />
       ) : (
-        <div>
-          <p>
-            <strong>Visa Type:</strong>{' '}
-            {employee.workAuthorization?.visaType || ''}
-          </p>
-          <p>
-            <strong>Start Date:</strong>{' '}
-            {employee.workAuthorization?.startDate || ''}
-          </p>
-          <p>
-            <strong>End Date:</strong>{' '}
-            {employee.workAuthorization?.endDate || ''}
-          </p>
+        <div className='bg-white p-4 rounded shadow-md'>
+          <h2 className='text-xl font-semibold'>Employment</h2>
+          <div>
+            <p>
+              <strong>Visa Type:</strong>{' '}
+              {employee.workAuthorization?.visaType || ''}
+            </p>
+            <p>
+              <strong>Start Date:</strong>{' '}
+              {employee.workAuthorization?.startDate || ''}
+            </p>
+            <p>
+              <strong>End Date:</strong>{' '}
+              {employee.workAuthorization?.endDate || ''}
+            </p>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
