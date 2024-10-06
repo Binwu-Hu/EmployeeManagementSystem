@@ -38,7 +38,20 @@ const VisaStatusInProgress: React.FC = () => {
 
   // Fetch data on component mount
   useEffect(() => {
-    fetchVisaStatuses();
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchVisaStatusesApi();
+        setVisaStatuses(response);
+        setFilteredStatuses(response);
+        setLoading(false);
+      } catch (err: any) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleSearch = (value: string) => {
@@ -47,6 +60,12 @@ const VisaStatusInProgress: React.FC = () => {
     );
     setFilteredStatuses(filteredData);
   };
+
+  const visaTypeFilters = Array.from(new Set(visaStatuses.map(status => status.employee.workAuthorization.visaType)))
+  .map(visaType => ({
+    text: visaType,
+    value: visaType,
+  }));
 
   const getDaysRemaining = (endDate: string) => {
     const today = moment();
@@ -198,6 +217,8 @@ const VisaStatusInProgress: React.FC = () => {
       title: 'Work Authorization',
       dataIndex: 'employee',
       key: 'visaType',
+      filters: visaTypeFilters,
+      onFilter: (value: any, record: any) => record.employee.workAuthorization.visaType === value,
       render: (employee: any) => employee.workAuthorization.visaType,
     },
     {

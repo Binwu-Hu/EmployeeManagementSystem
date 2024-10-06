@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Input, Button } from 'antd';
+import { Table, Input } from 'antd';
 import { fetchVisaStatusesApi } from '../../../api/visaStatus';
 import moment from 'moment';
 
 const { Search } = Input;
 
 const VisaStatusAllEmployees: React.FC = () => {
-  const [visaStatuses, setVisaStatuses] = useState<VisaStatusType[]>([]);
-  const [filteredStatuses, setFilteredStatuses] = useState<VisaStatusType[]>([]);
+  const [visaStatuses, setVisaStatuses] = useState<any[]>([]);
+  const [filteredStatuses, setFilteredStatuses] = useState<any[]>([]);
+  const [visaTypeFilters, setVisaTypeFilters] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +18,14 @@ const VisaStatusAllEmployees: React.FC = () => {
         setLoading(true);
         const response = await fetchVisaStatusesApi();
         setVisaStatuses(response);
-        setFilteredStatuses(response);
+        setFilteredStatuses(response); 
+
+        const uniqueVisaTypes = Array.from(new Set(response.map((status: any) => status.employee.workAuthorization.visaType)));
+        setVisaTypeFilters(uniqueVisaTypes.map(visaType => ({
+          text: visaType,
+          value: visaType,
+        })));
+
         setLoading(false);
       } catch (err: any) {
         setError(err.message);
@@ -60,6 +68,8 @@ const VisaStatusAllEmployees: React.FC = () => {
       title: 'Work Authorization',
       dataIndex: 'employee',
       key: 'visaType',
+      filters: visaTypeFilters,  // 使用生成的 visaTypeFilters 进行筛选
+      onFilter: (value: any, record: any) => record.employee.workAuthorization.visaType === value,
       render: (employee: any) => employee.workAuthorization.visaType,
     },
     {
