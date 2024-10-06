@@ -33,7 +33,7 @@ const App = () => {
             }
           />
           <Route
-            path='/visa-status'
+            path='/visa-status/user/:id'
             element={
               <PrivateRoute requiredRole='Employee'>
                 <VisaStatus />
