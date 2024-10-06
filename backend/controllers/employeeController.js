@@ -1,9 +1,8 @@
 import Employee from '../models/employeeModel.js';
-import VisaStatus from '../models/visaStatusModel.js';
+import { updateVisaStatus } from '../controllers/visaStatusController.js';
 import asyncHandler from 'express-async-handler';
 import fs from 'fs';
 import path from 'path';
-import { updateVisaStatus } from './visaStatusController.js';
 
 // Controller to get employee by userId
 export const getEmployeeByUserId = async (req, res) => {
@@ -26,7 +25,6 @@ export const getEmployeeByUserId = async (req, res) => {
 
 export const updateEmployee = async (req, res) => {
   const userId = req.params.id;
-  const validVisaTypes = ['H1-B', 'L2', 'F1', 'H4'];
   try {
     const updatedEmployee = await Employee.findOneAndUpdate(
       { userId },
@@ -39,23 +37,20 @@ export const updateEmployee = async (req, res) => {
     }
     const visaType = updatedEmployee.workAuthorization.visaType;
     const files = updatedEmployee.workAuthorization.files;
-    if (validVisaTypes.includes(visaType)) {
-      try {
-        if (files) {
-          await updateVisaStatus(updatedEmployee._id, visaType, files);
-        } else {
-          await updateVisaStatus(updatedEmployee._id, visaType);
-        }
-        // console.log(result.message);
-      } catch (error) {
-        console.error('Error updating visa status:', error.message);
-        return res
-          .status(500)
-          .json({
-            message: 'Error updating visa status',
-            error: error.message,
-          });
+    try {
+      if (files) {
+        await updateVisaStatus(updatedEmployee._id, visaType, files);
+      } else {
+        await updateVisaStatus(updatedEmployee._id, visaType);
       }
+    } catch (error) {
+      console.error('Error updating visa status:', error.message);
+      return res
+        .status(500)
+        .json({
+          message: 'Error updating visa status',
+          error: error.message,
+        });
     }
 
     res.status(200).json(updatedEmployee);

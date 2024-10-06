@@ -85,25 +85,63 @@ export const getVisaStatusByEmployee = async (req, res) => {
 
 // Update visa status function
 export const updateVisaStatus = async (employeeId, visaType, files=[]) => {
+  // console.log('visaType in updateVisaStatus:', visaType);
   try {
-    let visaStatus = await VisaStatus.findOne({ employee: employeeId });
 
+    let visaStatus = await VisaStatus.findOne({ employee: employeeId });
+    // If visa type is Green Card or Citizen, delete existing visa status
+    if (visaType === 'Green Card' || visaType === 'Citizen') {
+      if (visaStatus) {
+        await VisaStatus.deleteOne({ employee: employeeId });
+        return { message: 'Visa status deleted successfully for Green Card or Citizen' };
+      } else {
+        
+        return { message: 'No visa status to delete for Green Card or Citizen' };
+      }
+    }
+
+    if (visaType === 'F1') {
+      if (visaStatus) {
+        // update existing visa status
+        visaStatus.visaType = visaType;
+        visaStatus.optReceipt = { files: files, status: 'Unsubmitted' };
+        visaStatus.optEAD = { files: [], status: 'Unsubmitted' };
+        visaStatus.i983Form = { files: [], status: 'Unsubmitted' };
+        visaStatus.i20Form = { files: [], status: 'Unsubmitted' };
+        await visaStatus.save();
+        return { message: 'Visa status updated successfully for F1', visaStatus };
+      } else {
+        // create new visa status
+        visaStatus = new VisaStatus({
+          employee: employeeId,
+          visaType: visaType,
+          optReceipt: { files: files, status: 'Unsubmitted' },
+          optEAD: { files: [], status: 'Unsubmitted' },
+          i983Form: { files: [], status: 'Unsubmitted' },
+          i20Form: { files: [], status: 'Unsubmitted' },
+        });
+        await visaStatus.save();
+        return { message: 'New visa status created successfully for F1', visaStatus };
+      }
+    }
+
+    // non-F1 visa types
     if (visaStatus) {
       visaStatus.visaType = visaType;
-      visaStatus.optReceipt.files = files;
+      // delete existing f-1 related files
+      visaStatus.optReceipt = undefined;
+      visaStatus.optEAD = undefined;
+      visaStatus.i983Form = undefined;
+      visaStatus.i20Form = undefined;
       await visaStatus.save();
-      return { message: 'Visa status updated successfully', visaStatus };
+      return { message: `Visa status updated successfully for ${visaType}`, visaStatus };
     } else {
       visaStatus = new VisaStatus({
         employee: employeeId,
         visaType: visaType,
-        optReceipt: { files: [], status: 'Unsubmitted' },
-        optEAD: { files: [], status: 'Unsubmitted' },
-        i983Form: { files: [], status: 'Unsubmitted' },
-        i20Form: { files: [], status: 'Unsubmitted' },
       });
       await visaStatus.save();
-      return { message: 'New visa status created successfully', visaStatus };
+      return { message: `New visa status created successfully for ${visaType}`, visaStatus };
     }
   } catch (error) {
     throw new Error(`Error updating visa status: ${error.message}`);
