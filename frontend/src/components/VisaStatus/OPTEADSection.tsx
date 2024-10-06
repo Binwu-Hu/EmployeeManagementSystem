@@ -23,7 +23,7 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
       return;
     }
 
-    const fileList = files.map(file => file.originFileObj).filter(Boolean);
+    const fileList = files.map((file) => file.originFileObj).filter(Boolean);
     dispatch(uploadVisaDocument({ employeeId, fileType: 'optEAD', files: fileList }))
       .then(() => {
         message.success('OPT EAD upload successful');
@@ -37,6 +37,21 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
   const handlePreview = (fileUrl: string) => {
     setModalPdfUrl(fileUrl);
     setIsModalVisible(true);
+  };
+
+  const handleDownload = (fileUrl: string, employeeName: string, fileType: string, index: number) => {
+    fetch(fileUrl)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        const fileName = `${employeeName}_${fileType}_${index + 1}`;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((err) => console.error('Error while downloading the file:', err));
   };
 
   const renderContent = () => {
@@ -81,14 +96,36 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
     }
   };
 
-  const fileBaseUrl = "http://localhost:3000/";
+  const fileBaseUrl = 'http://localhost:3000/';
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <Card title="OPT EAD" bordered={false} style={{ width: 400, textAlign: 'center' }}>
-        {visaStatus?.optEAD?.status !== 'Unsubmitted' && visaStatus?.optEAD?.files?.[0] && (
-          <Button type="link" onClick={() => handlePreview(`${fileBaseUrl}${visaStatus.optEAD.files[0]}`)}>
-            View Uploaded OPT EAD
-          </Button>
+        {visaStatus?.optEAD?.status !== 'Unsubmitted' && visaStatus?.optEAD?.files?.length > 0 && (
+          <div>
+            <p>Uploaded Files:</p>
+            {visaStatus.optEAD.files.map((file, index) => (
+              <div key={index}>
+                Document {index + 1}:{' '}
+                <Button type="link" onClick={() => handlePreview(`${fileBaseUrl}${file}`)}>
+                  Preview
+                </Button>{' '}
+                |{' '}
+                <Button
+                  type="link"
+                  onClick={() =>
+                    handleDownload(
+                      `${fileBaseUrl}${file}`,
+                      `${visaStatus?.employee?.firstName}${visaStatus?.employee?.lastName}`,
+                      'optEAD',
+                      index
+                    )
+                  }
+                >
+                  Download
+                </Button>
+              </div>
+            ))}
+          </div>
         )}
         {renderContent()}
         <Modal
