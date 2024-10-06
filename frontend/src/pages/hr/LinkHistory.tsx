@@ -58,9 +58,7 @@ const LinkHistory: React.FC = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div>
-      <h1>History of email addresses that received a registration link</h1>
-
+    <div className='text-md  mb-2'>
       {filteredTokens.length > 0 ? (
         <Table
           dataSource={filteredTokens.map((token) => ({

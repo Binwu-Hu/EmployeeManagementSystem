@@ -8,13 +8,13 @@ import Login from './pages/auth/Login';
 import Onboarding from './pages/employee/Onboarding';
 import PersonalInfo from './pages/employee/PersonalInfo';
 import PrivateRoute from './components/PrivateRoute';
-import SendRegistrationLink from './pages/protected/SendRegistrationLink';
+//import SendRegistrationLink from './pages/protected/SendRegistrationLink';
 import Signup from './pages/auth/Signup';
 import VisaStatus from './pages/protected/VisaStatus';
 import HiringManagement from './pages/hr/HiringManagement';
 import VisaStatusManagement from './pages/hr/VisaStatusManagement';
 import ApplicationManagement from './pages/hr/ApplicationManagement';
-import LinkHistory from './pages/hr/LinkHistory';
+// import LinkHistory from './pages/hr/LinkHistory';
 
 const App = () => {
   return (
@@ -88,22 +88,22 @@ const App = () => {
               </PrivateRoute>
             }
           />
-          <Route
+          {/* <Route
             path='/link-history'
             element={
               <PrivateRoute requiredRole='HR'>
                 <LinkHistory />
               </PrivateRoute>
             }
-          />
-          <Route
+          /> */}
+          {/* <Route
             path='/send-registration-link'
             element={
               <PrivateRoute requiredRole='HR'>
                 <SendRegistrationLink />
               </PrivateRoute>
             }
-          />
+          /> */}
         </Routes>
       </AppLayout>
     </Router>

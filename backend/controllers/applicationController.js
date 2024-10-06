@@ -4,6 +4,7 @@ import User from '../models/userModel.js';
 import RegistrationToken from '../models/registrationTokenModel.js';
 import asyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
+import VisaStatus from '../models/visaStatusModel.js';
 
 // @desc    Create application
 // @route   POST /api/application
