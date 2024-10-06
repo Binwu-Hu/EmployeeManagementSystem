@@ -229,14 +229,20 @@ const VisaStatusInProgress: React.FC = () => {
     {
       title: 'Next Steps',
       key: 'nextSteps',
-      render: (visaStatus: any) => getNextStep(visaStatus),
+      render: (visaStatus: any) =>
+        visaStatus.employee.workAuthorization.visaType === 'F1'
+          ? getNextStep(visaStatus)
+          : '',
     },
     {
       title: 'Action',
       key: 'action',
-      render: (visaStatus: any) => handleAction(visaStatus),
+      render: (visaStatus: any) =>
+        visaStatus.employee.workAuthorization.visaType === 'F1'
+          ? handleAction(visaStatus)
+          : null,
     },
-  ];
+  ];  
 
   return (
     <div>
