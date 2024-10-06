@@ -50,7 +50,7 @@ const MergedHeader = () => {
                     </Link>
                   </Menu.Item>
                   <Menu.Item key='visa-status'>
-                    <Link to='/visa-status'>Visa Status Management</Link>
+                    <Link to={`/visa-status/user/${user.id}`}>Visa Status</Link>
                   </Menu.Item>
                 </>
               )}
