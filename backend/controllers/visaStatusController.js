@@ -83,28 +83,31 @@ export const getVisaStatusByEmployee = async (req, res) => {
   }
 };
 
-// // Controller function to update visa status
-// export const updateVisaStatus = async (req, res) => {
-//   const { id } = req.params;
-//   const { status } = req.body;  // Get new status from request body
+// Update visa status function
+export const updateVisaStatus = async (employeeId, visaType) => {
+  try {
+    let visaStatus = await VisaStatus.findOne({ employee: employeeId });
 
-//   try {
-//     // Find the visa status by ID and update its status field
-//     const updatedVisaStatus = await VisaStatus.findByIdAndUpdate(
-//       id,
-//       { status },  // Update status field
-//       { new: true }  // Return the updated document
-//     );
-
-//     if (!updatedVisaStatus) {
-//       return res.status(404).json({ message: 'Visa status not found' });
-//     }
-
-//     res.status(200).json(updatedVisaStatus);  // Send updated visa status back to frontend
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
+    if (visaStatus) {
+      visaStatus.visaType = visaType;
+      await visaStatus.save();
+      return { message: 'Visa status updated successfully', visaStatus };
+    } else {
+      visaStatus = new VisaStatus({
+        employee: employeeId,
+        visaType: visaType,
+        optReceipt: { files: [], status: 'Unsubmitted' },
+        optEAD: { files: [], status: 'Unsubmitted' },
+        i983Form: { files: [], status: 'Unsubmitted' },
+        i20Form: { files: [], status: 'Unsubmitted' },
+      });
+      await visaStatus.save();
+      return { message: 'New visa status created successfully', visaStatus };
+    }
+  } catch (error) {
+    throw new Error(`Error updating visa status: ${error.message}`);
+  }
+};
 
 // HR Action: Approve/Reject Visa Documents
 export const approveOrRejectVisaDocument = async (req, res) => {
