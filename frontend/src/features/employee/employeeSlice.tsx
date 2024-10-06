@@ -98,7 +98,6 @@ const employeeSlice = createSlice({
     clearEmployee: (state) => {
       state.employee = null;
       state.employees = [];
-      localStorage.clear()
     },
   },
   extraReducers: (builder) => {
