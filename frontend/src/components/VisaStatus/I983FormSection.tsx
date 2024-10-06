@@ -39,20 +39,20 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
     setIsModalVisible(true);
   };
 
-  const handleDownload = (fileUrl: string, employeeName: string, fileType: string) => {
+  const handleDownload = (fileUrl: string, employeeName: string, fileType: string, index: number) => {
     fetch(fileUrl)
       .then(response => response.blob())
       .then(blob => {
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
-        const fileName = `${employeeName}_${fileType}_1`;
+        const fileName = `${employeeName}_${fileType}_${index + 1}`;
         link.download = fileName;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       })
       .catch(err => console.error('Error while downloading the file:', err));
-  };
+  };  
 
   const renderFileLink = (files: string[], employeeName: string, fileType: string) => {
     return files?.map((file, index) => (
@@ -61,12 +61,12 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
           Preview
         </Button>
         |
-        <Button type="link" onClick={() => handleDownload(`http://localhost:3000/${file}`, employeeName, fileType)}>
+        <Button type="link" onClick={() => handleDownload(`http://localhost:3000/${file}`, employeeName, fileType, index)}>
           Download
         </Button>
       </div>
     ));
-  };
+  };  
 
   const renderContent = () => {
     const status = visaStatus?.i983Form?.status;
@@ -126,7 +126,7 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
               Preview Empty Template
             </Button>
             <Button
-              onClick={() => handleDownload('http://localhost:3000/static/i983-empty-template.pdf', 'Employee', 'i983-empty-template')}
+              onClick={() => handleDownload('http://localhost:3000/static/i983-empty-template.pdf', `${visaStatus?.employee?.firstName}${visaStatus?.employee?.lastName}`, 'i983-empty-template')}
             >
               Download Empty Template
             </Button>
@@ -137,7 +137,7 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
               Preview Sample Template
             </Button>
             <Button
-              onClick={() => handleDownload('http://localhost:3000/static/i983-sample-template.pdf', 'Employee', 'i983-sample-template')}
+              onClick={() => handleDownload('http://localhost:3000/static/i983-sample-template.pdf', `${visaStatus?.employee?.firstName}${visaStatus?.employee?.lastName}` , 'i983-sample-template')}
             >
               Download Sample Template
             </Button>
@@ -147,7 +147,7 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
         {/* Conditionally render the previously uploaded file if status is not 'Unsubmitted' */}
         {visaStatus?.i983Form?.status !== 'Unsubmitted' && visaStatus?.i983Form?.files?.[0] && (
           <div>
-            {renderFileLink(visaStatus.i983Form.files, 'Employee', 'i983Form')}
+            {renderFileLink(visaStatus.i983Form.files, `${visaStatus?.employee?.firstName}${visaStatus?.employee?.lastName}`, 'i983Form')}
           </div>
         )}
 
