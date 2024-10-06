@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { uploadVisaDocument, fetchVisaStatus } from '../../features/visaStatus/visaStatusSlice';
 import { RootState } from '../../app/store';
-import { Upload, Button, message, Card } from 'antd';
+import { Upload, Button, message, Card, Modal } from 'antd';
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+import '@react-pdf-viewer/core/lib/styles/index.css';
 
 const I983FormSection = ({ employeeId }: { employeeId: string }) => {
   const dispatch = useDispatch();
   const { visaStatus } = useSelector((state: RootState) => state.visaStatus);
-  const [files, setFiles] = React.useState([]);
+  const [files, setFiles] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalPdfUrl, setModalPdfUrl] = useState<string | null>(null);
 
   const handleFileChange = (info: any) => {
     setFiles(info.fileList);
@@ -28,6 +32,41 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
       .catch((error) => {
         message.error(error.message);
       });
+  };
+
+  const handlePreview = (fileUrl: string) => {
+    setModalPdfUrl(fileUrl);
+    setIsModalVisible(true);
+  };
+
+  const handleDownload = (fileUrl: string, employeeName: string, fileType: string) => {
+    fetch(fileUrl)
+      .then(response => response.blob())
+      .then(blob => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        const fileName = `${employeeName}_${fileType}_1`;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch(err => console.error('Error while downloading the file:', err));
+  };
+
+  const renderFileLink = (files: string[], employeeName: string, fileType: string) => {
+    console.log('files.length', files.length);
+    return files?.map((file, index) => (
+      <div key={index}>
+        <Button type="link" onClick={() => handlePreview(`http://localhost:3000/${file}`)}>
+          Preview
+        </Button>
+        |
+        <Button type="link" onClick={() => handleDownload(`http://localhost:3000/${file}`, employeeName, fileType)}>
+          Download
+        </Button>
+      </div>
+    ));
   };
 
   const renderContent = () => {
@@ -72,7 +111,6 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
     }
   };
 
-  // Base URL for serving uploaded files
   const fileBaseUrl = "http://localhost:3000/";
 
   return (
@@ -120,17 +158,29 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
 
         {/* Conditionally render the previously uploaded file if status is not 'Unsubmitted' */}
         {visaStatus?.i983Form?.status !== 'Unsubmitted' && visaStatus?.i983Form?.files?.[0] && (
-          <Button
-            type="link"
-            onClick={() => window.open(`${fileBaseUrl}${visaStatus.i983Form.files[0]}`, '_blank')}
-          >
-            View Uploaded I-983 Form
-          </Button>
+          <div>
+            {renderFileLink(visaStatus.i983Form.files, 'Employee', 'i983Form')}
+          </div>
         )}
-        
+
         {/* Render the rest of the content based on the form status */}
         {renderContent()}
       </Card>
+
+      {/* PDF Modal Preview */}
+      <Modal
+        title="PDF Preview"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+        width="80%"
+      >
+        {modalPdfUrl && (
+          <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
+            <Viewer fileUrl={modalPdfUrl} />
+          </Worker>
+        )}
+      </Modal>
     </div>
   );
 };
