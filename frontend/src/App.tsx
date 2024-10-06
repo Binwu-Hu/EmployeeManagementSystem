@@ -10,7 +10,7 @@ import PersonalInfo from './pages/employee/PersonalInfo';
 import PrivateRoute from './components/PrivateRoute';
 //import SendRegistrationLink from './pages/protected/SendRegistrationLink';
 import Signup from './pages/auth/Signup';
-import VisaStatus from './pages/protected/VisaStatus';
+import VisaStatus from './pages/employee/VisaStatus';
 import HiringManagement from './pages/hr/HiringManagement';
 import VisaStatusManagement from './pages/hr/VisaStatusManagement';
 import ApplicationManagement from './pages/hr/ApplicationManagement';
