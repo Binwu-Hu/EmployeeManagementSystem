@@ -52,23 +52,29 @@ const VisaStatusAllEmployees: React.FC = () => {
     setIsModalVisible(true);
   };
 
-  const handleDownload = (fileUrl: string) => {
-    const link = document.createElement('a');
-    link.href = fileUrl;
-    link.download = ''; // 这里可以设置文件名
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownload = (fileUrl: string, employeeName: string, fileType: string, index: number) => {
+    fetch(fileUrl)
+      .then(response => response.blob())
+      .then(blob => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        const fileName = `${employeeName}_${fileType}_${index + 1}`;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch(err => console.error('Error while downloading the file:', err));
   };
 
-  const renderFileLink = (files: string[]) => {
+  const renderFileLink = (files: string[], employeeName: string, fileType: string) => {
     return files?.map((file, index) => (
       <div key={index}>
         <Button type="link" onClick={() => handlePreview(`http://localhost:3000/${file}`)}>
           Preview
         </Button>
         |
-        <Button type="link" onClick={() => handleDownload(`http://localhost:3000/${file}`)}>
+        <Button type="link" onClick={() => handleDownload(`http://localhost:3000/${file}`, employeeName, fileType, index)}>
           Download
         </Button>
       </div>
@@ -112,27 +118,27 @@ const VisaStatusAllEmployees: React.FC = () => {
       title: 'OPT Receipt Files',
       dataIndex: 'optReceipt',
       key: 'optReceiptFiles',
-      render: (optReceipt: any) => (optReceipt.status === 'Approved' ? renderFileLink(optReceipt.files) : 'N/A'),
+      render: (optReceipt: any, record: any) => (optReceipt.status === 'Approved' ? renderFileLink(optReceipt.files, record.employee.firstName, 'optReceipt') : 'N/A'),
     },
     {
       title: 'OPT EAD Files',
       dataIndex: 'optEAD',
       key: 'optEADFiles',
-      render: (optEAD: any) => (optEAD.status === 'Approved' ? renderFileLink(optEAD.files) : 'N/A'),
+      render: (optEAD: any, record: any) => (optEAD.status === 'Approved' ? renderFileLink(optEAD.files, record.employee.firstName, 'optEAD') : 'N/A'),
     },
     {
       title: 'I-983 Form Files',
       dataIndex: 'i983Form',
       key: 'i983FormFiles',
-      render: (i983Form: any) => (i983Form.status === 'Approved' ? renderFileLink(i983Form.files) : 'N/A'),
+      render: (i983Form: any, record: any) => (i983Form.status === 'Approved' ? renderFileLink(i983Form.files, record.employee.firstName, 'i983Form') : 'N/A'),
     },
     {
       title: 'I-20 Form Files',
       dataIndex: 'i20Form',
       key: 'i20FormFiles',
-      render: (i20Form: any) => (i20Form.status === 'Approved' ? renderFileLink(i20Form.files) : 'N/A'),
+      render: (i20Form: any, record: any) => (i20Form.status === 'Approved' ? renderFileLink(i20Form.files, record.employee.firstName, 'i20Form') : 'N/A'),
     },
-  ];
+  ];  
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
