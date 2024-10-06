@@ -81,8 +81,32 @@ export const getVisaStatusByEmployee = async (req, res) => {
   }
 };
 
+// // Controller function to update visa status
+// export const updateVisaStatus = async (req, res) => {
+//   const { id } = req.params;
+//   const { status } = req.body;  // Get new status from request body
+
+//   try {
+//     // Find the visa status by ID and update its status field
+//     const updatedVisaStatus = await VisaStatus.findByIdAndUpdate(
+//       id,
+//       { status },  // Update status field
+//       { new: true }  // Return the updated document
+//     );
+
+//     if (!updatedVisaStatus) {
+//       return res.status(404).json({ message: 'Visa status not found' });
+//     }
+
+//     res.status(200).json(updatedVisaStatus);  // Send updated visa status back to frontend
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 // HR Action: Approve/Reject Visa Documents
 export const approveOrRejectVisaDocument = async (req, res) => {
+  console.log('req.body:', req.body);
   try {
     const { employeeId } = req.params;
     const { fileType, action } = req.body;

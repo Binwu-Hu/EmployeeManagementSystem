@@ -41,6 +41,16 @@ export const uploadVisaDocument = createAsyncThunk(
   }
 );
 
+// Async thunk for approving the visa status
+export const approveVisaStatus = createAsyncThunk(
+  'visaStatus/approveVisaStatus',
+  async (visaStatusId: string) => {
+    const response = await updateVisaStatusApi(visaStatusId, 'Approved');  // API call
+    return response.data;
+  }
+);
+
+
 export const approveOrRejectVisaDocument = createAsyncThunk(
   'visaStatus/approveOrRejectVisaDocument',
   async ({ employeeId, fileType, action }: { employeeId: string, fileType: string, action: string }) => {
@@ -94,6 +104,24 @@ const visaStatusSlice = createSlice({
       // Upload document
       .addCase(uploadVisaDocument.fulfilled, (state, action) => {
         state.visaStatus = action.payload;
+      })
+      .addCase(approveVisaStatus.pending, (state) => {
+        state.loading = true;
+      })
+      // Handle fulfilled state (update visa status in state)
+      .addCase(approveVisaStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        const updatedVisaStatus = action.payload;
+        // Find and update the visa status in state
+        const index = state.visaStatuses.findIndex((status) => status._id === updatedVisaStatus._id);
+        if (index !== -1) {
+          state.visaStatuses[index].status = updatedVisaStatus.status;
+        }
+      })
+      // Handle rejected state
+      .addCase(approveVisaStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       })
       // Approve or reject document
       .addCase(approveOrRejectVisaDocument.fulfilled, (state, action) => {

@@ -31,7 +31,7 @@ router.get('/all', authMiddleware, getAllVisaStatuses);
 router.get('/:employeeId', authMiddleware, getVisaStatusByEmployee);
 
 // HR Approves or Rejects Documents
-router.patch('/approve/:employeeId', authMiddleware, approveOrRejectVisaDocument);
+router.patch('/update/:employeeId', authMiddleware, approveOrRejectVisaDocument);
 
 // HR Sends Notification
 router.post('/notify/:employeeId', authMiddleware, sendNotification);

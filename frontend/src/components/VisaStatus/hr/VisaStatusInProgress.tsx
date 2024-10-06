@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Table, Input, Button, Modal, Form, Input as AntInput } from 'antd';
-import { fetchVisaStatusesApi } from '../../../api/visaStatus';
+import { fetchVisaStatusesApi, updateVisaDocumentStatusApi } from '../../../api/visaStatus';
+import { approveVisaStatus } from '../../../features/visaStatus/visaStatusSlice';
 import moment from 'moment';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
@@ -9,6 +11,7 @@ const { Search } = Input;
 const { TextArea } = AntInput;
 
 const VisaStatusInProgress: React.FC = () => {
+  const dispatch = useDispatch(); 
   const [visaStatuses, setVisaStatuses] = useState<VisaStatusType[]>([]);
   const [filteredStatuses, setFilteredStatuses] = useState<VisaStatusType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -73,9 +76,33 @@ const VisaStatusInProgress: React.FC = () => {
     setIsModalVisible(true);
   };
 
-  const handleApproveReject = (visaStatus: any, status: 'Approved' | 'Rejected') => {
-    setSelectedDocument(visaStatus); // Select the document to process
-    setIsModalVisible(true); // Open modal
+  const getPendingFileType = (visaStatus: any) => {
+    if (visaStatus.optReceipt.status === 'Pending') return 'optReceipt';
+    if (visaStatus.optEAD.status === 'Pending') return 'optEAD';
+    if (visaStatus.i983Form.status === 'Pending') return 'i983Form';
+    if (visaStatus.i20Form.status === 'Pending') return 'i20Form';
+    return null; // No pending fileType found
+  };  
+
+  const handleApproveReject = async (visaStatus: any, action: 'Approved' | 'Rejected') => {
+    try {
+      const { _id: employeeId } = visaStatus.employee;
+      const fileType = getPendingFileType(visaStatus); 
+      
+      if (!fileType) {
+        console.error('No pending document found to approve/reject.');
+        return;
+      }
+  
+      // Call the API to update the document status
+      await updateVisaDocumentStatusApi(employeeId, fileType, action);
+  
+      // Optionally: refresh the visa status or show a success message
+      alert(`Document ${fileType} has been ${action}`);
+    } catch (error) {
+      console.error('Error updating visa status:', error);
+      alert('Error updating visa status');
+    }
   };
 
   const handleModalSubmit = () => {
