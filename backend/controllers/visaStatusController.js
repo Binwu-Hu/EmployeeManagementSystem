@@ -5,10 +5,9 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Upload Visa Documents
 export const uploadVisaDocuments = async (req, res) => {
-    try {
+  try {
       const { employeeId } = req.params;
       const { fileType } = req.body;
-        // console.log('req.files:', req.files);
       let visaStatus = await VisaStatus.findOne({ employee: employeeId });
       if (!visaStatus) {
         visaStatus = new VisaStatus({ employee: employeeId, visaType: 'OPT' });
@@ -23,28 +22,31 @@ export const uploadVisaDocuments = async (req, res) => {
       if (fileType === 'i20Form' && visaStatus.i983Form.status !== 'Approved') {
         return res.status(400).json({ message: 'You must upload I-983 and get it approved before uploading I-20.' });
       }
-  
+
+      // Clear the previous files and set the new ones
       if (fileType === 'optReceipt') {
-        if (!visaStatus.optReceipt.files) visaStatus.optReceipt.files = []; 
+        visaStatus.optReceipt.files = []; // Clear previous files
         visaStatus.optReceipt.files.push(...req.files.map(file => file.path));
         visaStatus.optReceipt.status = 'Pending';
       } else if (fileType === 'optEAD') {
-        if (!visaStatus.optEAD.files) visaStatus.optEAD.files = [];
+        visaStatus.optEAD.files = []; // Clear previous files
         visaStatus.optEAD.files.push(...req.files.map(file => file.path));
         visaStatus.optEAD.status = 'Pending';
       } else if (fileType === 'i983Form') {
-        if (!visaStatus.i983Form.files) visaStatus.i983Form.files = [];
+        visaStatus.i983Form.files = []; // Clear previous files
         visaStatus.i983Form.files.push(...req.files.map(file => file.path));
         visaStatus.i983Form.status = 'Pending';
       } else if (fileType === 'i20Form') {
-        if (!visaStatus.i20Form.files) visaStatus.i20Form.files = [];
+        visaStatus.i20Form.files = []; // Clear previous files
         visaStatus.i20Form.files.push(...req.files.map(file => file.path));
         visaStatus.i20Form.status = 'Pending';
       }
-    //   console.log('visaStatus:', visaStatus);
+
+      // Save the visa status
       await visaStatus.save();
       res.status(200).json({ message: 'Files uploaded successfully', visaStatus });
-    } catch (error) {
+
+  } catch (error) {
       console.error('Error uploading files:', error);
       res.status(500).json({ message: 'Error uploading files', error: error.message });
     }
@@ -85,25 +87,63 @@ export const getVisaStatusByEmployee = async (req, res) => {
 
 // Update visa status function
 export const updateVisaStatus = async (employeeId, visaType, files=[]) => {
+  // console.log('visaType in updateVisaStatus:', visaType);
   try {
-    let visaStatus = await VisaStatus.findOne({ employee: employeeId });
 
+    let visaStatus = await VisaStatus.findOne({ employee: employeeId });
+    // If visa type is Green Card or Citizen, delete existing visa status
+    if (visaType === 'Green Card' || visaType === 'Citizen') {
+      if (visaStatus) {
+        await VisaStatus.deleteOne({ employee: employeeId });
+        return { message: 'Visa status deleted successfully for Green Card or Citizen' };
+      } else {
+        
+        return { message: 'No visa status to delete for Green Card or Citizen' };
+      }
+    }
+
+    if (visaType === 'F1') {
+      if (visaStatus) {
+        // update existing visa status
+        visaStatus.visaType = visaType;
+        visaStatus.optReceipt = { files: files, status: 'Unsubmitted' };
+        visaStatus.optEAD = { files: [], status: 'Unsubmitted' };
+        visaStatus.i983Form = { files: [], status: 'Unsubmitted' };
+        visaStatus.i20Form = { files: [], status: 'Unsubmitted' };
+        await visaStatus.save();
+        return { message: 'Visa status updated successfully for F1', visaStatus };
+      } else {
+        // create new visa status
+        visaStatus = new VisaStatus({
+          employee: employeeId,
+          visaType: visaType,
+          optReceipt: { files: files, status: 'Unsubmitted' },
+          optEAD: { files: [], status: 'Unsubmitted' },
+          i983Form: { files: [], status: 'Unsubmitted' },
+          i20Form: { files: [], status: 'Unsubmitted' },
+        });
+        await visaStatus.save();
+        return { message: 'New visa status created successfully for F1', visaStatus };
+      }
+    }
+
+    // non-F1 visa types
     if (visaStatus) {
       visaStatus.visaType = visaType;
-      visaStatus.optReceipt.files = files;
+      // delete existing f-1 related files
+      visaStatus.optReceipt = undefined;
+      visaStatus.optEAD = undefined;
+      visaStatus.i983Form = undefined;
+      visaStatus.i20Form = undefined;
       await visaStatus.save();
-      return { message: 'Visa status updated successfully', visaStatus };
+      return { message: `Visa status updated successfully for ${visaType}`, visaStatus };
     } else {
       visaStatus = new VisaStatus({
         employee: employeeId,
         visaType: visaType,
-        optReceipt: { files: [], status: 'Unsubmitted' },
-        optEAD: { files: [], status: 'Unsubmitted' },
-        i983Form: { files: [], status: 'Unsubmitted' },
-        i20Form: { files: [], status: 'Unsubmitted' },
       });
       await visaStatus.save();
-      return { message: 'New visa status created successfully', visaStatus };
+      return { message: `New visa status created successfully for ${visaType}`, visaStatus };
     }
   } catch (error) {
     throw new Error(`Error updating visa status: ${error.message}`);

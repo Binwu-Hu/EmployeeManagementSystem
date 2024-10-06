@@ -1,4 +1,4 @@
-import mongoose, { connect } from 'mongoose';
+import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import User from '../models/userModel.js';
@@ -9,26 +9,37 @@ import connectDB from '../db/index.js';
 dotenv.config();
 connectDB();
 
-const usersData = [
-  { firstName: 'John', lastName: 'Doe', email: 'test1@domain.com' },
-  { firstName: 'Jane', lastName: 'Smith', email: 'test2@domain.com' },
-  { firstName: 'Mike', lastName: 'Johnson', email: 'test3@domain.com' },
-  { firstName: 'Emily', lastName: 'Davis', email: 'test4@domain.com' },
-  { firstName: 'David', lastName: 'Brown', email: 'test5@domain.com' },
-  { firstName: 'Sarah', lastName: 'Miller', email: 'test6@domain.com' },
-  { firstName: 'Chris', lastName: 'Wilson', email: 'test7@domain.com' },
-  { firstName: 'Anna', lastName: 'Taylor', email: 'test8@domain.com' },
+const newEmployees = [
+  { firstName: 'Alex', lastName: 'Jones', email: 'test9@domain.com' },
+  { firstName: 'Lily', lastName: 'White', email: 'test10@domain.com' },
+  { firstName: 'Mark', lastName: 'Taylor', email: 'test11@domain.com' },
+  { firstName: 'Sophia', lastName: 'Green', email: 'test12@domain.com' },
+  { firstName: 'James', lastName: 'Walker', email: 'test13@domain.com' },
+  { firstName: 'Olivia', lastName: 'Brown', email: 'test14@domain.com' },
+  { firstName: 'William', lastName: 'Harris', email: 'test15@domain.com' },
+  { firstName: 'Emma', lastName: 'Clark', email: 'test16@domain.com' },
 ];
 
-const createEmployeeUsers = async () => {
-  try {
-    for (let i = 0; i < usersData.length; i++) {
-      const { firstName, lastName, email } = usersData[i];
+// 随机生成不超过未来一年的日期（现在未过期）
+const generateRandomDates = () => {
+  const startDate = new Date();
+  startDate.setMonth(startDate.getMonth() - Math.floor(Math.random() * 12)); // 起始日期最多为1年前
 
-      // Hash password
+  const endDate = new Date();
+  endDate.setFullYear(endDate.getFullYear() + 1); // 结束日期设为1年后
+
+  return { startDate, endDate };
+};
+
+const createNewEmployeeUsers = async () => {
+  try {
+    for (let i = 0; i < newEmployees.length; i++) {
+      const { firstName, lastName, email } = newEmployees[i];
+
+      // Hash the password
       const hashedPassword = await bcrypt.hash('1234', 10);
 
-      // Create new user
+      // Create the user
       const user = new User({
         username: `${firstName} ${lastName}`,
         email,
@@ -38,7 +49,10 @@ const createEmployeeUsers = async () => {
       await user.save();
       console.log(`User Created: ${user._id}`);
 
-      // Create employee associated with the user
+      // Generate random start and end dates
+      const { startDate, endDate } = generateRandomDates();
+
+      // Create the employee
       const employee = new Employee({
         firstName,
         lastName,
@@ -46,12 +60,14 @@ const createEmployeeUsers = async () => {
         userId: user._id,
         workAuthorization: {
           visaType: 'F1',
+          startDate,
+          endDate,
         },
       });
       await employee.save();
       console.log(`Employee Created: ${employee._id}`);
 
-      // Create visa status for employee
+      // Create the visa status
       const visaStatus = new VisaStatus({
         employee: employee._id,
         visaType: 'F1',
@@ -60,12 +76,12 @@ const createEmployeeUsers = async () => {
       console.log(`Visa Status Created for Employee: ${employee._id}`);
     }
 
-    console.log('All users created successfully!');
+    console.log('All new employees created successfully!');
   } catch (error) {
-    console.error('Error creating users:', error);
+    console.error('Error creating new employees:', error);
   } finally {
     mongoose.connection.close();
   }
 };
 
-createEmployeeUsers();
+createNewEmployeeUsers();

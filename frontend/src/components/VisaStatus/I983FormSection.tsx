@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { uploadVisaDocument, fetchVisaStatus } from '../../features/visaStatus/visaStatusSlice';
 import { RootState } from '../../app/store';
-import { Upload, Button, message, Card } from 'antd';
+import { Upload, Button, message, Card, Modal } from 'antd';
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+import '@react-pdf-viewer/core/lib/styles/index.css';
 
 const I983FormSection = ({ employeeId }: { employeeId: string }) => {
   const dispatch = useDispatch();
   const { visaStatus } = useSelector((state: RootState) => state.visaStatus);
-  const [files, setFiles] = React.useState([]);
+  const [files, setFiles] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalPdfUrl, setModalPdfUrl] = useState<string | null>(null);
+
+  const base_url = "http://localhost:3000";
 
   const handleFileChange = (info: any) => {
     setFiles(info.fileList);
@@ -19,7 +25,7 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
       return;
     }
 
-    const fileList = files.map(file => file.originFileObj).filter(Boolean);
+    const fileList = files.map((file) => file.originFileObj).filter(Boolean);
     dispatch(uploadVisaDocument({ employeeId, fileType: 'i983Form', files: fileList }))
       .then(() => {
         message.success('I-983 Form upload successful');
@@ -28,6 +34,41 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
       .catch((error) => {
         message.error(error.message);
       });
+  };
+
+  const handlePreview = (fileUrl: string) => {
+    setModalPdfUrl(fileUrl);
+    setIsModalVisible(true);
+  };
+
+  const handleDownload = (fileUrl: string, employeeName: string, fileType: string, index: number) => {
+    fetch(fileUrl)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        const fileName = `${employeeName}_${fileType}_${index + 1}`;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((err) => console.error('Error while downloading the file:', err));
+  };
+
+  const renderFileLink = (files: string[], employeeName: string, fileType: string) => {
+    return files?.map((file, index) => (
+      <div key={index}>
+        <span>Document {index + 1} : </span>
+        <Button type="link" onClick={() => handlePreview(`${base_url}/${file}`)}>
+          Preview
+        </Button>
+        |
+        <Button type="link" onClick={() => handleDownload(`${base_url}/${file}`, employeeName, fileType, index)}>
+          Download
+        </Button>
+      </div>
+    ));
   };
 
   const renderContent = () => {
@@ -72,65 +113,74 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
     }
   };
 
-  // Base URL for serving uploaded files
-  const fileBaseUrl = "http://localhost:3000/";
-
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <Card title="I-983 Form" bordered={false} style={{ width: 400, textAlign: 'center' }}>
-        
-        {/* Always display the two template buttons */}
         <div style={{ marginBottom: '20px' }}>
           <p>Download/Preview Templates:</p>
 
           <div style={{ marginBottom: '10px' }}>
-            <Button
-              type="link"
-              href="http://localhost:3000/static/i983-empty-template.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Button type="link" onClick={() => handlePreview(`${base_url}/static/i983-empty-template.pdf`)}>
               Preview Empty Template
             </Button>
-            <a
-              href="http://localhost:3000/static/i983-empty-template.pdf"
-              download="I-983_Empty_Template.pdf"
+            <Button
+              onClick={() =>
+                handleDownload(
+                  `${base_url}/static/i983-empty-template.pdf`,
+                  `${visaStatus?.employee?.firstName}${visaStatus?.employee?.lastName}`,
+                  'i983-empty-template'
+                )
+              }
             >
-              <Button>Download Empty Template</Button>
-            </a>
+              Download Empty Template
+            </Button>
           </div>
 
           <div style={{ marginBottom: '10px' }}>
-            <Button
-              type="link"
-              href="http://localhost:3000/static/i983-sample-template.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Button type="link" onClick={() => handlePreview(`${base_url}/static/i983-sample-template.pdf`)}>
               Preview Sample Template
             </Button>
-            <a
-              href="http://localhost:3000/static/i983-sample-template.pdf"
-              download="I-983_Sample_Template.pdf"
+            <Button
+              onClick={() =>
+                handleDownload(
+                  `${base_url}/static/i983-sample-template.pdf`,
+                  `${visaStatus?.employee?.firstName}${visaStatus?.employee?.lastName}`,
+                  'i983-sample-template'
+                )
+              }
             >
-              <Button>Download Sample Template</Button>
-            </a>
+              Download Sample Template
+            </Button>
           </div>
         </div>
 
-        {/* Conditionally render the previously uploaded file if status is not 'Unsubmitted' */}
         {visaStatus?.i983Form?.status !== 'Unsubmitted' && visaStatus?.i983Form?.files?.[0] && (
-          <Button
-            type="link"
-            onClick={() => window.open(`${fileBaseUrl}${visaStatus.i983Form.files[0]}`, '_blank')}
-          >
-            View Uploaded I-983 Form
-          </Button>
+          <div>
+            <p>Uploaded Files:</p>
+            {renderFileLink(
+              visaStatus.i983Form.files,
+              `${visaStatus?.employee?.firstName}${visaStatus?.employee?.lastName}`,
+              'i983Form'
+            )}
+          </div>
         )}
-        
-        {/* Render the rest of the content based on the form status */}
+
         {renderContent()}
       </Card>
+
+      <Modal
+        title="PDF Preview"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+        width="80%"
+      >
+        {modalPdfUrl && (
+          <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
+            <Viewer fileUrl={modalPdfUrl} />
+          </Worker>
+        )}
+      </Modal>
     </div>
   );
 };

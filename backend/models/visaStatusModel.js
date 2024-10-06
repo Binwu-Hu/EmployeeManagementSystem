@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const visaStatusSchema = new mongoose.Schema({
   employee: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee', required: true },
-  visaType: { type: String, enum: ['H1-B', 'L2', 'F1', 'H4', 'Other'], required: true },
+  visaType: { type: String, required: true },
   optReceipt: {
     files: [{ type: String }], // Array to hold multiple file paths
     status: { type: String, enum: ['Unsubmitted', 'Pending', 'Approved', 'Rejected'], default: 'Unsubmitted' }, 
