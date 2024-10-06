@@ -7,7 +7,10 @@ const employeeSchema = new mongoose.Schema(
     middleName: { type: String },
     preferredName: { type: String },
     email: { type: String, required: true, unique: true },
-    profilePicture: { type: String, default: 'default-profile.png' },
+    profilePicture: {
+      type: String,
+      default: '../../frontend/public/default-avatar.jpg',
+    },
     address: {
       building: { type: String },
       street: { type: String },

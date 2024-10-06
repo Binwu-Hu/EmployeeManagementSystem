@@ -1,4 +1,4 @@
-import { Button, Form, Upload } from 'antd';
+import { Button, Form, Image, Upload } from 'antd';
 
 import { Employee } from '../../utils/type';
 import React from 'react';
@@ -17,6 +17,8 @@ const ProfilePictureSection: React.FC<ProfilePictureSectionProps> = ({
   form,
   unchangeable,
 }) => {
+  const profilePictureSrc =
+    employee.documents?.profilePicture || '../../../public/default-avatar.jpg';
   return (
     <div className='bg-white p-4 rounded shadow-md'>
       <h2 className='text-xl font-semibold'>Profile Picture</h2>
@@ -24,26 +26,31 @@ const ProfilePictureSection: React.FC<ProfilePictureSectionProps> = ({
         form={form}
         layout='vertical'
         initialValues={{
-          profilePicture:
-            employee.documents?.profilePicture || 'default-placeholder.png',
+          profilePicture: profilePictureSrc,
         }}
       >
-        <Form.Item
-          name='profilePicture'
-          label='Profile Picture'
-          // rules={[{ required: true, message: 'Profile picture is required' }]}
-        >
-          <Upload
-            listType='picture'
-            maxCount={1}
-            onChange={(info) =>
-              onChange('documents.profilePicture', info.file.name)
-            }
-          >
-            <Button disabled={unchangeable} icon={<UploadOutlined />}>
-              {employee.documents?.profilePicture || 'Upload Profile Picture'}
-            </Button>
-          </Upload>
+        <Form.Item name='profilePicture'>
+          <div className='flex items-center space-x-4 mt-4'>
+            {/* Display profile picture */}
+            <Image
+              width={100}
+              height={100}
+              src={profilePictureSrc}
+              alt='Profile Picture'
+              fallback='../../../public/default-avatar.jpg'
+            />
+            <Upload
+              listType='picture'
+              maxCount={1}
+              onChange={(info) =>
+                onChange('profilePicture', info.file.name)
+              }
+            >
+              <Button disabled={unchangeable} icon={<UploadOutlined />}>
+                {employee.documents?.profilePicture || 'Upload Profile Picture'}
+              </Button>
+            </Upload>
+          </div>
         </Form.Item>
       </Form>
     </div>
