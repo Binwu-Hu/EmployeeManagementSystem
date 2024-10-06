@@ -38,13 +38,23 @@ export const updateEmployee = async (req, res) => {
       return res.status(404).json({ message: 'Employee not found' });
     }
     const visaType = updatedEmployee.workAuthorization.visaType;
+    const files = updatedEmployee.workAuthorization.files;
     if (validVisaTypes.includes(visaType)) {
       try {
-        const result = await updateVisaStatus(updatedEmployee._id, visaType);
+        if (files) {
+          await updateVisaStatus(updatedEmployee._id, visaType, files);
+        } else {
+          await updateVisaStatus(updatedEmployee._id, visaType);
+        }
         // console.log(result.message);
       } catch (error) {
         console.error('Error updating visa status:', error.message);
-        return res.status(500).json({ message: 'Error updating visa status', error: error.message });
+        return res
+          .status(500)
+          .json({
+            message: 'Error updating visa status',
+            error: error.message,
+          });
       }
     }
 
@@ -85,8 +95,7 @@ export const uploadEmployeeFile = asyncHandler(async (req, res) => {
   const filePath = `/uploads/${req.file.filename}`;
   const fileType = path.extname(req.file.filename).toLowerCase();
 
-  res.status(200).json({ message: 'File uploaded successfully', filePath, fileType });
+  res
+    .status(200)
+    .json({ message: 'File uploaded successfully', filePath, fileType });
 });
-
-
-
