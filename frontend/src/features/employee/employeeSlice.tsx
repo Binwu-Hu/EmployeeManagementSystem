@@ -178,17 +178,113 @@ const employeeSlice = createSlice({
     //   }
     // },
 
+    // updateEmployeeField: (
+    //   state,
+    //   action: PayloadAction<{ field: string; value: any }>
+    // ) => {
+    //   const { field, value } = action.payload;
+    //   const storedUser = localStorage.getItem('user');
+    //   let email;
+    //   if (storedUser) {
+    //     const user = JSON.parse(storedUser);
+    //     email = user?.email || null;
+    //   }
+    //   if (!state.employee) {
+    //     state.employee = {
+    //       _id: '',
+    //       firstName: '',
+    //       lastName: '',
+    //       email: email,
+    //       address: { building: '', street: '', city: '', state: '', zip: '' },
+    //       phone: { cellPhone: '', workPhone: '' },
+    //       workAuthorization: {
+    //         visaType: '',
+    //         startDate: '',
+    //         endDate: '',
+    //         files: [],
+    //       },
+    //       emergencyContacts: [],
+    //       userId: '',
+    //       gender: '',
+    //     };
+    //   }
+
+    //   // Split field string into parts, handling both dot and array-like indexing
+    //   const fieldParts = field.split(/[\.\[\]]/).filter(Boolean);
+
+    //   let currentField: any = state.employee; // Reference to traverse the employee object
+
+    //   // Traverse through the field path, except for the last key
+    //   for (let i = 0; i < fieldParts.length - 1; i++) {
+    //     const key = fieldParts[i];
+
+    //     if (Array.isArray(currentField)) {
+    //       const index = parseInt(key, 10);
+    //       if (isNaN(index) || index >= currentField.length) {
+    //         return;
+    //       }
+    //       currentField = currentField[index];
+    //     } else {
+    //       if (!currentField[key]) {
+    //         currentField[key] = {}; // Create a nested object if it doesn't exist
+    //       }
+    //       currentField = currentField[key];
+    //     }
+    //   }
+
+    //   // Update the final key with the new value
+    //   const lastKey = fieldParts[fieldParts.length - 1];
+    //   if (Array.isArray(currentField)) {
+    //     const index = parseInt(lastKey, 10);
+    //     if (!isNaN(index) && index < currentField.length) {
+    //       currentField[index] = value;
+    //     }
+    //   } else {
+    //     currentField[lastKey] = value;
+    //   }
+    // },
     updateEmployeeField: (
       state,
       action: PayloadAction<{ field: string; value: any }>
     ) => {
       const { field, value } = action.payload;
-      if (!state.employee) return;
 
-      // Split field string into parts, handling both dot and array-like indexing
+      // Get the user email from localStorage
+      const storedUser = localStorage.getItem('user');
+      let email;
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        email = user?.email || null;
+      }
+
+      // Initialize state.employee if it's null
+      if (!state.employee) {
+        state.employee = {
+          _id: '',
+          firstName: '',
+          lastName: '',
+          email: email,
+          address: { building: '', street: '', city: '', state: '', zip: '' },
+          phone: { cellPhone: '', workPhone: '' },
+          workAuthorization: {
+            visaType: '',
+            startDate: '',
+            endDate: '',
+            files: [],
+          },
+          emergencyContacts: [],
+          userId: '',
+          gender: '',
+        };
+      }
+
+      // Split the field string into parts for handling nested updates
       const fieldParts = field.split(/[\.\[\]]/).filter(Boolean);
 
-      let currentField: any = state.employee; // Reference to traverse the employee object
+      // Create a shallow copy of the employee state to avoid direct mutation
+      const newEmployee = { ...state.employee };
+
+      let currentField: any = newEmployee; // Reference to traverse the employee object
 
       // Traverse through the field path, except for the last key
       for (let i = 0; i < fieldParts.length - 1; i++) {
@@ -202,13 +298,16 @@ const employeeSlice = createSlice({
           currentField = currentField[index];
         } else {
           if (!currentField[key]) {
-            currentField[key] = {}; // Create a nested object if it doesn't exist
+            // Handle different types (arrays or objects) dynamically
+            currentField[key] = !isNaN(parseInt(fieldParts[i + 1], 10))
+              ? []
+              : {};
           }
           currentField = currentField[key];
         }
       }
 
-      // Update the final key with the new value
+      // Update the final key with the new value immutably
       const lastKey = fieldParts[fieldParts.length - 1];
       if (Array.isArray(currentField)) {
         const index = parseInt(lastKey, 10);
@@ -218,6 +317,9 @@ const employeeSlice = createSlice({
       } else {
         currentField[lastKey] = value;
       }
+
+      // Assign the newly updated employee back to the state
+      state.employee = newEmployee;
     },
   },
   extraReducers: (builder) => {

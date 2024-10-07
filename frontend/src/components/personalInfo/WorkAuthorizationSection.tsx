@@ -84,7 +84,9 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
             employee.workAuthorization?.visaType === 'Citizen' ||
             employee.workAuthorization?.visaType === 'Green Card'
               ? 'Yes'
-              : 'No',
+              : employee.workAuthorization?.visaType
+              ? 'No'
+              : undefined,
           visaType: employee.workAuthorization?.visaType || undefined,
         }}
       >
@@ -158,7 +160,9 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
                   name='optReceipt'
                   rules={[
                     {
-                      required: employee.workAuthorization.files.length == 0 && form.getFieldValue('visaType') === 'F1',
+                      required:
+                        employee.workAuthorization.files.length == 0 &&
+                        form.getFieldValue('visaType') === 'F1',
                       message: 'OPT Receipt is required for F1 visa type',
                     },
                   ]}

@@ -99,7 +99,14 @@ const AddressSection: React.FC<AddressSectionProps> = ({
           <Form.Item
             name='zip'
             label='Zip'
-            rules={[{ required: true, message: 'Zip code is required' }]}
+            rules={[
+              { required: true, message: 'Zip code is required' },
+              {
+                pattern: /^[0-9]{5}$/,
+                message:
+                  'zip must be exactly 5 digits and contain only numbers',
+              },
+            ]}
           >
             <Input
               disabled={unchangeable}

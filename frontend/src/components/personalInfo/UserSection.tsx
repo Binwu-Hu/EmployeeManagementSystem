@@ -57,10 +57,17 @@ const UserSection: React.FC<UserSectionProps> = ({
         <Form.Item
           name='ssn'
           label='SSN'
-          rules={[{ required: true, message: 'SSN is required' }]}
+          rules={[
+            { required: true, message: 'SSN is required' },
+            {
+              pattern: /^[0-9]{9}$/,
+              message: 'SSN must be exactly 9 digits and contain only numbers',
+            },
+          ]}
         >
           <Input
             disabled={unchangeable}
+            maxLength={9}
             onChange={
               (e) => handleFieldChange('ssn', e.target.value)
               // onChange('ssn', e.target.value)
@@ -91,9 +98,9 @@ const UserSection: React.FC<UserSectionProps> = ({
         >
           <Radio.Group
             disabled={unchangeable}
-            onChange={(e) => 
-                handleFieldChange('gender', e.target.value)
-                // onChange('gender', e.target.value)
+            onChange={
+              (e) => handleFieldChange('gender', e.target.value)
+              // onChange('gender', e.target.value)
             }
           >
             <Radio value='male'>Male</Radio>

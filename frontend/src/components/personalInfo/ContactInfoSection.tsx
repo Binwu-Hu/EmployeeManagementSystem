@@ -44,7 +44,13 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
           <Form.Item
             name='cellPhone'
             label='Cell Phone'
-            rules={[{ required: true, message: 'Cell phone is required' }]}
+            rules={[
+              { required: true, message: 'Cell phone is required' },
+              {
+                pattern: /^[0-9]{10,15}$/,
+                message: 'Please enter a valid phone number (10-15 digits)',
+              },
+            ]}
           >
             <Input
               disabled={unchangeable}
@@ -54,7 +60,17 @@ const ContactInfoSection: React.FC<ContactInfoSectionProps> = ({
               }
             />
           </Form.Item>
-          <Form.Item name='workPhone' label='Work Phone'>
+          <Form.Item
+            name='workPhone'
+            label='Work Phone'
+            rules={[
+              {
+                pattern: /^[0-9]{10,15}$/,
+                message:
+                  'Please enter a valid work phone number (10-15 digits)',
+              },
+            ]}
+          >
             <Input
               disabled={unchangeable}
               onChange={
