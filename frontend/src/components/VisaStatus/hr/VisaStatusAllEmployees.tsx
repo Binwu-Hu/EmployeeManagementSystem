@@ -7,7 +7,7 @@ import '@react-pdf-viewer/core/lib/styles/index.css';
 
 const { Search } = Input;
 
-const VisaStatusAllEmployees: React.FC = () => {
+const VisaStatusAllEmployees: React.FC<{ selectedKey: string }> = ({ selectedKey }) => {
   const [visaStatuses, setVisaStatuses] = useState<any[]>([]);
   const [filteredStatuses, setFilteredStatuses] = useState<any[]>([]);
   const [visaTypeFilters, setVisaTypeFilters] = useState<any[]>([]);
@@ -46,7 +46,7 @@ const VisaStatusAllEmployees: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [selectedKey]);
 
   const handleSearch = (value: string) => {
     const filteredData = visaStatuses.filter((status: any) =>

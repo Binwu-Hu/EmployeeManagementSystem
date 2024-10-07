@@ -24,7 +24,7 @@ import '@react-pdf-viewer/core/lib/styles/index.css';
 const { Search } = Input;
 const { TextArea } = AntInput;
 
-const VisaStatusInProgress: React.FC = () => {
+const VisaStatusInProgress: React.FC<{ selectedKey: string }> = ({ selectedKey }) => {
   const dispatch = useDispatch();
   const [visaStatuses, setVisaStatuses] = useState<VisaStatusType[]>([]);
   const [filteredStatuses, setFilteredStatuses] = useState<VisaStatusType[]>(
@@ -68,7 +68,7 @@ const VisaStatusInProgress: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [selectedKey]);
 
   const handleSearch = (value: string) => {
     const filteredData = visaStatuses.filter((status: any) => {

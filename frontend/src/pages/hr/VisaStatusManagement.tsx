@@ -23,8 +23,8 @@ const VisaStatusManagement: React.FC = () => {
       </Sider>
       <Layout className="bg-gray-50">
         <Content className="p-6">
-          {selectedKey === '1' && <VisaStatusInProgress />}
-          {selectedKey === '2' && <VisaStatusAllEmployees />}
+          {selectedKey === '1' && <VisaStatusInProgress selectedKey={selectedKey} />}
+          {selectedKey === '2' && <VisaStatusAllEmployees selectedKey={selectedKey} />}
         </Content>
       </Layout>
     </Layout>

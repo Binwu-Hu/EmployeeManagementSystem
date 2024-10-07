@@ -42,6 +42,12 @@ const VisaStatusPage = () => {
     }
   }, [dispatch, employee]);
 
+  useEffect(() => {
+    if (employee?._id) {
+      dispatch(fetchVisaStatus(employee._id));
+    }
+  }, [dispatch, employee, selectedKey]);
+
   const handleMenuClick = (e: any) => {
     setSelectedKey(e.key);
   };
