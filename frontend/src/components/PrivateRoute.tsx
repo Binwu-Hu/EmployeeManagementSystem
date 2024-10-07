@@ -1,7 +1,7 @@
 import { Navigate, useParams } from 'react-router-dom';
+import { RootState, store } from '../app/store';
 
 import React from 'react';
-import { RootState } from '../app/store';
 import { useSelector } from 'react-redux';
 
 interface PrivateRouteProps {
@@ -28,7 +28,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
     return <Navigate to='/error' />;
   }
 
-  if (id && storedUser?.id && id !== storedUser.id) {
+  if (id && storedUser?.id && id !== storedUser.id && storedUser.role !== 'HR') {
     return <Navigate to='/error' />;
   }
 
