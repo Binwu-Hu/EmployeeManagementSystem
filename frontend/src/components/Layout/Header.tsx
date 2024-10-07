@@ -11,7 +11,6 @@ const MergedHeader = () => {
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.user
   );
-  console.log('isauth', isAuthenticated);
 
   return (
     <Header className='bg-black text-white px-0 md:px-4 h-12 md:h-20'>

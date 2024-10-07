@@ -74,11 +74,6 @@ export const getVisaStatusByEmployee = async (req, res) => {
   try {
     const { employeeId } = req.params;
     const visaStatus = await VisaStatus.findOne({ employee: employeeId }).populate('employee');
-    // console.log('visaStatus:', visaStatus);
-    if (!visaStatus) {
-      return res.status(404).json({ message: 'Visa status not found' });
-    }
-
     res.status(200).json(visaStatus);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching visa status', error });
@@ -91,21 +86,22 @@ export const updateVisaStatus = async (employeeId, visaType, files=[]) => {
   try {
 
     let visaStatus = await VisaStatus.findOne({ employee: employeeId });
-    console.log('visaStatus:', visaStatus);
     // If visa type is Green Card or Citizen, delete existing visa status
     if (visaType === 'Green Card' || visaType === 'Citizen') {
       if (visaStatus) {
+        // console.log('Deleting visa status for Green Card or Citizen');
         await VisaStatus.deleteOne({ employee: employeeId });
+        // console.log('Success: Deleting visa status for Green Card or Citizen');
         return { message: 'Visa status deleted successfully for Green Card or Citizen' };
       } else {
-        
+        // console.log('No visa status to delete for Green Card or Citizen');
         return { message: 'No visa status to delete for Green Card or Citizen' };
       }
     }
 
     if (visaType === 'F1') {
       if (visaStatus) {
-        console.log('Updating visa status for F1');
+        // console.log('Updating visa status for F1');
         // update existing visa status
         visaStatus.visaType = visaType;
         visaStatus.optReceipt = { files: files, status: files.length === 0 ? 'Unsubmitted' : 'Pending' };
@@ -115,8 +111,8 @@ export const updateVisaStatus = async (employeeId, visaType, files=[]) => {
         await visaStatus.save();
         return { message: 'Visa status updated successfully for F1', visaStatus };
       } else {
-        console.log('Creating new visa status for F1'); 
-        console.log('files:', files);
+        // console.log('Creating new visa status for F1'); 
+        // console.log('files:', files);
         // create new visa status
         visaStatus = new VisaStatus({
           employee: employeeId,

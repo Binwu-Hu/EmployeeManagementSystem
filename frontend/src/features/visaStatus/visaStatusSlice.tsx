@@ -100,6 +100,7 @@ const visaStatusSlice = createSlice({
       .addCase(fetchVisaStatuses.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.visaStatus = null; 
       })
       // Upload document
       .addCase(uploadVisaDocument.fulfilled, (state, action) => {
