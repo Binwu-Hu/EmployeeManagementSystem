@@ -138,27 +138,69 @@ const employeeSlice = createSlice({
       state.employee = null;
       state.employees = [];
     },
+    // updateEmployeeField: (
+    //   state,
+    //   action: PayloadAction<{ field: string[]; value: any }>
+    // ) => {
+    //   const { field, value } = action.payload;
+    //   if (!state.employee) return;
+
+    //   let currentField: any = state.employee; // Reference to traverse the employee object
+
+    //   // Traverse through the field path, except for the last key
+    //   for (let i = 0; i < field.length - 1; i++) {
+    //     const key = field[i];
+    //     if (Array.isArray(currentField)) {
+    //       // If we're working with an array, ensure the index exists
+    //       const index = parseInt(key, 10);
+    //       if (isNaN(index) || index >= currentField.length) {
+    //         return;
+    //       }
+    //       currentField = currentField[index];
+    //     } else {
+    //       // If it's an object, ensure the key exists
+    //       if (!currentField[key]) {
+    //         currentField[key] = {}; // Create a nested object if it doesn't exist
+    //       }
+    //       currentField = currentField[key];
+    //     }
+    //   }
+
+    //   // Update the final key with the new value
+    //   const lastKey = field[field.length - 1];
+    //   if (Array.isArray(currentField)) {
+    //     const index = parseInt(lastKey, 10);
+    //     if (!isNaN(index) && index < currentField.length) {
+    //       currentField[index] = value;
+    //     }
+    //   } else {
+    //     currentField[lastKey] = value;
+    //   }
+    // },
+
     updateEmployeeField: (
       state,
-      action: PayloadAction<{ field: string[]; value: any }>
+      action: PayloadAction<{ field: string; value: any }>
     ) => {
       const { field, value } = action.payload;
       if (!state.employee) return;
 
+      // Split field string into parts, handling both dot and array-like indexing
+      const fieldParts = field.split(/[\.\[\]]/).filter(Boolean);
+
       let currentField: any = state.employee; // Reference to traverse the employee object
 
       // Traverse through the field path, except for the last key
-      for (let i = 0; i < field.length - 1; i++) {
-        const key = field[i];
+      for (let i = 0; i < fieldParts.length - 1; i++) {
+        const key = fieldParts[i];
+
         if (Array.isArray(currentField)) {
-          // If we're working with an array, ensure the index exists
           const index = parseInt(key, 10);
           if (isNaN(index) || index >= currentField.length) {
             return;
           }
           currentField = currentField[index];
         } else {
-          // If it's an object, ensure the key exists
           if (!currentField[key]) {
             currentField[key] = {}; // Create a nested object if it doesn't exist
           }
@@ -167,7 +209,7 @@ const employeeSlice = createSlice({
       }
 
       // Update the final key with the new value
-      const lastKey = field[field.length - 1];
+      const lastKey = fieldParts[fieldParts.length - 1];
       if (Array.isArray(currentField)) {
         const index = parseInt(lastKey, 10);
         if (!isNaN(index) && index < currentField.length) {
@@ -239,5 +281,6 @@ const employeeSlice = createSlice({
   },
 });
 
-export const { clearEmployee, setSelectedEmployee, updateEmployeeField } = employeeSlice.actions;
+export const { clearEmployee, setSelectedEmployee, updateEmployeeField } =
+  employeeSlice.actions;
 export default employeeSlice.reducer;

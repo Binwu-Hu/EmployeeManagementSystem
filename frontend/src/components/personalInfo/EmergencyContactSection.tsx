@@ -1,8 +1,11 @@
 import { Button, Form, Input } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-
-import { Employee } from '../../utils/type';
 import React, { useEffect } from 'react';
+
+import { AppDispatch } from '../../app/store';
+import { Employee } from '../../utils/type';
+import { updateEmployeeField } from '../../features/employee/employeeSlice';
+import { useDispatch } from 'react-redux';
 
 interface EmergencyContactSectionProps {
   employee: Employee;
@@ -19,6 +22,14 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
   form,
   unchangeable,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const handleFieldChange = (field: string, value: any) => {
+    onChange(field, value);
+
+    const fieldParts = field.split('.');
+    dispatch(updateEmployeeField({ field: fieldParts, value }));
+  };
+
   useEffect(() => {
     if (
       isEditing &&
@@ -69,7 +80,10 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
           >
             <Input
               disabled={unchangeable}
-              onChange={(e) => onChange('reference.firstName', e.target.value)}
+              onChange={(e) =>
+                // onChange('reference.firstName', e.target.value)
+                handleFieldChange('reference.firstName', e.target.value)
+              }
             />
           </Form.Item>
           <Form.Item
@@ -79,25 +93,37 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
           >
             <Input
               disabled={unchangeable}
-              onChange={(e) => onChange('reference.lastName', e.target.value)}
+              onChange={
+                (e) => handleFieldChange('reference.lastName', e.target.value)
+                // onChange('reference.lastName', e.target.value)
+              }
             />
           </Form.Item>
           <Form.Item name='referenceMiddleName' label='Middle Name'>
             <Input
               disabled={unchangeable}
-              onChange={(e) => onChange('reference.middleName', e.target.value)}
+              onChange={
+                (e) => handleFieldChange('reference.middleName', e.target.value)
+                // onChange('reference.middleName', e.target.value)
+              }
             />
           </Form.Item>
           <Form.Item name='referencePhone' label='Phone'>
             <Input
               disabled={unchangeable}
-              onChange={(e) => onChange('reference.phone', e.target.value)}
+              onChange={
+                (e) => handleFieldChange('reference.phone', e.target.value)
+                // onChange('reference.phone', e.target.value)
+              }
             />
           </Form.Item>
           <Form.Item name='referenceEmail' label='Email'>
             <Input
               disabled={unchangeable}
-              onChange={(e) => onChange('reference.email', e.target.value)}
+              onChange={
+                (e) => handleFieldChange('reference.email', e.target.value)
+                // onChange('reference.email', e.target.value)
+              }
             />
           </Form.Item>
           <Form.Item
@@ -107,8 +133,10 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
           >
             <Input
               disabled={unchangeable}
-              onChange={(e) =>
-                onChange('reference.relationship', e.target.value)
+              onChange={
+                (e) =>
+                  handleFieldChange('reference.relationship', e.target.value)
+                // onChange('reference.relationship', e.target.value)
               }
             />
           </Form.Item>
@@ -131,7 +159,11 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                       <Input
                         disabled={unchangeable}
                         onChange={(e) =>
-                          onChange(
+                          //   onChange(
+                          //     `emergencyContacts[${index}].firstName`,
+                          //     e.target.value
+                          //   )
+                          handleFieldChange(
                             `emergencyContacts[${index}].firstName`,
                             e.target.value
                           )
@@ -149,7 +181,11 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                       <Input
                         disabled={unchangeable}
                         onChange={(e) =>
-                          onChange(
+                          //   onChange(
+                          //     `emergencyContacts[${index}].lastName`,
+                          //     e.target.value
+                          //   )
+                          handleFieldChange(
                             `emergencyContacts[${index}].lastName`,
                             e.target.value
                           )
@@ -164,7 +200,11 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                       <Input
                         disabled={unchangeable}
                         onChange={(e) =>
-                          onChange(
+                          //   onChange(
+                          //     `emergencyContacts[${index}].middleName`,
+                          //     e.target.value
+                          //   )
+                          handleFieldChange(
                             `emergencyContacts[${index}].middleName`,
                             e.target.value
                           )
@@ -179,7 +219,11 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                       <Input
                         disabled={unchangeable}
                         onChange={(e) =>
-                          onChange(
+                          //   onChange(
+                          //     `emergencyContacts[${index}].phone`,
+                          //     e.target.value
+                          //   )
+                          handleFieldChange(
                             `emergencyContacts[${index}].phone`,
                             e.target.value
                           )
@@ -194,7 +238,11 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                       <Input
                         disabled={unchangeable}
                         onChange={(e) =>
-                          onChange(
+                          //   onChange(
+                          //     `emergencyContacts[${index}].email`,
+                          //     e.target.value
+                          //   )
+                          handleFieldChange(
                             `emergencyContacts[${index}].email`,
                             e.target.value
                           )
@@ -212,7 +260,11 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
                       <Input
                         disabled={unchangeable}
                         onChange={(e) =>
-                          onChange(
+                          //   onChange(
+                          //     `emergencyContacts[${index}].relationship`,
+                          //     e.target.value
+                          //   )
+                          handleFieldChange(
                             `emergencyContacts[${index}].relationship`,
                             e.target.value
                           )
