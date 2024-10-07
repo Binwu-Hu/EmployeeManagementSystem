@@ -29,13 +29,13 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
   const [uploadedFiles, setUploadedFiles] = useState<string[]>(
     employee?.workAuthorization?.files || []
   );
+
   const handleUpload = (file: any) => {
     const userId = user?.id;
     if (userId) {
-      dispatch(uploadEmployeeFile({ userId, file }))
+      dispatch(uploadEmployeeFile({ userId, file, visaType: 'F1' }))
         .unwrap()
         .then(({ filePath }) => {
-          console.log('File uploaded:', filePath);
           const newFiles = [...uploadedFiles, filePath];
           setUploadedFiles(newFiles);
 
@@ -44,20 +44,23 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
           message.success('OPT Receipt uploaded successfully!');
         })
         .catch((error) => {
-          console.error('Upload failed:', error);
           message.error('Failed to upload OPT Receipt');
         });
     }
   };
 
   const handleFileRemove = (filePath: string) => {
-    // Remove the file from the list and update the state and form
     const updatedFiles = uploadedFiles.filter((file) => file !== filePath);
     setUploadedFiles(updatedFiles);
     onChange('workAuthorization.files', updatedFiles);
 
-    // Optionally, make a request to delete the file from the server
     message.success('File removed successfully');
+  };
+
+  // Use form.setFieldsValue to explicitly set form values on change
+  const handleVisaTypeChange = (e: any) => {
+    form.setFieldsValue({ visaType: e.target.value });
+    onChange('workAuthorization.visaType', e.target.value);
   };
 
   return (
@@ -73,10 +76,6 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
               ? 'Yes'
               : 'No',
           visaType: employee.workAuthorization?.visaType || undefined,
-          ...(employee.workAuthorization?.visaType === 'F1' && {
-            permanentResident: 'No',
-            visaType: 'F1',
-          }),
         }}
       >
         <Form.Item
@@ -86,9 +85,10 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
         >
           <Radio.Group
             disabled={unchangeable || !isEditing}
-            onChange={(e) =>
-              onChange('workAuthorization.visaType', e.target.value)
-            }
+            onChange={(e) => {
+              form.setFieldsValue({ permanentResident: e.target.value });
+              onChange('workAuthorization.permanentResident', e.target.value);
+            }}
           >
             <Radio value='Yes'>Yes</Radio>
             <Radio value='No'>No</Radio>
@@ -108,9 +108,7 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
           >
             <Radio.Group
               disabled={unchangeable || !isEditing}
-              onChange={(e) =>
-                onChange('workAuthorization.visaType', e.target.value)
-              }
+              onChange={handleVisaTypeChange}
             >
               <Radio value='Green Card'>Green Card</Radio>
               <Radio value='Citizen'>Citizen</Radio>
@@ -132,9 +130,7 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
             >
               <Radio.Group
                 disabled={unchangeable || !isEditing}
-                onChange={(e) =>
-                  onChange('workAuthorization.visaType', e.target.value)
-                }
+                onChange={handleVisaTypeChange}
               >
                 <Radio value='H1-B'>H1-B</Radio>
                 <Radio value='L2'>L2</Radio>
