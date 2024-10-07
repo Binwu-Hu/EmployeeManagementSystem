@@ -196,7 +196,7 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
                         {filePath.split('/').pop()}{' '}
                         {/* Display the file name */}
                       </a>
-                      {isEditing && (
+                      {isEditing && !unchangeable && (
                         <Button
                           type='link'
                           icon={<DeleteOutlined />}
