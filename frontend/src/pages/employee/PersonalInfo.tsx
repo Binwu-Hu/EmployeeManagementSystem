@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '../../app/store';
-import { Button, Form, Layout, Menu, message, Spin } from 'antd';
+import { Button, Form, Layout, Menu, Spin, message } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   clearEmployee,
@@ -33,6 +33,12 @@ const PersonalInfoPage: React.FC = () => {
     }
     return undefined;
   }, [user]);
+
+  const {
+    application,
+    applicationMessage,
+    loading: applicationLoading,
+  } = useSelector((state: RootState) => state.application);
 
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
@@ -205,9 +211,11 @@ const PersonalInfoPage: React.FC = () => {
                 </Button>
               </>
             ) : (
-              <Button type='primary' onClick={() => setIsEditing(true)}>
-                Edit
-              </Button>
+              application?.status !== 'Pending' && (
+                <Button type='primary' onClick={() => setIsEditing(true)}>
+                  Edit
+                </Button>
+              )
             )}
           </div>
 
