@@ -16,8 +16,10 @@ const Signup: React.FC = () => {
       await signupUserApi({ ...values, token });
       message.success('Signup successful');
       navigate('/login');  // Redirect user to login page
-    } catch (error) {
-      message.error('Signup failed. Please try again.');
+    } catch (error: any) {
+      console.log('Signup error:', error);
+      message.error(error.message || 'Signup failed. Please try again.');
+      
     } finally {
       setLoading(false);
     }
