@@ -24,11 +24,15 @@ const VisaStatusAllEmployees: React.FC = () => {
         setVisaStatuses(response);
         setFilteredStatuses(response);
 
-        const uniqueVisaTypes = Array.from(new Set(response.map((status: any) => status.employee.workAuthorization.visaType)));
-        setVisaTypeFilters(uniqueVisaTypes.map(visaType => ({
-          text: visaType,
-          value: visaType,
-        })));
+        const uniqueVisaTypes = Array.from(
+          new Set(response.map((status: any) => status.employee?.workAuthorization?.visaType))
+        ).filter(Boolean); // Remove any undefined values
+        setVisaTypeFilters(
+          uniqueVisaTypes.map(visaType => ({
+            text: visaType,
+            value: visaType,
+          }))
+        );
 
         setLoading(false);
       } catch (err: any) {
@@ -67,7 +71,7 @@ const VisaStatusAllEmployees: React.FC = () => {
       .catch(err => console.error('Error while downloading the file:', err));
   };
 
-  const renderFileLink = (files: string[], employeeName: string, fileType: string) => {
+  const renderFileLink = (files: string[], employeeName: string = 'Unknown', fileType: string) => {
     return files?.map((file, index) => (
       <div key={index}>
         <Button type="link" onClick={() => handlePreview(`http://localhost:3000/${file}`)}>
@@ -79,29 +83,29 @@ const VisaStatusAllEmployees: React.FC = () => {
         </Button>
       </div>
     ));
-  };
+  };  
 
   const columns = [
     {
       title: 'Name',
       dataIndex: 'employee',
       key: 'name',
-      render: (employee: any) => `${employee.firstName} ${employee.lastName}`,
+      render: (employee: any) => `${employee?.firstName || ''} ${employee?.lastName || ''}`,
     },
     {
       title: 'Work Authorization',
       dataIndex: 'employee',
       key: 'visaType',
       filters: visaTypeFilters,
-      onFilter: (value: any, record: any) => record.employee.workAuthorization.visaType === value,
-      render: (employee: any) => employee.workAuthorization.visaType,
+      onFilter: (value: any, record: any) => record.employee?.workAuthorization?.visaType === value,
+      render: (employee: any) => employee?.workAuthorization?.visaType || 'N/A',
     },
     {
       title: 'Start Date',
       dataIndex: 'employee',
       key: 'startDate',
       render: (employee: any) =>
-        employee.workAuthorization.startDate
+        employee?.workAuthorization?.startDate
           ? moment(employee.workAuthorization.startDate).format('YYYY-MM-DD')
           : 'N/A',
     },
@@ -110,7 +114,7 @@ const VisaStatusAllEmployees: React.FC = () => {
       dataIndex: 'employee',
       key: 'endDate',
       render: (employee: any) =>
-        employee.workAuthorization.endDate
+        employee?.workAuthorization?.endDate
           ? moment(employee.workAuthorization.endDate).format('YYYY-MM-DD')
           : 'N/A',
     },
