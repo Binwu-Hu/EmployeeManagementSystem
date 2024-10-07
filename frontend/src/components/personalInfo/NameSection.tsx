@@ -1,7 +1,10 @@
 import { Form, Input } from 'antd';
 
+import { AppDispatch } from '../../app/store';
 import { Employee } from '../../utils/type';
 import React from 'react';
+import { updateEmployeeField } from '../../features/employee/employeeSlice';
+import { useDispatch } from 'react-redux';
 
 interface NameSectionProps {
   employee: Employee;
@@ -18,6 +21,14 @@ const NameSection: React.FC<NameSectionProps> = ({
   form,
   unchangeable,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const handleFieldChange = (field: string, value: any) => {
+    onChange(field, value);
+
+    const fieldParts = field.split('.');
+    dispatch(updateEmployeeField({ field: fieldParts, value }));
+  };
+
   return (
     <div className='bg-white p-4 rounded shadow-md'>
       <h2 className='text-xl font-semibold'>Name</h2>
@@ -39,7 +50,9 @@ const NameSection: React.FC<NameSectionProps> = ({
           >
             <Input
               disabled={unchangeable}
-              onChange={(e) => onChange('firstName', e.target.value)}
+              onChange={(e) =>
+                handleFieldChange('firstName', e.target.value)
+              }
             />
           </Form.Item>
           <Form.Item
@@ -49,7 +62,9 @@ const NameSection: React.FC<NameSectionProps> = ({
           >
             <Input
               disabled={unchangeable}
-              onChange={(e) => onChange('lastName', e.target.value)}
+              onChange={
+                (e) => handleFieldChange('lastName', e.target.value)
+              }
             />
           </Form.Item>
           <Form.Item name='middleName' label='Middle Name'>

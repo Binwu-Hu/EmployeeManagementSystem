@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { Employee } from '../../utils/type';
 import axios from 'axios';
@@ -91,7 +91,11 @@ export const fetchEmployees = createAsyncThunk(
 export const uploadEmployeeFile = createAsyncThunk(
   'employee/uploadFile',
   async (
-    { userId, file, visaType }: { userId: string; file: File; visaType: string},
+    {
+      userId,
+      file,
+      visaType,
+    }: { userId: string; file: File; visaType: string },
     { rejectWithValue }
   ) => {
     try {
@@ -113,7 +117,7 @@ export const uploadEmployeeFile = createAsyncThunk(
       );
 
       const { filePath, fileType } = response.data;
-      return {filePath, fileType, visaType};
+      return { filePath, fileType, visaType };
     } catch (error: any) {
       // Return the error message in case of failure
       return rejectWithValue(
@@ -133,6 +137,45 @@ const employeeSlice = createSlice({
     clearEmployee: (state) => {
       state.employee = null;
       state.employees = [];
+    },
+    updateEmployeeField: (
+      state,
+      action: PayloadAction<{ field: string[]; value: any }>
+    ) => {
+      const { field, value } = action.payload;
+      if (!state.employee) return;
+
+      let currentField: any = state.employee; // Reference to traverse the employee object
+
+      // Traverse through the field path, except for the last key
+      for (let i = 0; i < field.length - 1; i++) {
+        const key = field[i];
+        if (Array.isArray(currentField)) {
+          // If we're working with an array, ensure the index exists
+          const index = parseInt(key, 10);
+          if (isNaN(index) || index >= currentField.length) {
+            return;
+          }
+          currentField = currentField[index];
+        } else {
+          // If it's an object, ensure the key exists
+          if (!currentField[key]) {
+            currentField[key] = {}; // Create a nested object if it doesn't exist
+          }
+          currentField = currentField[key];
+        }
+      }
+
+      // Update the final key with the new value
+      const lastKey = field[field.length - 1];
+      if (Array.isArray(currentField)) {
+        const index = parseInt(lastKey, 10);
+        if (!isNaN(index) && index < currentField.length) {
+          currentField[index] = value;
+        }
+      } else {
+        currentField[lastKey] = value;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -180,12 +223,12 @@ const employeeSlice = createSlice({
       .addCase(uploadEmployeeFile.fulfilled, (state, action) => {
         state.loading = false;
         if (state.employee) {
-            const { filePath, fileType, visaType } = action.payload;
+          const { filePath, fileType, visaType } = action.payload;
           if (fileType === '.pdf') {
             state.employee.workAuthorization.visaType = visaType;
             state.employee.workAuthorization.files.push(filePath);
           } else {
-            state.employee.profilePicture = filePath
+            state.employee.profilePicture = filePath;
           }
         }
       })
@@ -196,5 +239,5 @@ const employeeSlice = createSlice({
   },
 });
 
-export const { clearEmployee, setSelectedEmployee } = employeeSlice.actions;
+export const { clearEmployee, setSelectedEmployee, updateEmployeeField } = employeeSlice.actions;
 export default employeeSlice.reducer;
