@@ -3,8 +3,11 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import User from '../models/userModel.js';
 import Employee from '../models/employeeModel.js';
+import User from '../models/userModel.js';
 import VisaStatus from '../models/visaStatusModel.js';
+import bcrypt from 'bcryptjs';
 import connectDB from '../db/index.js';
+import dotenv from 'dotenv';
 
 dotenv.config();
 connectDB();
