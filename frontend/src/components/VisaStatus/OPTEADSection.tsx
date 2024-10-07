@@ -96,7 +96,7 @@ const OPTEADSection = ({ employeeId }: { employeeId: string }) => {
     }
   };
 
-  const fileBaseUrl = 'http://localhost:3000/';
+  const fileBaseUrl = 'http://localhost:3000';
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <Card title="OPT EAD" bordered={false} style={{ width: 400, textAlign: 'center' }}>

@@ -96,7 +96,7 @@ const I20FormSection = ({ employeeId }: { employeeId: string }) => {
     }
   };
 
-  const fileBaseUrl = 'http://localhost:3000/';
+  const fileBaseUrl = 'http://localhost:3000';
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
       <Card title="I-20 Form" bordered={false} style={{ width: 400, textAlign: 'center' }}>

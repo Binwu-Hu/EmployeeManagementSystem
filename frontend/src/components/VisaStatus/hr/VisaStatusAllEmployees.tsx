@@ -91,7 +91,7 @@ const VisaStatusAllEmployees: React.FC = () => {
       <div key={index}>
         <Button
           type='link'
-          onClick={() => handlePreview(`http://localhost:3000/${file}`)}
+          onClick={() => handlePreview(`http://localhost:3000${file}`)}
         >
           Preview
         </Button>
@@ -100,7 +100,7 @@ const VisaStatusAllEmployees: React.FC = () => {
           type='link'
           onClick={() =>
             handleDownload(
-              `http://localhost:3000/${file}`,
+              `http://localhost:3000${file}`,
               employeeName,
               fileType,
               index

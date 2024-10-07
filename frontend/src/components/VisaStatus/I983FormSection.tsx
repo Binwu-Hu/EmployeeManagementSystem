@@ -60,11 +60,11 @@ const I983FormSection = ({ employeeId }: { employeeId: string }) => {
     return files?.map((file, index) => (
       <div key={index}>
         <span>Document {index + 1} : </span>
-        <Button type="link" onClick={() => handlePreview(`${base_url}/${file}`)}>
+        <Button type="link" onClick={() => handlePreview(`${base_url}${file}`)}>
           Preview
         </Button>
         |
-        <Button type="link" onClick={() => handleDownload(`${base_url}/${file}`, employeeName, fileType, index)}>
+        <Button type="link" onClick={() => handleDownload(`${base_url}${file}`, employeeName, fileType, index)}>
           Download
         </Button>
       </div>

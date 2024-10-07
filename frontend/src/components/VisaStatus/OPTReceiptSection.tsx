@@ -16,6 +16,8 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
   // Handle file change and only set file, do not auto-upload
   const handleFileChange = (info: any) => {
     setFiles(info.fileList);
+    const fileNames = info.fileList.map((file: any) => file.name);
+    console.log("Uploaded file names:", fileNames);
   };
 
   // Handle the manual upload on button click
@@ -102,7 +104,7 @@ const OPTReceiptSection = ({ employeeId }: { employeeId: string }) => {
     }
   };
 
-  const fileBaseUrl = 'http://localhost:3000/';
+  const fileBaseUrl = 'http://localhost:3000';
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>

@@ -130,7 +130,7 @@ const VisaStatusInProgress: React.FC = () => {
   const handleViewDocument = (document: string) => {
     const correctPath = document.startsWith('http')
       ? document
-      : `http://localhost:3000/${document}`;
+      : `http://localhost:3000${document}`;
 
     setPdfFile(correctPath); // Set the URL of the PDF file
     setIsModalVisible(true);

@@ -26,19 +26,19 @@ export const uploadVisaDocuments = async (req, res) => {
       // Clear the previous files and set the new ones
       if (fileType === 'optReceipt') {
         visaStatus.optReceipt.files = []; // Clear previous files
-        visaStatus.optReceipt.files.push(...req.files.map(file => file.path));
+        visaStatus.optReceipt.files.push(...req.files.map(file => `/${file.path}`));
         visaStatus.optReceipt.status = 'Pending';
       } else if (fileType === 'optEAD') {
         visaStatus.optEAD.files = []; // Clear previous files
-        visaStatus.optEAD.files.push(...req.files.map(file => file.path));
+        visaStatus.optEAD.files.push(...req.files.map(file => `/${file.path}`));
         visaStatus.optEAD.status = 'Pending';
       } else if (fileType === 'i983Form') {
         visaStatus.i983Form.files = []; // Clear previous files
-        visaStatus.i983Form.files.push(...req.files.map(file => file.path));
+        visaStatus.i983Form.files.push(...req.files.map(file => `/${file.path}`));
         visaStatus.i983Form.status = 'Pending';
       } else if (fileType === 'i20Form') {
         visaStatus.i20Form.files = []; // Clear previous files
-        visaStatus.i20Form.files.push(...req.files.map(file => file.path));
+        visaStatus.i20Form.files.push(...req.files.map(file => `/${file.path}`));
         visaStatus.i20Form.status = 'Pending';
       }
 
