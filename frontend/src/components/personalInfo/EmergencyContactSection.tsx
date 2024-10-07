@@ -295,6 +295,14 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
         </Form>
       ) : (
         <div>
+          <div>
+            <p>
+              <strong>First Name:</strong> {employee.reference?.firstName}
+            </p>
+          </div>
+
+          {/* Emergency Contacts Display */}
+          <h3 className='text-lg font-semibold mt-4'>Emergency Contacts</h3>
           {employee.emergencyContacts?.length > 0 ? (
             employee.emergencyContacts.map((contact, index) => (
               <div key={index} style={{ marginBottom: 16 }}>

@@ -7,7 +7,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>
+      <h1 className='text-xl font-semibold'>
         {user?.role === 'HR'
           ? 'This is home page for HR'
           : user?.role === 'Employee'
