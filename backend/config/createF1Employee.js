@@ -1,23 +1,25 @@
 import mongoose, { connect } from 'mongoose';
-import bcrypt from 'bcryptjs';
-import dotenv from 'dotenv';
-import User from '../models/userModel.js';
+
 import Employee from '../models/employeeModel.js';
+import User from '../models/userModel.js';
 import VisaStatus from '../models/visaStatusModel.js';
+import bcrypt from 'bcryptjs';
 import connectDB from '../db/index.js';
+import dotenv from 'dotenv';
 
 dotenv.config();
 connectDB();
 
 const usersData = [
-  { firstName: 'John', lastName: 'Doe', email: 'test1@domain.com' },
-  { firstName: 'Jane', lastName: 'Smith', email: 'test2@domain.com' },
-  { firstName: 'Mike', lastName: 'Johnson', email: 'test3@domain.com' },
-  { firstName: 'Emily', lastName: 'Davis', email: 'test4@domain.com' },
-  { firstName: 'David', lastName: 'Brown', email: 'test5@domain.com' },
-  { firstName: 'Sarah', lastName: 'Miller', email: 'test6@domain.com' },
-  { firstName: 'Chris', lastName: 'Wilson', email: 'test7@domain.com' },
-  { firstName: 'Anna', lastName: 'Taylor', email: 'test8@domain.com' },
+  { firstName: 'John', lastName: 'Doe', email: 'test20@domain.com' },
+  { firstName: 'John', lastName: 'Doe', email: 'test21@domain.com' },
+  { firstName: 'Jane', lastName: 'Smith', email: 'test22@domain.com' },
+  { firstName: 'Mike', lastName: 'Johnson', email: 'test23@domain.com' },
+  { firstName: 'Emily', lastName: 'Davis', email: 'test24@domain.com' },
+  { firstName: 'David', lastName: 'Brown', email: 'test25@domain.com' },
+  { firstName: 'Sarah', lastName: 'Miller', email: 'test26@domain.com' },
+  { firstName: 'Chris', lastName: 'Wilson', email: 'test27@domain.com' },
+  { firstName: 'Anna', lastName: 'Taylor', email: 'test28@domain.com' },
 ];
 
 const createEmployeeUsers = async () => {
@@ -44,9 +46,6 @@ const createEmployeeUsers = async () => {
         lastName,
         email,
         userId: user._id,
-        workAuthorization: {
-          visaType: 'F1',
-        },
       });
       await employee.save();
       console.log(`Employee Created: ${employee._id}`);
