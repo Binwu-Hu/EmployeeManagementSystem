@@ -55,14 +55,20 @@ const VisaStatusInProgress: React.FC = () => {
   }, []);
 
   const handleSearch = (value: string) => {
-    const filteredData = visaStatuses.filter((status: any) =>
-      `${status.employee.firstName} ${status.employee.lastName}`.toLowerCase().includes(value.toLowerCase())
-    );
+    const filteredData = visaStatuses.filter((status: any) => {
+      const employeeName = `${status.employee?.firstName || ''} ${status.employee?.lastName || ''}`.toLowerCase();
+      return employeeName.includes(value.toLowerCase());
+    });
     setFilteredStatuses(filteredData);
   };
 
-  const visaTypeFilters = Array.from(new Set(visaStatuses.map(status => status.employee.workAuthorization.visaType)))
-  .map(visaType => ({
+  const visaTypeFilters = Array.from(
+    new Set(
+      visaStatuses
+        .map(status => status.employee?.workAuthorization?.visaType)
+        .filter(visaType => visaType !== undefined) // Filter out undefined values
+    )
+  ).map(visaType => ({
     text: visaType,
     value: visaType,
   }));
@@ -256,22 +262,22 @@ const VisaStatusInProgress: React.FC = () => {
       title: 'Name',
       dataIndex: 'employee',
       key: 'name',
-      render: (employee: any) => `${employee.firstName} ${employee.lastName}`,
+      render: (employee: any) => employee ? `${employee.firstName} ${employee.lastName}` : 'N/A',
     },
     {
       title: 'Work Authorization',
       dataIndex: 'employee',
       key: 'visaType',
       filters: visaTypeFilters,
-      onFilter: (value: any, record: any) => record.employee.workAuthorization.visaType === value,
-      render: (employee: any) => employee.workAuthorization.visaType,
+      onFilter: (value: any, record: any) => record.employee?.workAuthorization?.visaType === value,
+      render: (employee: any) => employee?.workAuthorization ? employee.workAuthorization.visaType : 'N/A',
     },
     {
       title: 'Start Date',
       dataIndex: 'employee',
       key: 'startDate',
       render: (employee: any) =>
-        employee.workAuthorization.startDate
+        employee?.workAuthorization?.startDate
           ? moment(employee.workAuthorization.startDate).format('YYYY-MM-DD')
           : 'N/A',
     },
@@ -280,7 +286,7 @@ const VisaStatusInProgress: React.FC = () => {
       dataIndex: 'employee',
       key: 'endDate',
       render: (employee: any) =>
-        employee.workAuthorization.endDate
+        employee?.workAuthorization?.endDate
           ? moment(employee.workAuthorization.endDate).format('YYYY-MM-DD')
           : 'N/A',
     },
@@ -288,7 +294,7 @@ const VisaStatusInProgress: React.FC = () => {
       title: 'Number of Days Remaining',
       key: 'daysRemaining',
       render: (visaStatus: any) =>
-        visaStatus.employee.workAuthorization.endDate
+        visaStatus.employee?.workAuthorization?.endDate
           ? getDaysRemaining(visaStatus.employee.workAuthorization.endDate)
           : 'N/A',
     },
@@ -296,15 +302,15 @@ const VisaStatusInProgress: React.FC = () => {
       title: 'Next Steps',
       key: 'nextSteps',
       render: (visaStatus: any) =>
-        visaStatus.employee.workAuthorization.visaType === 'F1'
+        visaStatus.employee?.workAuthorization?.visaType === 'F1'
           ? getNextStep(visaStatus)
-          : '',
+          : 'N/A',
     },
     {
       title: 'Action',
       key: 'action',
       render: (visaStatus: any) =>
-        visaStatus.employee.workAuthorization.visaType === 'F1'
+        visaStatus.employee?.workAuthorization?.visaType === 'F1'
           ? handleAction(visaStatus)
           : null,
     },
