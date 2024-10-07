@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Table, Input, Button, Modal, Form, Input as AntInput } from 'antd';
+import { Table, Input, Button, Modal, Form, Dropdown, Menu, Input as AntInput } from 'antd';
 import { fetchVisaStatusesApi, updateVisaDocumentStatusApi, sendNotificationApi } from '../../../api/visaStatus';
 import { approveVisaStatus } from '../../../features/visaStatus/visaStatusSlice';
 import moment from 'moment';
@@ -38,7 +38,20 @@ const VisaStatusInProgress: React.FC = () => {
 
   // Fetch data on component mount
   useEffect(() => {
-    fetchVisaStatuses();
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchVisaStatusesApi();
+        setVisaStatuses(response);
+        setFilteredStatuses(response);
+        setLoading(false);
+      } catch (err: any) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleSearch = (value: string) => {
@@ -48,25 +61,40 @@ const VisaStatusInProgress: React.FC = () => {
     setFilteredStatuses(filteredData);
   };
 
+  const visaTypeFilters = Array.from(new Set(visaStatuses.map(status => status.employee.workAuthorization.visaType)))
+  .map(visaType => ({
+    text: visaType,
+    value: visaType,
+  }));
+
   const getDaysRemaining = (endDate: string) => {
     const today = moment();
     const end = moment(endDate);
     return end.diff(today, 'days');
   };
 
-  const getNextStep = (visaStatus: any) => {
+  const getNextStep = (visaStatus) => {
+    // Check for pending documents first
     if (visaStatus.optReceipt.status === 'Pending') return 'Wait for OPT Receipt approval';
     if (visaStatus.optEAD.status === 'Pending') return 'Wait for OPT EAD approval';
     if (visaStatus.i983Form.status === 'Pending') return 'Wait for I-983 Form approval';
     if (visaStatus.i20Form.status === 'Pending') return 'Wait for I-20 Form approval';
-
+  
+    // If no pending, check for rejected documents
+    if (visaStatus.optReceipt.status === 'Rejected') return 'Resubmit OPT Receipt';
+    if (visaStatus.optEAD.status === 'Rejected') return 'Resubmit OPT EAD';
+    if (visaStatus.i983Form.status === 'Rejected') return 'Resubmit I-983 Form';
+    if (visaStatus.i20Form.status === 'Rejected') return 'Resubmit I-20 Form';
+    
+    // Finally, check for unsubmitted documents
     if (visaStatus.optReceipt.status === 'Unsubmitted') return 'Submit OPT Receipt';
     if (visaStatus.optEAD.status === 'Unsubmitted') return 'Submit OPT EAD';
     if (visaStatus.i983Form.status === 'Unsubmitted') return 'Submit I-983 Form';
     if (visaStatus.i20Form.status === 'Unsubmitted') return 'Submit I-20 Form';
-
+      
+    // Default case when all documents are approved
     return 'All documents approved';
-  };
+  };  
 
   const handleViewDocument = (document: string) => {
     const correctPath = document.startsWith('http')
@@ -162,30 +190,66 @@ const VisaStatusInProgress: React.FC = () => {
   };  
 
   const handleAction = (visaStatus: any) => {
-    const pendingDocs = [
+    const documents = [
       { name: 'OPT Receipt', status: visaStatus.optReceipt.status, files: visaStatus.optReceipt.files },
       { name: 'OPT EAD', status: visaStatus.optEAD.status, files: visaStatus.optEAD.files },
       { name: 'I-983 Form', status: visaStatus.i983Form.status, files: visaStatus.i983Form.files },
       { name: 'I-20 Form', status: visaStatus.i20Form.status, files: visaStatus.i20Form.files }
     ];
-
-    const pendingDoc = pendingDocs.find(doc => doc.status === 'Pending');
-
-    if (pendingDoc) {
-      return (
-        <>
-          <Button onClick={() => handleViewDocument(pendingDoc.files[0])}>View</Button>
-          <Button type="default" style={{ color: 'blue', border: '0.5px solid blue', backgroundColor: 'white' }} onClick={() => handleApproveReject(visaStatus, 'Approved')}>Approve</Button>
-          <Button danger onClick={() => handleApproveReject(visaStatus, 'Rejected')}>Reject</Button>
-        </>
+  
+    // Check for pending documents and show approval/rejection UI if any are found
+    const pendingDocuments = documents
+      .filter(doc => doc.status === 'Pending' && doc.files?.length > 0)
+      .flatMap((doc, docIndex) =>
+        doc.files.map((file: string, index: number) => ({
+          label: `Document ${index + 1}`, 
+          key: file // The file URL to be viewed
+        }))
       );
-    } else {
-      const fileType = getRejectedOrUnsubmittedFileType(visaStatus); 
-      console.log('fileType', fileType);
-      return <Button type="primary" onClick={() => handleSendNotification(visaStatus.employee._id, fileType)}>Send Notification</Button>;
-
+  
+    if (pendingDocuments.length > 0) {
+      const handleMenuClick = ({ key }: { key: string }) => {
+        handleViewDocument(key); // key will be the file URL
+      };
+  
+      const menu = (
+        <Menu onClick={handleMenuClick} items={pendingDocuments} />
+      );
+  
+      return (
+        <div>
+          <Dropdown overlay={menu} trigger={['click']}>
+            <Button type="default">View</Button>
+          </Dropdown>
+          <Button
+            type="default"
+            style={{ color: 'blue', border: '0.5px solid blue', backgroundColor: 'white' }}
+            onClick={() => handleApproveReject(visaStatus, 'Approved')}
+          >
+            Approve
+          </Button>
+          <Button danger onClick={() => handleApproveReject(visaStatus, 'Rejected')}>
+            Reject
+          </Button>
+        </div>
+      );
     }
+  
+    // If no pending documents, check for rejected or unsubmitted documents
+    const firstRejectedOrUnsubmitted = documents.find(doc => doc.status === 'Rejected' || doc.status === 'Unsubmitted');
+    if (firstRejectedOrUnsubmitted) {
+      const fileType = getRejectedOrUnsubmittedFileType(visaStatus);
+      return (
+        <Button type="primary" onClick={() => handleSendNotification(visaStatus.employee._id, fileType)}>
+          Send Notification
+        </Button>
+      );
+    }
+  
+    // No actions available
+    return null;
   };
+  
 
   const columns = [
     {
@@ -198,6 +262,8 @@ const VisaStatusInProgress: React.FC = () => {
       title: 'Work Authorization',
       dataIndex: 'employee',
       key: 'visaType',
+      filters: visaTypeFilters,
+      onFilter: (value: any, record: any) => record.employee.workAuthorization.visaType === value,
       render: (employee: any) => employee.workAuthorization.visaType,
     },
     {
@@ -229,14 +295,20 @@ const VisaStatusInProgress: React.FC = () => {
     {
       title: 'Next Steps',
       key: 'nextSteps',
-      render: (visaStatus: any) => getNextStep(visaStatus),
+      render: (visaStatus: any) =>
+        visaStatus.employee.workAuthorization.visaType === 'F1'
+          ? getNextStep(visaStatus)
+          : '',
     },
     {
       title: 'Action',
       key: 'action',
-      render: (visaStatus: any) => handleAction(visaStatus),
+      render: (visaStatus: any) =>
+        visaStatus.employee.workAuthorization.visaType === 'F1'
+          ? handleAction(visaStatus)
+          : null,
     },
-  ];
+  ];  
 
   return (
     <div>

@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '../../app/store';
-import { Button, Form, Layout, Menu, Modal, message } from 'antd';
+import { Button, Form, Layout, Menu, Modal, message, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
   fetchEmployeeByUserId,
@@ -254,7 +254,12 @@ const OnboardingPage: React.FC = () => {
       });
     };
 
-  if (loading || applicationLoading) return <div>Loading...</div>;
+  if (loading || applicationLoading)
+    return (
+      <div className='flex justify-center items-center h-96'>
+        <Spin size='large' />
+      </div>
+    );
 
   if (error) return <div>Error: {error}</div>;
 
@@ -330,7 +335,11 @@ const OnboardingPage: React.FC = () => {
                   'Please fill in the application fields and submit.' &&
                   `${applicationMessage}`}
 
-                <div className={'text-red-500'}>{application?.status}</div>
+                <div className={'text-red-500'}>
+                  {application?.status}
+                  {application?.status === 'Pending' &&
+                    ' - Please wait for HR to review your application.'}
+                </div>
               </h2>
 
               <h2 className='text-xl font-semibold'>

@@ -12,7 +12,7 @@ interface Phone {
 }
 
 interface WorkAuthorization {
-  visaType: 'Green Card' | 'Citizen' | 'H1-B' | 'L2' | 'F1' | 'H4' | 'Other';
+  visaType: string;
   startDate: string; // ISO format date
   endDate: string; // ISO format date
   files: string[];
