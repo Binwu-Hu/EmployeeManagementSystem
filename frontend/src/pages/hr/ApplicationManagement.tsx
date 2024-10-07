@@ -1,5 +1,5 @@
 import { AppDispatch, RootState } from '../../app/store';
-import { Button, Form, Layout, Menu, message, Input, Modal } from 'antd'; // Add Input for feedback
+import { Button, Form, Layout, Menu, message, Input, Modal, Spin } from 'antd'; // Add Input for feedback
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -134,7 +134,12 @@ const ApplicationManagement: React.FC = () => {
     });
   };
 
-  if (loading || applicationLoading) return <div>Loading...</div>;
+  if (loading || applicationLoading)
+    return (
+      <div className='flex justify-center items-center h-96'>
+        <Spin size='large' />
+      </div>
+    );
 
   if (error) return <div>Error: {error}</div>;
 
