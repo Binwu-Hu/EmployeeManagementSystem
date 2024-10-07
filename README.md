@@ -80,8 +80,6 @@ The backend is built using **Node.js** and **Express**, with **MongoDB** as the 
 
 ## Installation and Setup
 
-### Backend Setup
-
 1. **Clone the Repository**:
 ```
    git clone https://github.com/Binwu-Hu/EmployeeManagementSystem.git
@@ -90,25 +88,25 @@ The backend is built using **Node.js** and **Express**, with **MongoDB** as the 
 
 2. **Install Backend Dependencies**:
 ```
-    cd backend
-    npm install
+   cd backend
+   npm install
 ```
 
 3. **Configure Environment Variables**:
 ```
-    #.env
-    MONGODB_URI=<your-mongodb-connection-string>
-    JWT_SECRET=<your-secret-key>
-    SENDGRID_API_KEY=<your-sendgrid-api-key>
+   #.env
+   MONGODB_URI=<your-mongodb-connection-string>
+   JWT_SECRET=<your-secret-key>
+   SENDGRID_API_KEY=<your-sendgrid-api-key>
 ```
 
 4. **Install Frontend Dependencies**:
 ```
-    cd frontend
-    npm install
+   cd frontend
+   npm install
 ```
 
 5. **Start the application**:
 ```
-    npm run dev
+   npm run dev
 ```
