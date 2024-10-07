@@ -48,8 +48,8 @@ export interface Employee {
   phone: Phone;
   ssn?: string;
   dateOfBirth?: string; // ISO format date
-  gender: 'male' | 'female' | 'i do not wish to answer';
-  visaStatus: 'Pending' | 'Approved' | 'Rejected';
+  gender: string;
+  visaStatus?: 'Pending' | 'Approved' | 'Rejected';
   workAuthorization: WorkAuthorization;
   reference?: Reference;
   emergencyContacts: EmergencyContact[];

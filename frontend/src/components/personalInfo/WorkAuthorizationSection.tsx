@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Employee } from '../../utils/type';
 import moment from 'moment';
+import { updateEmployeeField } from '../../features/employee/employeeSlice';
 import { uploadEmployeeFile } from '../../features/employee/employeeSlice';
 
 interface WorkAuthorizationSectionProps {
@@ -30,6 +31,13 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
     employee?.workAuthorization?.files || []
   );
 
+  const handleFieldChange = (field: string, value: any) => {
+    onChange(field, value);
+
+    const fieldParts = field.split('.');
+    dispatch(updateEmployeeField({ field: fieldParts, value }));
+  };
+
   const handleUpload = (file: any) => {
     const userId = user?.id;
     if (userId) {
@@ -52,7 +60,8 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
   const handleFileRemove = (filePath: string) => {
     const updatedFiles = uploadedFiles.filter((file) => file !== filePath);
     setUploadedFiles(updatedFiles);
-    onChange('workAuthorization.files', updatedFiles);
+    handleFieldChange('workAuthorization.files', updatedFiles);
+    // onChange('workAuthorization.files', updatedFiles);
 
     message.success('File removed successfully');
   };
@@ -60,7 +69,8 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
   // Use form.setFieldsValue to explicitly set form values on change
   const handleVisaTypeChange = (e: any) => {
     form.setFieldsValue({ visaType: e.target.value });
-    onChange('workAuthorization.visaType', e.target.value);
+    handleFieldChange('workAuthorization.visaType', e.target.value);
+    // onChange('workAuthorization.visaType', e.target.value);
   };
 
   return (
@@ -74,7 +84,9 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
             employee.workAuthorization?.visaType === 'Citizen' ||
             employee.workAuthorization?.visaType === 'Green Card'
               ? 'Yes'
-              : 'No',
+              : employee.workAuthorization?.visaType
+              ? 'No'
+              : undefined,
           visaType: employee.workAuthorization?.visaType || undefined,
         }}
       >
@@ -148,7 +160,9 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
                   name='optReceipt'
                   rules={[
                     {
-                      required: form.getFieldValue('visaType') === 'F1',
+                      required:
+                        employee.workAuthorization.files.length == 0 &&
+                        form.getFieldValue('visaType') === 'F1',
                       message: 'OPT Receipt is required for F1 visa type',
                     },
                   ]}
@@ -206,7 +220,11 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
                 <Input
                   disabled={unchangeable || !isEditing}
                   onChange={(e) =>
-                    onChange('workAuthorization.visaTitle', e.target.value)
+                    // onChange('workAuthorization.visaTitle', e.target.value)
+                    handleFieldChange(
+                      'workAuthorization.visaType',
+                      e.target.value
+                    )
                   }
                 />
               </Form.Item>
@@ -217,7 +235,11 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
               <DatePicker
                 disabled={unchangeable || !isEditing}
                 onChange={(date) =>
-                  onChange('workAuthorization.startDate', date?.toISOString())
+                  //   onChange('workAuthorization.startDate', date?.toISOString())
+                  handleFieldChange(
+                    'workAuthorization.startDate',
+                    date?.toISOString()
+                  )
                 }
                 defaultValue={
                   employee.workAuthorization?.startDate
@@ -231,7 +253,11 @@ const WorkAuthorizationSection: React.FC<WorkAuthorizationSectionProps> = ({
               <DatePicker
                 disabled={unchangeable || !isEditing}
                 onChange={(date) =>
-                  onChange('workAuthorization.endDate', date?.toISOString())
+                  //   onChange('workAuthorization.endDate', date?.toISOString())
+                  handleFieldChange(
+                    'workAuthorization.endDate',
+                    date?.toISOString()
+                  )
                 }
                 defaultValue={
                   employee.workAuthorization?.endDate

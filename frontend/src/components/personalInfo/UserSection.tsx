@@ -1,8 +1,11 @@
 import { DatePicker, Form, Input, Radio } from 'antd';
 
+import { AppDispatch } from '../../app/store';
 import { Employee } from '../../utils/type';
 import React from 'react';
 import moment from 'moment';
+import { updateEmployeeField } from '../../features/employee/employeeSlice';
+import { useDispatch } from 'react-redux';
 
 interface UserSectionProps {
   employee: Employee;
@@ -17,6 +20,14 @@ const UserSection: React.FC<UserSectionProps> = ({
   form,
   unchangeable,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const handleFieldChange = (field: string, value: any) => {
+    onChange(field, value);
+
+    const fieldParts = field.split('.');
+    dispatch(updateEmployeeField({ field: fieldParts, value }));
+  };
+
   return (
     <div className='bg-white p-4 rounded shadow-md'>
       <h2 className='text-xl font-semibold'>Employee Info</h2>
@@ -46,11 +57,21 @@ const UserSection: React.FC<UserSectionProps> = ({
         <Form.Item
           name='ssn'
           label='SSN'
-          rules={[{ required: true, message: 'SSN is required' }]}
+          rules={[
+            { required: true, message: 'SSN is required' },
+            {
+              pattern: /^[0-9]{9}$/,
+              message: 'SSN must be exactly 9 digits and contain only numbers',
+            },
+          ]}
         >
           <Input
             disabled={unchangeable}
-            onChange={(e) => onChange('ssn', e.target.value)}
+            maxLength={9}
+            onChange={
+              (e) => handleFieldChange('ssn', e.target.value)
+              // onChange('ssn', e.target.value)
+            }
           />
         </Form.Item>
 
@@ -62,7 +83,10 @@ const UserSection: React.FC<UserSectionProps> = ({
         >
           <DatePicker
             disabled={unchangeable}
-            onChange={(date) => onChange('dateOfBirth', date?.toISOString())}
+            onChange={
+              (date) => handleFieldChange('dateOfBirth', date?.toISOString())
+              // onChange('dateOfBirth', date?.toISOString())
+            }
           />
         </Form.Item>
 
@@ -74,7 +98,10 @@ const UserSection: React.FC<UserSectionProps> = ({
         >
           <Radio.Group
             disabled={unchangeable}
-            onChange={(e) => onChange('gender', e.target.value)}
+            onChange={
+              (e) => handleFieldChange('gender', e.target.value)
+              // onChange('gender', e.target.value)
+            }
           >
             <Radio value='male'>Male</Radio>
             <Radio value='female'>Female</Radio>

@@ -52,6 +52,31 @@ const OnboardingPage: React.FC = () => {
     }
   }, [dispatch, employee?._id]);
 
+  //   useEffect(() => {
+  //     if (employee) {
+  //       if (
+  //         applicationMessage ===
+  //           'Please fill in the application fields and submit.' ||
+  //         application?.status === 'Rejected'
+  //       ) {
+  //         setUnchangeable(false);
+  //       } else {
+  //         setUnchangeable(true);
+  //       }
+
+  //     //   setUpdatedData(employee);
+  //     setUpdatedData((prevData) => ({
+  //       ...prevData,
+  //       profilePicture: employee.profilePicture, // Update profilePicture
+  //       workAuthorization: {
+  //         ...prevData.workAuthorization, // Retain existing workAuthorization data
+  //         visaType: employee.workAuthorization.visaType, // Update visaType
+  //         files: employee.workAuthorization.files, // Update files
+  //       },
+  //     }));
+  //     }
+  //   }, [employee, applicationMessage, application?.status]);
+
   useEffect(() => {
     if (employee) {
       if (
@@ -64,9 +89,36 @@ const OnboardingPage: React.FC = () => {
         setUnchangeable(true);
       }
 
-      setUpdatedData(employee);
+      // Safely update fields, keeping required fields intact
+      setUpdatedData((prevData) => {
+        // Ensure that prevData is not null and that it preserves the required fields
+        return prevData
+          ? {
+              ...prevData, // Preserve all existing fields
+              profilePicture:
+                employee.profilePicture || prevData.profilePicture, // Update profilePicture or preserve
+              workAuthorization: {
+                ...prevData.workAuthorization, // Preserve existing workAuthorization fields
+                visaType:
+                  employee.workAuthorization.visaType ||
+                  prevData.workAuthorization.visaType, // Update visaType
+                files:
+                  employee.workAuthorization.files ||
+                  prevData.workAuthorization.files, // Update files
+                startDate: prevData.workAuthorization.startDate, // Preserve startDate
+                endDate: prevData.workAuthorization.endDate, // Preserve endDate
+              },
+            }
+          : employee; // If prevData is null, use employee as the initial value
+      });
     }
-  }, [employee, applicationMessage, application?.status]);
+  }, [
+    employee,
+    applicationMessage,
+    application?.status,
+    employee?.profilePicture,
+    employee?.workAuthorization,
+  ]);
 
   const handleSubmit = () => {
     form
@@ -148,62 +200,62 @@ const OnboardingPage: React.FC = () => {
     });
   };
 
-    // const handleSubmit = () => {
-    //   form
-    //     .validateFields() // Validate fields
-    //     .then(() => {
-    //       const token = localStorage.getItem('token');
-    //       if (!token) {
-    //         message.error('No authentication token found.');
-    //         return;
-    //       }
+  // const handleSubmit = () => {
+  //   form
+  //     .validateFields() // Validate fields
+  //     .then(() => {
+  //       const token = localStorage.getItem('token');
+  //       if (!token) {
+  //         message.error('No authentication token found.');
+  //         return;
+  //       }
 
-    //       // Update employee information
-    //       if (updatedData && userId) {
-    //         dispatch(updateEmployee({ userId, updatedData }))
-    //           .then(() => {
-    //             message.success('Onboarding information submitted successfully!');
-    //           })
-    //           .catch(() => {
-    //             message.error('Please fill in all required fields.');
-    //           });
-    //       }
+  //       // Update employee information
+  //       if (updatedData && userId) {
+  //         dispatch(updateEmployee({ userId, updatedData }))
+  //           .then(() => {
+  //             message.success('Onboarding information submitted successfully!');
+  //           })
+  //           .catch(() => {
+  //             message.error('Please fill in all required fields.');
+  //           });
+  //       }
 
-    //       // If application status allows, submit the application
-    //       if (application?.status === 'Rejected' || !application?.status) {
-    //         axios
-    //           .post(
-    //             '/api/application',
-    //             {},
-    //             {
-    //               headers: {
-    //                 Authorization: `Bearer ${token}`,
-    //               },
-    //             }
-    //           )
-    //           .then((response) => {
-    //             message.success(
-    //               'Application submitted successfully!',
-    //               0.8,
-    //               () => {
-    //                 window.location.reload();
-    //               }
-    //             );
-    //             console.log('Response:', response.data);
-    //           })
-    //           .catch((error) => {
-    //             message.error(
-    //               error.response?.data?.message ||
-    //                 'Failed to apply. Please fill in all required fields.'
-    //             );
-    //             console.error('Error:', error);
-    //           });
-    //       }
-    //     })
-    //     .catch(() => {
-    //       message.error('Please fill in all required fields.');
-    //     });
-    // };
+  //       // If application status allows, submit the application
+  //       if (application?.status === 'Rejected' || !application?.status) {
+  //         axios
+  //           .post(
+  //             '/api/application',
+  //             {},
+  //             {
+  //               headers: {
+  //                 Authorization: `Bearer ${token}`,
+  //               },
+  //             }
+  //           )
+  //           .then((response) => {
+  //             message.success(
+  //               'Application submitted successfully!',
+  //               0.8,
+  //               () => {
+  //                 window.location.reload();
+  //               }
+  //             );
+  //             console.log('Response:', response.data);
+  //           })
+  //           .catch((error) => {
+  //             message.error(
+  //               error.response?.data?.message ||
+  //                 'Failed to apply. Please fill in all required fields.'
+  //             );
+  //             console.error('Error:', error);
+  //           });
+  //       }
+  //     })
+  //     .catch(() => {
+  //       message.error('Please fill in all required fields.');
+  //     });
+  // };
 
   const handleApply = () => {
     Modal.confirm({

@@ -1,7 +1,10 @@
 import { Form, Input } from 'antd';
 
+import { AppDispatch } from '../../app/store';
 import { Employee } from '../../utils/type';
 import React from 'react';
+import { updateEmployeeField } from '../../features/employee/employeeSlice';
+import { useDispatch } from 'react-redux';
 
 interface AddressSectionProps {
   employee: Employee;
@@ -18,6 +21,14 @@ const AddressSection: React.FC<AddressSectionProps> = ({
   form,
   unchangeable,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const handleFieldChange = (field: string, value: any) => {
+    onChange(field, value);
+
+    const fieldParts = field.split('.');
+    dispatch(updateEmployeeField({ field: fieldParts, value }));
+  };
+
   return (
     <div className='bg-white p-4 rounded shadow-md'>
       <h2 className='text-xl font-semibold'>Address</h2>
@@ -40,7 +51,10 @@ const AddressSection: React.FC<AddressSectionProps> = ({
           >
             <Input
               disabled={unchangeable}
-              onChange={(e) => onChange('address.building', e.target.value)}
+              onChange={(e) =>
+                // onChange('address.building', e.target.value)
+                handleFieldChange('address.building', e.target.value)
+              }
             />
           </Form.Item>
           <Form.Item
@@ -50,7 +64,10 @@ const AddressSection: React.FC<AddressSectionProps> = ({
           >
             <Input
               disabled={unchangeable}
-              onChange={(e) => onChange('address.street', e.target.value)}
+              onChange={
+                (e) => handleFieldChange('address.street', e.target.value)
+                // onChange('address.street', e.target.value)
+              }
             />
           </Form.Item>
           <Form.Item
@@ -60,7 +77,10 @@ const AddressSection: React.FC<AddressSectionProps> = ({
           >
             <Input
               disabled={unchangeable}
-              onChange={(e) => onChange('address.city', e.target.value)}
+              onChange={(e) =>
+                // onChange('address.city', e.target.value)
+                handleFieldChange('address.city', e.target.value)
+              }
             />
           </Form.Item>
           <Form.Item
@@ -70,17 +90,30 @@ const AddressSection: React.FC<AddressSectionProps> = ({
           >
             <Input
               disabled={unchangeable}
-              onChange={(e) => onChange('address.state', e.target.value)}
+              onChange={
+                (e) => handleFieldChange('address.state', e.target.value)
+                // onChange('address.state', e.target.value)
+              }
             />
           </Form.Item>
           <Form.Item
             name='zip'
             label='Zip'
-            rules={[{ required: true, message: 'Zip code is required' }]}
+            rules={[
+              { required: true, message: 'Zip code is required' },
+              {
+                pattern: /^[0-9]{5}$/,
+                message:
+                  'zip must be exactly 5 digits and contain only numbers',
+              },
+            ]}
           >
             <Input
               disabled={unchangeable}
-              onChange={(e) => onChange('address.zip', e.target.value)}
+              onChange={
+                (e) => handleFieldChange('address.zip', e.target.value)
+                // onChange('address.zip', e.target.value)
+              }
             />
           </Form.Item>
         </Form>
