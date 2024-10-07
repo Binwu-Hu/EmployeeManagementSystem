@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
 import { fetchEmployeeByUserId } from '../../features/employee/employeeSlice';
@@ -14,13 +14,21 @@ const { Sider, Content } = Layout;
 const VisaStatusPage = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
-  const { employee, loading, error } = useSelector(
-    (state: RootState) => state.employee
+
+  const {
+    employee,
+    loading: employeeLoading,
+    error: employeeError,
+  } = useSelector((state: RootState) => state.employee);
+
+  // Extract only visaType to minimize re-renders
+  const visaType = useSelector(
+    (state: RootState) => state.visaStatus.visaStatus?.visaType
   );
-  const { visaStatus } = useSelector((state: RootState) => state.visaStatus); // Fetch visa status from Redux store
+
   const [selectedKey, setSelectedKey] = useState('optReceipt');
 
-  // Fetch employee and visa status data on component mount
+  // Fetch employee data on component mount
   useEffect(() => {
     if (user?.email) {
       dispatch(fetchEmployeeByUserId(user.id));
@@ -30,15 +38,17 @@ const VisaStatusPage = () => {
   // Fetch visa status once employee is loaded
   useEffect(() => {
     if (employee?._id) {
-      dispatch(fetchVisaStatus(employee._id)); // Fetch visa status for the employee
+      dispatch(fetchVisaStatus(employee._id));
     }
   }, [dispatch, employee]);
 
-  const handleMenuClick = (key: string) => {
-    setSelectedKey(key);
+  const handleMenuClick = (e: any) => {
+    setSelectedKey(e.key);
   };
 
-  const renderSection = () => {
+  const renderSection = useMemo(() => {
+    if (!employee?._id) return null;
+
     switch (selectedKey) {
       case 'optReceipt':
         return <OPTReceiptSection employeeId={employee._id} />;
@@ -51,17 +61,17 @@ const VisaStatusPage = () => {
       default:
         return <p>Select a section</p>;
     }
-  };
+  }, [selectedKey, employee?._id]);
 
-  if (loading)
+  if (employeeLoading)
     return (
       <div className='flex justify-center items-center h-96'>
         <Spin size='large' />
       </div>
     );
-  if (error) return <p>Error: {error}</p>;
-  console.log('visaStatus', visaStatus);
-  if (visaStatus?.visaType !== 'F1') {
+  if (employeeError) return <p>Error: {employeeError}</p>;
+
+  if (visaType !== 'F1') {
     return (
       <Layout className='min-h-screen'>
         <Content className='p-6'>
@@ -86,7 +96,7 @@ const VisaStatusPage = () => {
           theme='dark'
           className='h-full'
           selectedKeys={[selectedKey]}
-          onClick={(e) => handleMenuClick(e.key)}
+          onClick={handleMenuClick}
         >
           <Menu.Item key='optReceipt'>OPT Receipt</Menu.Item>
           <Menu.Item key='optEAD'>OPT EAD</Menu.Item>
@@ -98,7 +108,7 @@ const VisaStatusPage = () => {
       <Layout className='bg-gray-50'>
         <Content className='p-6'>
           <h1 className='text-2xl font-bold mb-4'>Visa Status Management</h1>
-          {employee && visaStatus && renderSection()}
+          {renderSection}
         </Content>
       </Layout>
     </Layout>
