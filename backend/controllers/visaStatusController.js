@@ -123,7 +123,7 @@ export const updateVisaStatus = async (employeeId, visaType, files=[]) => {
           i20Form: { files: [], status: 'Unsubmitted' },
         });
         await visaStatus.save();
-        console.log('visaStatus created successfully:', visaStatus);
+        // console.log('visaStatus created successfully:', visaStatus);
         return { message: 'New visa status created successfully for F1', visaStatus };
       }
     }

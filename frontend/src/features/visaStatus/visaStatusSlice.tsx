@@ -103,8 +103,16 @@ const visaStatusSlice = createSlice({
         state.visaStatus = null; 
       })
       // Upload document
-      .addCase(uploadVisaDocument.fulfilled, (state, action) => {
-        state.visaStatus = action.payload;
+      .addCase(uploadVisaDocument.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(uploadVisaDocument.fulfilled, (state) => {
+        state.loading = false;
+        // Do not update visaStatus here
+      })
+      .addCase(uploadVisaDocument.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
       .addCase(approveVisaStatus.pending, (state) => {
         state.loading = true;
