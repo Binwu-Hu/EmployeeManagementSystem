@@ -38,18 +38,21 @@ export const updateEmployee = async (req, res) => {
     if (!updatedEmployee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
-    console.log("here1")
-    const visaType = updatedEmployee.workAuthorization.visaType;
-    console.log('here2');
-    const files = updatedEmployee.workAuthorization.files;
+    console.log("employee controller updatedEmployee:", updatedEmployee);
+    const visaType = updatedEmployee?.workAuthorization?.visaType;
+    console.log('employee controller visaType:', visaType);
+    const files = updatedEmployee?.workAuthorization?.files;
+    console.log('employee controller files:', files);
     try {
         console.log('here3');
       if (files) {
         console.log('here4');
         await updateVisaStatus(updatedEmployee._id, visaType, files);
+        console.log('save succcessfully in employee controller');
       } else {
         console.log('here5');
         await updateVisaStatus(updatedEmployee._id, visaType);
+        console.log('save succcessfully without files in employee controller');
       }
     } catch (error) {
       console.error('Error updating visa status:', error.message);

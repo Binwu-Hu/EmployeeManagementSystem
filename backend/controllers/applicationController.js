@@ -134,14 +134,30 @@ const createApplication = asyncHandler(async (req, res) => {
       });
     }
   }
-  
+  const visaType = updatedEmployee?.workAuthorization?.visaType;
+  const files = updatedEmployee?.workAuthorization?.files;
+  console.log('application controller, visaType:', visaType);
+  console.log('application controller, files:', files);
   try {
-    const result = await updateVisaStatus(employee._id, employee.workAuthorization.visaType);
-    console.log(result.message);
-  } catch (error) {
-    console.error('Error updating visa status:', error.message);
-    return res.status(500).json({ message: 'Error updating visa status', error: error.message });
+    console.log('here3');
+  if (files) {
+    console.log('here4');
+    await updateVisaStatus(updatedEmployee._id, visaType, files);
+    console.log('save succcessfully with files in application controller');
+  } else {
+    console.log('here5');
+    await updateVisaStatus(updatedEmployee._id, visaType);
+    console.log('save succcessfully without files in application controller');
   }
+} catch (error) {
+  console.error('Error updating visa status:', error.message);
+  return res
+    .status(500)
+    .json({
+      message: 'Error updating visa status',
+      error: error.message,
+    });
+}
   
   const application = new Application({
     employee: employee._id,

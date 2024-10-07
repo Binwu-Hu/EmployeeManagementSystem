@@ -91,6 +91,7 @@ export const updateVisaStatus = async (employeeId, visaType, files=[]) => {
   try {
 
     let visaStatus = await VisaStatus.findOne({ employee: employeeId });
+    console.log('visaStatus:', visaStatus);
     // If visa type is Green Card or Citizen, delete existing visa status
     if (visaType === 'Green Card' || visaType === 'Citizen') {
       if (visaStatus) {
@@ -104,25 +105,29 @@ export const updateVisaStatus = async (employeeId, visaType, files=[]) => {
 
     if (visaType === 'F1') {
       if (visaStatus) {
+        console.log('Updating visa status for F1');
         // update existing visa status
         visaStatus.visaType = visaType;
-        visaStatus.optReceipt = { files: files, status: 'Unsubmitted' };
+        visaStatus.optReceipt = { files: files, status: files.length === 0 ? 'Unsubmitted' : 'Pending' };
         visaStatus.optEAD = { files: [], status: 'Unsubmitted' };
         visaStatus.i983Form = { files: [], status: 'Unsubmitted' };
         visaStatus.i20Form = { files: [], status: 'Unsubmitted' };
         await visaStatus.save();
         return { message: 'Visa status updated successfully for F1', visaStatus };
       } else {
+        console.log('Creating new visa status for F1'); 
+        console.log('files:', files);
         // create new visa status
         visaStatus = new VisaStatus({
           employee: employeeId,
           visaType: visaType,
-          optReceipt: { files: files, status: 'Unsubmitted' },
+          optReceipt: { files: files, status: files.length === 0 ? 'Unsubmitted' : 'Pending' },
           optEAD: { files: [], status: 'Unsubmitted' },
           i983Form: { files: [], status: 'Unsubmitted' },
           i20Form: { files: [], status: 'Unsubmitted' },
         });
         await visaStatus.save();
+        console.log('visaStatus created successfully:', visaStatus);
         return { message: 'New visa status created successfully for F1', visaStatus };
       }
     }
