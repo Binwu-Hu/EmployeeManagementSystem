@@ -295,9 +295,25 @@ const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = ({
         </Form>
       ) : (
         <div>
-          <div>
+          <div style={{ marginBottom: 16 }}>
             <p>
               <strong>First Name:</strong> {employee.reference?.firstName}
+            </p>
+            <p>
+              <strong>Last Name:</strong> {employee.reference?.lastName}
+            </p>
+            <p>
+              <strong>Middle Name:</strong>{' '}
+              {employee.reference?.middleName || ''}
+            </p>
+            <p>
+              <strong>Phone:</strong> {employee.reference?.phone}
+            </p>
+            <p>
+              <strong>Email:</strong> {employee.reference?.email}
+            </p>
+            <p>
+              <strong>Relationship:</strong> {employee.reference?.relationship}
             </p>
           </div>
 

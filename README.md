@@ -52,6 +52,11 @@ The backend is built using **Node.js** and **Express**, with **MongoDB** as the 
 | `/api/users/signup` | POST | User signup |
 | `/api/users/login` | POST | User login |
 
+### Registration
+| Endpoint | Method | Description |
+| --- | --- | --- |
+| `/api/registration/send` | POST | Send registration link |
+
 ### Employees
 | Endpoint | Method | Description |
 | --- | --- | --- |
@@ -72,11 +77,11 @@ The backend is built using **Node.js** and **Express**, with **MongoDB** as the 
 ### Visa Status
 | Endpoint | Method | Description |
 | --- | --- | --- |
-| `/api/visa/upload/:employeeId` | POST | Upload visa documents for an employee |
-| `/api/visa/all` | GET | Get visa status for all employees |
-| `/api/visa/:employeeId` | GET | Get visa status by employee ID |
-| `/api/visa/update/:employeeId` | PATCH | Approve or reject visa documents |
-| `/api/visa/notify/:employeeId` | POST | Send notification to employee |
+| `/api/visa-status/upload/:employeeId` | POST | Upload visa documents for an employee |
+| `/api/visa-status/all` | GET | Get visa status for all employees |
+| `/api/visa-status/:employeeId` | GET | Get visa status by employee ID |
+| `/api/visa-status/update/:employeeId` | PATCH | Approve or reject visa documents |
+| `/api/visa-status/notify/:employeeId` | POST | Send notification to employee |
 
 ## Installation and Setup
 
