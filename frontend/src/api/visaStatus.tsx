@@ -17,10 +17,8 @@ export const uploadVisaDocumentApi = (employeeId: string, fileType: string, file
   const formData = new FormData();
   files.forEach((file) => {
     formData.append('files', file); // Use originFileObj for Ant Design Upload component
-    console.log('file', file);
   });
   formData.append('fileType', fileType); // E.g., optReceipt, optEAD, i983Form
-  console.log('formData', formData);
   return post(`/visa-status/upload/${employeeId}`, formData, true); // Indicate it's form data
 };
 
