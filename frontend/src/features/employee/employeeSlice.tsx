@@ -91,7 +91,7 @@ export const fetchEmployees = createAsyncThunk(
 export const uploadEmployeeFile = createAsyncThunk(
   'employee/uploadFile',
   async (
-    { userId, file }: { userId: string; file: File },
+    { userId, file, visaType }: { userId: string; file: File; visaType: string},
     { rejectWithValue }
   ) => {
     try {
@@ -113,7 +113,7 @@ export const uploadEmployeeFile = createAsyncThunk(
       );
 
       const { filePath, fileType } = response.data;
-      return {filePath, fileType};
+      return {filePath, fileType, visaType};
     } catch (error: any) {
       // Return the error message in case of failure
       return rejectWithValue(
@@ -180,8 +180,9 @@ const employeeSlice = createSlice({
       .addCase(uploadEmployeeFile.fulfilled, (state, action) => {
         state.loading = false;
         if (state.employee) {
-            const { filePath, fileType } = action.payload;
+            const { filePath, fileType, visaType } = action.payload;
           if (fileType === '.pdf') {
+            state.employee.workAuthorization.visaType = visaType;
             state.employee.workAuthorization.files.push(filePath);
           } else {
             state.employee.profilePicture = filePath

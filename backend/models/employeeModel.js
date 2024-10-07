@@ -36,7 +36,6 @@ const employeeSchema = new mongoose.Schema(
     workAuthorization: {
       visaType: {
         type: String,
-        enum: ['Green Card', 'Citizen', 'H1-B', 'L2', 'F1', 'H4', 'Other'],
       },
       files: [{ type: String }],
       startDate: { type: Date },

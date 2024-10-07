@@ -1,8 +1,8 @@
 import Employee from '../models/employeeModel.js';
-import { updateVisaStatus } from '../controllers/visaStatusController.js';
 import asyncHandler from 'express-async-handler';
 import fs from 'fs';
 import path from 'path';
+import { updateVisaStatus } from '../controllers/visaStatusController.js';
 
 // Controller to get employee by userId
 export const getEmployeeByUserId = async (req, res) => {
@@ -25,22 +25,30 @@ export const getEmployeeByUserId = async (req, res) => {
 
 export const updateEmployee = async (req, res) => {
   const userId = req.params.id;
+//   console.log("userId:" ,userId)
+  console.log("req.body:" ,req.body)
   try {
     const updatedEmployee = await Employee.findOneAndUpdate(
       { userId },
       { $set: req.body },
       { new: true, runValidators: true } // Return updated employee, run validation
     );
+    console.log('here0');
 
     if (!updatedEmployee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
+    console.log("here1")
     const visaType = updatedEmployee.workAuthorization.visaType;
+    console.log('here2');
     const files = updatedEmployee.workAuthorization.files;
     try {
+        console.log('here3');
       if (files) {
+        console.log('here4');
         await updateVisaStatus(updatedEmployee._id, visaType, files);
       } else {
+        console.log('here5');
         await updateVisaStatus(updatedEmployee._id, visaType);
       }
     } catch (error) {
