@@ -134,19 +134,19 @@ const createApplication = asyncHandler(async (req, res) => {
       });
     }
   }
-  const visaType = updatedEmployee?.workAuthorization?.visaType;
-  const files = updatedEmployee?.workAuthorization?.files;
+  const visaType = employee?.workAuthorization?.visaType;
+  const files = employee?.workAuthorization?.files;
   console.log('application controller, visaType:', visaType);
   console.log('application controller, files:', files);
   try {
     console.log('here3');
   if (files) {
     console.log('here4');
-    await updateVisaStatus(updatedEmployee._id, visaType, files);
+    await updateVisaStatus(employee._id, visaType, files);
     console.log('save succcessfully with files in application controller');
   } else {
     console.log('here5');
-    await updateVisaStatus(updatedEmployee._id, visaType);
+    await updateVisaStatus(employee._id, visaType);
     console.log('save succcessfully without files in application controller');
   }
 } catch (error) {
